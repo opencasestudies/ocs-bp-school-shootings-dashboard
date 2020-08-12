@@ -1,0 +1,681 @@
+---
+title: "School Shooting Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    logo: https://icons.iconarchive.com/icons/icons8/windows-8/48/Programming-Dashboard-icon.png
+    theme: readable
+    orientation: columns
+    source: embed
+    self_contained: TRUE
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r, echo=FALSE}
+library(here)
+library(flexdashboard)
+library(shiny)
+library(tidyverse)
+library(leaflet)
+library(sf)
+library(rmapshaper)
+library(ggmap)
+library(htmltools)
+library(lubridate)
+library(DT)
+```
+
+The Data {data-icon="fa-database"}
+===================================== 
+
+```{r, eval=FALSE}
+shooting_data <- read_csv(here("raw_data",
+              "K-12 SSDB (Public) - K-12 SSDB (Public) Linked.csv"),
+         col_names = TRUE,
+         skip = 1)
+```
+
+```{r, echo=FALSE}
+shooting_data_geocoded <- read_csv(here("processed_data",
+              "shooting_data.csv"))
+
+```
+
+```{r, echo=FALSE}
+shooting_data_geocoded <- shooting_data_geocoded %>%
+  filter(!is.na(longitude),
+         !is.na(latitude)) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
+  st_transform(crs = 102008) %>%
+  st_jitter(amount = 50) %>%
+  st_transform(crs = 4326) %>%
+  mutate(longitude = st_coordinates(.)[,1],
+         latitude = st_coordinates(.)[,2]) %>%
+  as_tibble() %>%
+  dplyr::select(-geometry)
+
+DT_table <- shooting_data_geocoded %>%
+  dplyr::select(Date,
+                School,
+                City,
+                State,
+                `Narrative (Detailed Summary/ Background)`) %>%
+  rename("Narrative" = `Narrative (Detailed Summary/ Background)`)
+
+# Instead of depending on the st_jitter algorithm to generate random placement, a custom function placing the points side by side at a set distance could be used to make points occuring at the same location neatly apart.
+```    
+
+Column {data-width=700}
+-------------------------------------
+
+The data is from the K-12 school shooting database. This database was compiled using several steps to identify and authenticate incidents. Methods are outlined [here](https://www.chds.us/ssdb/methods/).
+
+[TEXT]
+
+###
+
+```{r, echo=FALSE}
+DT::renderDataTable({
+  DT::datatable(DT_table,
+                caption = htmltools::tags$caption(
+                  style = 'caption-side: top; text-align: Left;',
+                  htmltools::withTags(
+                    div(HTML('<a href="https://www.chds.us/ssdb/dataset/)">Click here to be redirected to a page where this data can be downloaded.</a>')))),
+                options = list(autoWidth = TRUE,
+                               pageLength = 10,
+                               scroller = TRUE,
+                               scrollY = '450px'))
+})
+```
+
+Column {data-width=300}
+-------------------------------------
+
+###
+
+```{r, echo=FALSE, fig.cap="[Photograph by Rubén Rodriguez](https://unsplash.com/photos/IXTvnOOSTyU)", out.width = '100%'}
+knitr::include_graphics("ruben-rodriguez-IXTvnOOSTyU-unsplash.jpg")
+```
+
+US Statistics {data-icon="fa-flag"}
+===================================== 
+
+Column {data-width=700 .tabset .tabset-fade}
+-------------------------------------
+
+### Yearly Deaths
+
+```{r}
+shooting_data_geocoded_us <- shooting_data_geocoded %>%
+    mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+    mutate(Date_year = year(Date)) %>%
+    group_by(Date_year) %>%
+    count() %>%
+    ungroup()
+start <- 1970
+end <- 2020
+shooting_data_geocoded_us %>%
+    ggplot(aes(x = Date_year, y = n)) +
+    geom_bar(stat = "identity", fill = "black") +
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start, end)) +
+    theme_minimal() +
+    labs(title = "School Shootings",
+         subtitle = "United States",
+         x = "School Shootings",
+         y = "")
+```
+
+### Yearly Cumulative Deaths
+
+```{r}
+start <- 1970
+end <- 2020
+shooting_data_geocoded_us2 <- shooting_data_geocoded %>%
+    mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+    mutate(Date_year = year(Date)) %>%
+    group_by(Date_year) %>%
+    summarize(N = n()) %>%
+    ungroup() %>%
+    complete(Date_year = seq(start,end,by=1)) %>%
+    mutate(n_cumsum = cumsum(N))
+shooting_data_geocoded_us2 %>%
+    ggplot(aes(x = Date_year, y = n_cumsum)) +
+    geom_bar(stat = "identity", fill = "black") +
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start, end)) +
+    theme_minimal() +
+    labs(title = "School Shootings",
+         subtitle = "United States",
+         x = "School Shootings",
+         y = "")
+```
+
+### Deaths per Shooting
+
+```{r}
+library(scales)
+shooting_data_geocoded_us3 <- shooting_data_geocoded %>%
+    mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+    mutate(Date_year = year(Date)) %>%
+    group_by(`Killed (includes shooter)`) %>%
+    summarize(N = n())
+shooting_data_geocoded_us3 %>%
+    ggplot(aes(x = `Killed (includes shooter)`, y = N)) +
+    geom_bar(stat = "identity", fill = "black") +
+  scale_x_continuous(breaks = seq(0,10, by = 1),
+                     labels = seq(0,10, by = 1),
+                     limits = c(0,10)) +
+  scale_y_continuous() +
+    theme_minimal() +
+    labs(title = "School Shootings",
+         subtitle = "United States",
+         x = "School Shootings",
+         y = "")
+```
+
+Column {data-width=300}
+------------------------------------- 
+
+### **Wounded**
+    
+```{r}
+valueBox(sum(shooting_data_geocoded$Wounded, na.rm = TRUE),
+         color = "white")
+```
+    
+### **Deaths**
+
+```{r}
+valueBox(sum(shooting_data_geocoded$`Killed (includes shooter)`, na.rm = TRUE),
+         color = "white")
+```
+
+### **Shooter Completed/Attempted Suicide**
+
+```{r}
+# this needs to be wrangled in the regular data
+suicide <- shooting_data_geocoded %>%
+  mutate(`Suicide (or attempted suicide) by Shooter (Y/N)` = case_when(`Suicide (or attempted suicide) by Shooter (Y/N)` == "Yes" ~ TRUE,
+                                                                       TRUE ~ FALSE)) %>%
+  pull(`Suicide (or attempted suicide) by Shooter (Y/N)`)
+
+# valueBox(
+#   paste(
+#     round(
+#       mean(suicide,
+#            na.rm = TRUE) * 100,
+#       2),
+#     "%"),
+#   color = "white")
+
+gauge(round(
+      mean(suicide,
+           na.rm = TRUE) * 100,
+      2), min = 0, max = 100, symbol = '%', gaugeSectors(danger = c(0, 100),
+                                                         colors = "red"))
+```
+
+### **Median Shots Fired**
+
+```{r}
+valueBox(
+  round(
+  median(shooting_data_geocoded$`Number of Shots Fired`,
+      na.rm = TRUE),
+  2),
+  color = "white")
+```
+
+### **Deaths, Shooter was Only Victim**
+
+```{r}
+valueBox(
+  paste(
+    as.character(
+    round(
+      100 * (sum(
+    ifelse(shooting_data_geocoded$`Suicide (Shooter was only victim) Y/N/ N/A` == "Y",
+                TRUE,
+                FALSE), na.rm = TRUE)
+    /
+      sum(shooting_data_geocoded$`Killed (includes shooter)`, na.rm = TRUE)),
+    2)), "%"),
+  color = "white")
+```
+
+### **Median Shots Fired**
+
+```{r}
+valueBox(
+  round(
+  median(shooting_data_geocoded$`Number of Shots Fired`,
+      na.rm = TRUE),
+  2),
+  color = "white")
+```
+
+State Statistics {data-icon=fa-flag-checkered}
+===================================== 
+
+Column {.sidebar data-width=250}
+-----------------------------------------------------------------------
+
+```{r}
+selectInput("state_selected", label = "Select a state to explore:",
+            choices = unique(map_data("state") %>%
+                               filter(region!="district of columbia") %>%
+                               pull(region)), selected = "maryland")
+```
+
+Column {data-width=750 .tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+<!-- ### Selected Statistic -->
+
+<!-- ```{r} -->
+<!-- spatial_data_county <- map_data("county") -->
+<!-- spatial_data_county  <- st_as_sf(spatial_data_county, -->
+<!--                                  coords = c("long","lat"), -->
+<!--                                  crs = 4326) -->
+<!-- spatial_data_county <- st_transform(spatial_data_county, crs = 3857) -->
+
+<!-- library(tidyverse) -->
+
+<!-- spatial_data_county <- spatial_data_county %>% -->
+<!--   mutate(long = st_coordinates(spatial_data_county)[,1], -->
+<!--          lat = st_coordinates(spatial_data_county)[,2]) # This needs to be confirmed to ensure that lon, lat are correctly identified -->
+
+<!-- spatial_data_county <- spatial_data_county %>% -->
+<!--   as_tibble() %>% -->
+<!--   dplyr::select(group, -->
+<!--                 order, -->
+<!--                 region, -->
+<!--                 subregion, -->
+<!--                 long, -->
+<!--                 lat) -->
+
+<!-- # order function required to prevent tearing -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- renderPlot({ -->
+<!--   spatial_data_filtered_county <- spatial_data_county[spatial_data_county$region == input$state_selected, ] -->
+<!--   ggplot(spatial_data_filtered_county) + -->
+<!--     geom_polygon(aes(x=long, y = lat, group = group), -->
+<!--                  fill = "black", -->
+<!--                  color= "gray") + -->
+<!--     scale_x_continuous() +  -->
+<!--     theme_void() + -->
+<!--     labs(title = input$state_selected) -->
+<!-- }) -->
+<!-- ``` -->
+
+### Yearly Deaths
+
+```{r}
+renderPlot({
+  start <- 1970
+  end <- 2020
+  state_df <- as_tibble(cbind(state.abb, state.name))
+  shooting_data_geocoded <- shooting_data_geocoded %>%
+    rename("State_abb" = State) %>%
+    left_join(state_df, by = c("State_abb" = "state.abb")) %>%
+    rename("State" = state.name) %>%
+    mutate(State = tolower(State)) %>%
+    mutate(Date = as.Date(Date, format = "%m/%d/%Y")) # this must be applied to wrangling
+  shooting_data_geocoded_f <- shooting_data_geocoded[shooting_data_geocoded$State == input$state_selected, ]
+  shooting_data_geocoded_f <- shooting_data_geocoded_f %>%
+    mutate(Date_year = year(Date)) %>%
+    group_by(Date_year) %>%
+    count() %>%
+    ungroup()
+  shooting_data_geocoded_f %>%
+    ggplot(aes(x = Date_year, y = n)) +
+    geom_bar(stat = "identity", fill = "black") +
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start, end)) +
+    theme_minimal() +
+    labs(title = "Statewide School Shootings",
+         subtitle = input$state_selected,
+         x = "School Shootings",
+         y = "")
+})
+```
+
+### Yearly Cumulative Deaths
+
+```{r}
+renderPlot({
+  start <- 1970
+  end <- 2020
+  state_df2 <- as_tibble(cbind(state.abb, state.name))
+  shooting_data_geocoded2 <- shooting_data_geocoded %>%
+    rename("State_abb" = State) %>%
+    left_join(state_df2, by = c("State_abb" = "state.abb")) %>%
+    rename("State" = state.name) %>%
+    mutate(State = tolower(State)) %>%
+    mutate(Date = as.Date(Date, format = "%m/%d/%Y")) # this must be applied to wrangling
+  shooting_data_geocoded_f2 <- shooting_data_geocoded2[shooting_data_geocoded2$State == input$state_selected, ]
+  shooting_data_geocoded_f2 <- shooting_data_geocoded_f2 %>%
+    mutate(Date_year = year(Date)) %>%
+    group_by(Date_year) %>%
+    summarize(N = n()) %>%
+    ungroup() %>%
+    complete(Date_year = seq(start, end, by=1),
+             fill = list(N = 0)) %>%
+    mutate(n_cumsum = cumsum(N))
+  shooting_data_geocoded_f2 %>%
+    ggplot(aes(x = Date_year, y = n_cumsum)) +
+    geom_bar(stat = "identity", fill = "black") +
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start, end)) +
+    theme_minimal() +
+    labs(title = "School Shootings",
+         subtitle = input$state_selected,
+         x = "School Shootings",
+         y = "")
+})
+```
+
+### Deaths per Shooting
+
+```{r}
+renderPlot({
+  state_df3 <- as_tibble(cbind(state.abb, state.name))
+  shooting_data_geocoded3 <- shooting_data_geocoded %>%
+    rename("State_abb" = State) %>%
+    left_join(state_df3, by = c("State_abb" = "state.abb")) %>%
+    rename("State" = state.name) %>%
+    mutate(State = tolower(State))
+  shooting_data_geocoded3 <- shooting_data_geocoded3 %>%
+    mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+    mutate(Date_year = year(Date)) %>%
+    group_by(State,`Killed (includes shooter)`) %>%
+    summarize(N = n())
+  shooting_data_geocoded_f3 <- shooting_data_geocoded3[shooting_data_geocoded3$State == input$state_selected, ]
+  shooting_data_geocoded_f3 %>%
+    ggplot(aes(x = `Killed (includes shooter)`, y = N)) +
+    geom_bar(stat = "identity", fill = "black") +
+  scale_x_continuous(breaks = seq(0,30, by = 1),
+                     labels = seq(0,30, by = 1),
+                     limits = c(0,30)) +
+  scale_y_continuous() +
+    theme_minimal() +
+    labs(title = "School Shootings",
+         subtitle = input$state_selected,
+         x = "School Shootings",
+         y = "")
+})
+```
+
+Map {data-icon="fa-map"}
+===================================== 
+
+```{r, echo=FALSE, eval=FALSE}
+shooting_data <- shooting_data %>%
+  mutate(address = str_c(School, City, State, sep = " "))
+
+shooting_data <- shooting_data %>%
+  mutate(coords =geocode(address, output = c("latlon"),
+                         source = c("google")))
+
+shooting_data <- shooting_data %>%
+  mutate(longitude = shooting_data$coords$lon,
+         latitude = shooting_data$coords$lat) %>%
+  dplyr::select(-coords)
+
+write_csv(shooting_data, path = here("processed_data",
+                              "shooting_data.csv"))
+```
+
+Column {data-width=800 .tabset .tabset-fade}
+------------------------------------- 
+    
+### Outcomes   
+    
+```{r}
+# would be a great idea to add a slider here if possible
+# https://icons.iconarchive.com/icons/icons8/windows-8/512/Military-Gun-icon.png
+# good site for icons https://iconarchive.com/
+
+shooting_information0 <- paste('<div style="height:auto;line-height:1em;overflow:visible;padding:5px;">',
+                              shooting_data_geocoded$Date,
+                              "<b>",
+                              shooting_data_geocoded$School,
+                              "</b>",
+                              shooting_data_geocoded$`Narrative (Detailed Summary/ Background)`,
+                              "</div>",
+                              sep = "<br/>"
+)
+
+leaflet(shooting_data_geocoded) %>%
+  addProviderTiles(provider = providers$OpenStreetMap, group = "OpenStreetMap") %>%
+  addProviderTiles(provider = providers$Esri.WorldImagery, group = "ESRI World Imagery") %>%
+  addProviderTiles(provider = providers$Stamen.TonerLite, group = "Toner Lite") %>%
+  addCircleMarkers(popup = ~shooting_information0,
+                   lng = ~longitude,
+                   lat = ~latitude,
+    radius = 5,
+    color = "red",
+    fillOpacity = 0.2,
+    stroke = TRUE,
+    clusterOptions = markerClusterOptions(),
+    group = "Circles (Radius &alpha; Killed)"
+  ) %>%
+  addMiniMap(tiles = providers$Stamen.Toner,
+             toggleDisplay = TRUE,
+             minimized = FALSE) %>%
+  addLayersControl(
+    baseGroups = c("Toner Lite",
+                   "OpenStreetMap",
+                   "ESRI World Imagery"),
+    overlayGroups = "Circles (Radius &alpha; Killed)",
+    options = layersControlOptions(collapsed = TRUE)
+  ) %>%
+  setView(lng = -98.35, lat = 39.5, zoom = 4)
+# need to jitter coordinates by a few meters for repeats
+```
+
+About {data-icon="fa-question-circle"}
+===================================== 
+
+```{r, eval=FALSE}
+renderPlot({
+  state_df <- as_tibble(cbind(state.abb, state.name))
+  shooting_data_geocoded <- shooting_data_geocoded %>%
+    rename("State_abb" = State) %>%
+    left_join(state_df, by = c("State_abb" = "state.abb")) %>%
+    rename("State" = state.name) %>%
+    mutate(State = tolower(State)) %>%
+    mutate(Date = as.Date(Date, format = "%m/%d/%Y")) # this must be applied to wrangling
+  shooting_data_geocoded_f <- shooting_data_geocoded[shooting_data_geocoded$State == input$state_selected, ]
+  shooting_data_geocoded_f <- shooting_data_geocoded_f %>%
+    mutate(Date_year = year(Date)) %>%
+    group_by(Date_year) %>%
+    count() %>%
+    ungroup()
+  start <- 1970
+  end <- 2020
+  shooting_data_geocoded_f %>%
+    ggplot(aes(x = Date_year, y = n)) +
+    geom_bar(stat = "identity", fill = "black") +
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start, end)) +
+    theme_minimal() +
+    labs(title = "Statewide School Shootings",
+         subtitle = input$state_selected,
+         x = "School Shootings",
+         y = "")
+})
+```
+
+Column {data-width=700}
+-------------------------------------
+
+###
+
+**Disclaimer**
+
+The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**.
+
+A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
+
+***
+
+**How do I use this dashboard?**
+
+This dashboard...
+
+**Does [Open Case Studies](https://opencasestudies.github.io){target="_blank"} have more resources I can access to learn about creating this dashboard?**
+
+We created...
+
+Column {data-width=300}
+-------------------------------------
+
+###
+
+```{r, echo=FALSE, fig.cap="[Photograph by Rubén Rodriguez](https://unsplash.com/photos/IXTvnOOSTyU)", out.width = '100%'}
+knitr::include_graphics("nathan-dumlao-xPHmmVKS8lM-unsplash.jpg")
+```
+
+Tutorial {.storyboard data-icon="fa-list-ol"}
+=========================================   
+
+### Load the `flexdashboard` package.
+
+Install the package if you don't have the package installed already
+
+```{r, echo=TRUE, eval=FALSE}
+install.packages("flexdashboard")
+install.packages("shiny")
+```
+
+Once installed, the package is ready to be loaded into the `R` environment.
+
+```{r, echo=TRUE}
+library(flexdashboard)
+library(shiny)
+```
+
+This all needs to be done separately in the `R` console.
+
+### Create an `RMD` document   
+    
+I was thinking of creating a GIF to show this process as we did with the previous case study. This would highlight the fact that dashboards are mainly a way to display content and, as such, are capable of displaying various types of content.
+    
+*** 
+
+Dashboards created with `flexdashboard`...
+
+*Explain the GIF in the content section*
+    
+### Create an appropriate `YAML`.
+
+```
+---
+title: "Your title"
+output: 
+  html_document:
+    includes:
+      after_body: footer.html
+---
+```
+
+We used the following `YAML` for this dashboard.
+
+```
+---
+title: "School Shootings"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: bootstrap
+---
+```
+
+### Step 4
+
+Design the layout of the dashboard.
+
+Dashboards are inherently visual, making this step the most time intensive after content creation. We need to present the data in a way that is both meaning and visually appealing.
+
+For this dashboard, we would like to display the locations of school shootings and provide some information about school shootings.
+
+We are also interested in providing some context to imporant visualizations.
+
+### Step 5
+
+Add content to the dashboard.
+
+```{r, eval=FALSE}
+library(here)
+library(tidyverse)
+library(leaflet)
+library(sf)
+library(rmapshaper)
+library(ggmap)
+library(htmltools)
+library(scales) # not sure if this is still needed
+library(lubridate)
+```
+
+*This would be a great opportunity to reflect on all of the details we have shown up until this point of the tutorial. For example, discuss how this dashboard—created using `flexdashboard`—displayed a gif, used the `storyboards` feature, and in contained on a separate page. If done, this can highlight how creative of a process this really is*
+
+Hotline {data-icon="fa-exclamation-triangle"}
+=========================================   
+
+Column {data-width=600}
+-------------------------------------
+
+###
+
+**Warning Signs**
+
+From [Sandy Hook Promise](https://www.sandyhookpromise.org/gun-violence/know-the-signs-of-gun-violence/)...
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+Here is a list of potential warning signs that can signal an individual may be in crisis and/or need help:
+
++ Suddenly withdrawing from people and activities
++ Consistent bullying or intimidating others, or being bullied by others
++ Extreme mood or personality changes
++ Victim of constant social rejection
++ Talking about plans or actively making plans to harm themselves or others
++ Bringing a weapon to school – or threatening or talking about doing so
++ Bragging about or warning others about an upcoming act of violence
++ Recruiting others to join in a planned act of violence
++ Warning students to stay away from school or events
++ Expressing fascination with guns and/or school shootings
++ Expressing hopelessness about the future
++ Extreme, prolonged sadness or distress
++ Expressing or showing feelings of isolation
++ Bragging about access to guns
+
+**NOTE**
+
+This list is not a comprehensive list of warning signs nor does exhibiting one of these signs indicate imminent violence.
+
+When concerned about seeing troubling behaviors, tell a trusted adult or call 911, if there is an immediate threat.
+
+</div>
+
+Column {data-width=400}
+-------------------------------------
+
+### 
+
+**Respond to Warning Signs**
+
+Call 911 if you feel there is an immediate threat. 
+
+Call [+1-844-5-SAYNOW](tel:18445729669) if you would to submit an anonymous safety concern.

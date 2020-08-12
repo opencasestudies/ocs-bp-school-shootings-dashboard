@@ -1,0 +1,205 @@
+---
+title: "ocs-school-shootings-dashboard"
+output:
+  html_document:
+    self_contained: yes
+    code_download: yes
+    highlight: tango
+    number_sections: no
+    theme: cosmo
+    toc: yes
+    toc_float: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+---
+
+CSS styling not included in this document. 
+
+<style>
+#TOC {
+  background: url("https://opencasestudies.github.io/img/logo.jpg");
+  background-size: contain;
+  padding-top: 240px !important;
+  background-repeat: no-repeat;
+}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
+                      message = FALSE, warning = FALSE, cache = FALSE,
+                      fig.align = "center", out.width = '90%')
+library(here)
+library(knitr)
+```
+
+## {.disclaimer_block}
+
+**Disclaimer**: The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**. A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
+
+
+## {.license_block}
+
+This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"}  United States License.
+
+
+## **Motivation**
+*** 
+
+
+### **Content Header**
+*** 
+
+Content content
+
+
+#### {.reference_block}
+
+
+####
+
+
+## **Main Questions**
+*** 
+
+#### {.main_question_block}
+<b><u> Our main question: </u></b>
+
+1) Where have school shootings occurred in the XXXX - XXXX period?
+2) What characteristics _______. 
+
+####
+
+## **Learning Objectives** 
+*** 
+
+In this case study, we will demonstrate how to create a dashboard. We will especially focus on using packages and functions from the [`Tidyverse`](https://www.tidyverse.org/){target="_blank"}, such as `package_name`, `package_name`. The tidyverse is a library of packages created by RStudio. While some students may be familiar with previous R programming packages, these packages make data science in R especially efficient.
+
+
+```{r, out.width = "20%", echo = FALSE, fig.align ="center"}
+include_graphics("https://tidyverse.tidyverse.org/logo.png")
+```
+
+
+*** 
+
+
+We will begin by loading the packages that we will need:
+
+```{r}
+library(here)
+library(readr)
+library(dplyr)
+```
+
+
+ Package   | Use                                                                         
+---------- |-------------
+[here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data
+
+
+The first time we use a function, we will use the `::` to indicate which package we are using. Unless we have overlapping function names, this is not necessary, but we will include it here to be informative about where the functions we will use come from.
+
+
+## **Context**
+*** 
+
+## **Limitations**
+*** 
+There are some important considerations regarding this data analysis to keep in mind: 
+
+1) This analysis is mainly exploratory and, as such, has a limited ability to provide information for inferential purposes.  
+
+2) Limitation 2  
+
+
+## **What are the data?**
+*** 
+
+If you want to make a table about variable info:
+
+Variable   | Details                                                                        
+---------- |-------------
+**variable1**  | Variable info  <br> -- more details <br> -- more detials <br>  **Example**: Content content  
+**variable2**  | Variable info  <br> -- more details <br> -- more detials <br>  **Example**: Content content
+
+## **Data Import**
+*** 
+
+Put files in docs directory and use `here` package.
+
+## **Data Exploration and Wrangling**
+*** 
+
+INTRODUCE THE CONCEPT OF DASHBOARDS
+
+INTRODUCE `flexdashboard`
+
+## **Data Analysis**
+*** 
+
+### **content header**
+*** 
+
+## **Data Visualization**
+*** 
+
+## **Summary**
+*** 
+
+## **Suggested Homework**
+*** 
+
+## **Helpful Links**
+*** 
+
+
+<u>Terms and concepts covered:</u>  
+
+[Tidyverse](https://www.tidyverse.org/){target="_blank"}  
+[RStudio cheatsheets](https://rstudio.com/resources/cheatsheets/){target="_blank"}  
+[Inference](https://www.britannica.com/science/inference-statistics){target="_blank"}  
+[Regression](https://lindeloev.github.io/tests-as-linear/){target="_blank"}  
+[Different types of regression](https://www.analyticsvidhya.com/blog/2015/08/comprehensive-guide-regression/){target="_blank"}  
+[Ordinary least squares method](http://setosa.io/ev/ordinary-least-squares-regression/){target="_blank"}  
+
+<u>Packages used in this case study: </u>
+
+ Package   | Use                                                                         
+---------- |-------------
+[here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
+
+## RA NOTES
+
+**Notes from Carrie**
+
+***
+
+We plan to make a dashboard ( a skill that we are excited to teach) with various data related to school shootings using the data included [here](https://datasci.data.blog/2019/12/11/school-shootings-do-gun-laws-work/) to make it easier for others to find. There should  a table if you scroll down a bit with all the data and sources)
+
+Data Science BlogData Science Blog | gshoe4
+
+School Shootings—Do Gun Laws Work?
+
+**Motivation and Overview**
+
+School shootings are an issue of growing concern in the United States. In the past 10 years, there has been a dramatic increase in the number of school shooting incidents across the country. Last year was particularly tragic, with over 100 recorded school shootings, the most ever in any year.
+
+Because of this, as well as an increase in media coverage of these events, the topic of school shootings has come to the forefront in the public consciousness. Therefore, it is imperative that state legislators look for ways to reduce the number of school shootings to prevent further tragedies and maintain public support. Many people point to the inadequacy of state gun policies as a major contributor to this phenomenon. This project aims to inform state legislators of the impact of gun policies on school shooting rates.
+
+**Goals**
+
+The main objective of this data analysis was to determine whether the strength of states’ gun laws is associated with the incidence of school shootings. This was first conducted using grades assigned by legal experts as a measure of the strength of states’ gun laws. We also wanted to see if specific types of gun laws—including bans, access laws, transport laws, and screening laws—have different associations with the incidence of school shootings. For this analysis, we considered laws regarding a waiting period, registration, background check, dealer license, safety training, permit, and one gun purchase per month limit as screening laws; castle doctrine, concealed carry, and open carry laws as transport laws; and minimum age, child access, and prohibited possessor laws as access laws. For this, we wanted to observe the effect of the strength of states’ gun laws independent of other variables that may affect the incidence of school shootings, such as the poverty rate and states’ anti-bullying laws.
+An additional goal of the analysis was to determine whether the strength of states’ gun laws is associated with the number of victims of school shootings. This was also conducted in two ways: first using an overall measure (letter grade) of each state’s gun policies and then looking at the number of laws by type. We wanted to conduct this analysis to see if the same predictors associated with the number of school shootings are similarly associated with the number of school shooting victims. This way, one set of policy recommendations may be provided to alleviate both issues.
+Data
+The data for these analyses came from a variety of sources, listed below. These datasets were chosen for their relevance to making inferences about school shooting rates, their overlapping period of years, and their reliability.
+DatasetOrganizationDescriptionYearsSourceSchool ShootingsCenter for Homeland Defense and SecurityLocation, date, type of shooting, number of victims1970-2019 Law GradesGiffords Law CenterLetter grades of states’ gun policies2012-2018 Law ChangesRAND CorporationType of law, permissive or restrictive change, state, effective date, supercession date1979-2019 Risk Behavior SurveyCDCProportion of students that responded “yes” to survey question, number of respondents2007-2015  New York Times/Washington Post ArticlesNatureNumber of NYT and WaPo articles about mass shootings by year1991-2017 RateUS CensusPercent of residents living below the poverty line by state2007-2015Interrelationships of 3-Year Average State Poverty Rates:  Lawsstopbullying.govIndication of whether types of bullying laws are present by state2010 PopulationUS CensusPopulation by state1970-2019 Analyses
+First, we wanted to see if there appears to be an association between a state’s Giffords Law Center letter grade and the number of school shootings in that state by year. The plots below show that there are a plurality of states with “F” grade gun policies, and that these states tend to have more school shooting incidents than states with better letter grades.
+The next plot shows that states’ grades change over time. We find that some areas of the country (in particular, the South) tend to have consistently low letter grades. States with the most highly populated cities, such as New York, California, and Illinois, tend to have consistently high grades.
+The next plots show how the number of laws in effect (# of restrictive laws — # of permissive laws) by category and state changes by year. We find that the number of access and the number of screening laws in effect show the most changes in time. We also see that there are fewer bans and transport laws overall, and that the numbers of these types of laws in effect do not show much variability in time.
+Next, we wanted to see what other variables may confound the effect between the number of school shootings and states’ gun policies. Media coverage of mass shootings is often mentioned as a factor that leads to more mass shootings. To assess whether this may be the case, we looked at the number of articles about mass shootings and the number of school shootings across time, with colors indicating the number of articles published in the previous year. We find that the number of articles about mass shootings appears to be increasing in time. The second plot indicates that there may be more school shootings in years where more articles about mass shootings were published in the previous year, although there is no clear trend.
+Another set of variables we wanted to assess were from the CDC’s Youth Behavior Risk Survey dataset. We combined survey questions from this dataset to formulate four scores for each state and year: bullying, physical altercation, school danger perception, and suicidal thoughts or actions. We anticipated that higher scores in these categories would be associated with more school shootings. The next two plots show how these survey scores vary in time and across states.
+Models
+We fit Poisson generalized linear models to the number of school shooting incidents by state per year. The model was chosen to show the relationship between state laws and the number of school shootings while controlling for state population (as an offset), the percent of the population living below the poverty line, the survey-derived bullying score, the state anti-bullying law scores, the survey-derived suicide score, the year, the survey-derived physical altercation score, the survey-derived school danger score, and the number of articles about mass shootings (in the previous year). Concisely, we wanted to observe whether there is an association between the number of school shootings and the strength of states’ gun laws while controlling for other factors that may influence both the number of school shootings and states’ gun laws. To accomplish this, we converted the Giffords Law Center data for state laws to a GPA on a 4.0 scale. The resulting model shows an expected decrease of 27.3% in the number of school shootings per one unit increase in letter grade (95% C.I.: (16.5%, 36.7%)). To see if specific types of gun laws are associated with changes in school shooting rates, we fit another model using the RAND Gun Law Changes dataset. The model fit with these data finds that an additional gun ban law is associated with, on average, a 22.9% decrease in the number of school shootings (95% C.I.: (2.0%, 39.4%)). The model also shows that an additional gun access law is associated with, on average, a 6.4% decrease in the number of school shootings (95% C.I.: (1.3%, 11.3%)). We did not find evidence that laws regarding the transport of firearms and screening laws are associated with the incidence of school shootings.
+The secondary analyses found similar conclusions. For these, the number of victims of school shootings were modeled using negative binomial generalized linear models. We found an expected decrease of  19.1% in the number of school shooting victims per …
