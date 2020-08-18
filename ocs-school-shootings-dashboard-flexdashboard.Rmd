@@ -2,7 +2,7 @@
 title: "School Shooting Dashboard"
 output: 
   flexdashboard::flex_dashboard:
-    logo: https://icons.iconarchive.com/icons/icons8/windows-8/48/Programming-Dashboard-icon.png
+    logo: https://icons.iconarchive.com/icons/icons8/windows-8/48/Military-Gun-icon.png
     theme: readable
     orientation: columns
     source: embed
@@ -19,7 +19,6 @@ library(tidyverse)
 library(leaflet)
 library(sf)
 library(rmapshaper)
-library(ggmap)
 library(htmltools)
 library(lubridate)
 library(DT)
@@ -27,13 +26,6 @@ library(DT)
 
 The Data {data-icon="fa-database"}
 ===================================== 
-
-```{r, eval=FALSE}
-shooting_data <- read_csv(here("raw_data",
-              "K-12 SSDB (Public) - K-12 SSDB (Public) Linked.csv"),
-         col_names = TRUE,
-         skip = 1)
-```
 
 ```{r, echo=FALSE}
 shooting_data_geocoded <- read_csv(here("processed_data",
@@ -119,9 +111,9 @@ shooting_data_geocoded_us %>%
     geom_bar(stat = "identity", fill = "black") +
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
-                 limits = c(start, end)) +
+                 limits = c(start-1, end+1)) +
     theme_minimal() +
-    labs(title = "School Shootings",
+    labs(title = "Yearly Deaths Attributable to School Shootings",
          subtitle = "United States",
          x = "School Shootings",
          y = "")
@@ -145,9 +137,9 @@ shooting_data_geocoded_us2 %>%
     geom_bar(stat = "identity", fill = "black") +
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
-                 limits = c(start, end)) +
+                 limits = c(start-1, end+1)) +
     theme_minimal() +
-    labs(title = "School Shootings",
+    labs(title = "Yearly Cumulative Deaths Attributable to School Shootings",
          subtitle = "United States",
          x = "School Shootings",
          y = "")
@@ -156,7 +148,6 @@ shooting_data_geocoded_us2 %>%
 ### Deaths per Shooting
 
 ```{r}
-library(scales)
 shooting_data_geocoded_us3 <- shooting_data_geocoded %>%
     mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
     mutate(Date_year = year(Date)) %>%
@@ -167,10 +158,10 @@ shooting_data_geocoded_us3 %>%
     geom_bar(stat = "identity", fill = "black") +
   scale_x_continuous(breaks = seq(0,10, by = 1),
                      labels = seq(0,10, by = 1),
-                     limits = c(0,10)) +
+                     limits = c(-1,10)) +
   scale_y_continuous() +
     theme_minimal() +
-    labs(title = "School Shootings",
+    labs(title = "Deaths per School Shooting",
          subtitle = "United States",
          x = "School Shootings",
          y = "")
@@ -202,6 +193,9 @@ suicide <- shooting_data_geocoded %>%
                                                                        TRUE ~ FALSE)) %>%
   pull(`Suicide (or attempted suicide) by Shooter (Y/N)`)
 
+suicide <- sum(suicide,
+               na.rm = TRUE) / length(suicide)
+
 # valueBox(
 #   paste(
 #     round(
@@ -211,11 +205,12 @@ suicide <- shooting_data_geocoded %>%
 #     "%"),
 #   color = "white")
 
-gauge(round(
-      mean(suicide,
-           na.rm = TRUE) * 100,
-      2), min = 0, max = 100, symbol = '%', gaugeSectors(danger = c(0, 100),
-                                                         colors = "red"))
+valueBox(
+  paste(
+    round(suicide * 100,
+          2),
+  "%"),
+  color = "white")
 ```
 
 ### **Median Shots Fired**
@@ -267,51 +262,12 @@ Column {.sidebar data-width=250}
 selectInput("state_selected", label = "Select a state to explore:",
             choices = unique(map_data("state") %>%
                                filter(region!="district of columbia") %>%
-                               pull(region)), selected = "maryland")
+                               pull(region)) %>%
+              str_to_title(), selected = "Maryland")
 ```
 
 Column {data-width=750 .tabset .tabset-fade}
 -----------------------------------------------------------------------
-
-<!-- ### Selected Statistic -->
-
-<!-- ```{r} -->
-<!-- spatial_data_county <- map_data("county") -->
-<!-- spatial_data_county  <- st_as_sf(spatial_data_county, -->
-<!--                                  coords = c("long","lat"), -->
-<!--                                  crs = 4326) -->
-<!-- spatial_data_county <- st_transform(spatial_data_county, crs = 3857) -->
-
-<!-- library(tidyverse) -->
-
-<!-- spatial_data_county <- spatial_data_county %>% -->
-<!--   mutate(long = st_coordinates(spatial_data_county)[,1], -->
-<!--          lat = st_coordinates(spatial_data_county)[,2]) # This needs to be confirmed to ensure that lon, lat are correctly identified -->
-
-<!-- spatial_data_county <- spatial_data_county %>% -->
-<!--   as_tibble() %>% -->
-<!--   dplyr::select(group, -->
-<!--                 order, -->
-<!--                 region, -->
-<!--                 subregion, -->
-<!--                 long, -->
-<!--                 lat) -->
-
-<!-- # order function required to prevent tearing -->
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- renderPlot({ -->
-<!--   spatial_data_filtered_county <- spatial_data_county[spatial_data_county$region == input$state_selected, ] -->
-<!--   ggplot(spatial_data_filtered_county) + -->
-<!--     geom_polygon(aes(x=long, y = lat, group = group), -->
-<!--                  fill = "black", -->
-<!--                  color= "gray") + -->
-<!--     scale_x_continuous() +  -->
-<!--     theme_void() + -->
-<!--     labs(title = input$state_selected) -->
-<!-- }) -->
-<!-- ``` -->
 
 ### Yearly Deaths
 
@@ -324,7 +280,7 @@ renderPlot({
     rename("State_abb" = State) %>%
     left_join(state_df, by = c("State_abb" = "state.abb")) %>%
     rename("State" = state.name) %>%
-    mutate(State = tolower(State)) %>%
+    mutate(State = str_to_title(tolower(State))) %>%
     mutate(Date = as.Date(Date, format = "%m/%d/%Y")) # this must be applied to wrangling
   shooting_data_geocoded_f <- shooting_data_geocoded[shooting_data_geocoded$State == input$state_selected, ]
   shooting_data_geocoded_f <- shooting_data_geocoded_f %>%
@@ -337,11 +293,11 @@ renderPlot({
     geom_bar(stat = "identity", fill = "black") +
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
-                 limits = c(start, end)) +
+                 limits = c(start-1, end+1)) +
     theme_minimal() +
     labs(title = "Statewide School Shootings",
          subtitle = input$state_selected,
-         x = "School Shootings",
+         x = "Yearly Deaths Attributable to School Shootings",
          y = "")
 })
 ```
@@ -357,7 +313,7 @@ renderPlot({
     rename("State_abb" = State) %>%
     left_join(state_df2, by = c("State_abb" = "state.abb")) %>%
     rename("State" = state.name) %>%
-    mutate(State = tolower(State)) %>%
+    mutate(State = str_to_title(tolower(State))) %>%
     mutate(Date = as.Date(Date, format = "%m/%d/%Y")) # this must be applied to wrangling
   shooting_data_geocoded_f2 <- shooting_data_geocoded2[shooting_data_geocoded2$State == input$state_selected, ]
   shooting_data_geocoded_f2 <- shooting_data_geocoded_f2 %>%
@@ -373,9 +329,9 @@ renderPlot({
     geom_bar(stat = "identity", fill = "black") +
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
-                 limits = c(start, end)) +
+                 limits = c(start-1, end+1)) +
     theme_minimal() +
-    labs(title = "School Shootings",
+    labs(title = "Yearly Cumulative Deaths Attributable to School Shootings",
          subtitle = input$state_selected,
          x = "School Shootings",
          y = "")
@@ -391,7 +347,7 @@ renderPlot({
     rename("State_abb" = State) %>%
     left_join(state_df3, by = c("State_abb" = "state.abb")) %>%
     rename("State" = state.name) %>%
-    mutate(State = tolower(State))
+    mutate(State = str_to_title(tolower(State)))
   shooting_data_geocoded3 <- shooting_data_geocoded3 %>%
     mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
     mutate(Date_year = year(Date)) %>%
@@ -403,10 +359,10 @@ renderPlot({
     geom_bar(stat = "identity", fill = "black") +
   scale_x_continuous(breaks = seq(0,30, by = 1),
                      labels = seq(0,30, by = 1),
-                     limits = c(0,30)) +
+                     limits = c(-1,30)) +
   scale_y_continuous() +
     theme_minimal() +
-    labs(title = "School Shootings",
+    labs(title = "Deaths per School Shooting",
          subtitle = input$state_selected,
          x = "School Shootings",
          y = "")
@@ -417,6 +373,8 @@ Map {data-icon="fa-map"}
 ===================================== 
 
 ```{r, echo=FALSE, eval=FALSE}
+#this should be deleted after being placed at the top of the case study
+
 shooting_data <- shooting_data %>%
   mutate(address = str_c(School, City, State, sep = " "))
 
@@ -433,14 +391,13 @@ write_csv(shooting_data, path = here("processed_data",
                               "shooting_data.csv"))
 ```
 
-Column {data-width=800 .tabset .tabset-fade}
+Column {data-width=1000}
 ------------------------------------- 
     
-### Outcomes   
+### 
     
 ```{r}
 # would be a great idea to add a slider here if possible
-# https://icons.iconarchive.com/icons/icons8/windows-8/512/Military-Gun-icon.png
 # good site for icons https://iconarchive.com/
 
 shooting_information0 <- paste('<div style="height:auto;line-height:1em;overflow:visible;padding:5px;">',
@@ -452,6 +409,14 @@ shooting_information0 <- paste('<div style="height:auto;line-height:1em;overflow
                               "</div>",
                               sep = "<br/>"
 )
+
+# icon_set <- icons(
+#   iconUrl = case_when(shooting_data_geocoded$`Firearm Type`=="Handgun" ~ "https://icons.iconarchive.com/icons/icons8/windows-8/48/Military-Gun-icon.png",
+#                       shooting_data_geocoded$`Firearm Type`=="Rifle" ~ "https://icons.iconarchive.com/icons/icons8/windows-8/48/Military-Rifle-icon.png",
+#                       TRUE ~ "https://icons.iconarchive.com/icons/dryicons/aesthetica-2/48/page-search-icon.png"),
+#   iconWidth = 20,
+#   iconHeight = 20
+# )
 
 leaflet(shooting_data_geocoded) %>%
   addProviderTiles(provider = providers$OpenStreetMap, group = "OpenStreetMap") %>%
@@ -465,8 +430,12 @@ leaflet(shooting_data_geocoded) %>%
     fillOpacity = 0.2,
     stroke = TRUE,
     clusterOptions = markerClusterOptions(),
-    group = "Circles (Radius &alpha; Killed)"
-  ) %>%
+    group = "Circles (Radius &alpha; Killed)") %>%
+  # addMarkers(lng = ~longitude,
+  #                  lat = ~latitude,
+  #            popup = ~shooting_information0,
+  #                  icon = icon_set,
+  #                  group = "TESTER") %>%
   addMiniMap(tiles = providers$Stamen.Toner,
              toggleDisplay = TRUE,
              minimized = FALSE) %>%
@@ -474,67 +443,43 @@ leaflet(shooting_data_geocoded) %>%
     baseGroups = c("Toner Lite",
                    "OpenStreetMap",
                    "ESRI World Imagery"),
-    overlayGroups = "Circles (Radius &alpha; Killed)",
+    overlayGroups = c("Circles (Radius &alpha; Killed)"),
+    # overlayGroups = c("Circles (Radius &alpha; Killed)", "TESTER"),
     options = layersControlOptions(collapsed = TRUE)
   ) %>%
   setView(lng = -98.35, lat = 39.5, zoom = 4)
+# hideGroup(c("Circles (Radius &alpha; Killed)", "TESTER"))
 # need to jitter coordinates by a few meters for repeats
 ```
 
 About {data-icon="fa-question-circle"}
 ===================================== 
 
-```{r, eval=FALSE}
-renderPlot({
-  state_df <- as_tibble(cbind(state.abb, state.name))
-  shooting_data_geocoded <- shooting_data_geocoded %>%
-    rename("State_abb" = State) %>%
-    left_join(state_df, by = c("State_abb" = "state.abb")) %>%
-    rename("State" = state.name) %>%
-    mutate(State = tolower(State)) %>%
-    mutate(Date = as.Date(Date, format = "%m/%d/%Y")) # this must be applied to wrangling
-  shooting_data_geocoded_f <- shooting_data_geocoded[shooting_data_geocoded$State == input$state_selected, ]
-  shooting_data_geocoded_f <- shooting_data_geocoded_f %>%
-    mutate(Date_year = year(Date)) %>%
-    group_by(Date_year) %>%
-    count() %>%
-    ungroup()
-  start <- 1970
-  end <- 2020
-  shooting_data_geocoded_f %>%
-    ggplot(aes(x = Date_year, y = n)) +
-    geom_bar(stat = "identity", fill = "black") +
-    scale_x_continuous(breaks = seq(start, end, by = 5),
-                 labels = seq(start, end, by = 5),
-                 limits = c(start, end)) +
-    theme_minimal() +
-    labs(title = "Statewide School Shootings",
-         subtitle = input$state_selected,
-         x = "School Shootings",
-         y = "")
-})
-```
-
 Column {data-width=700}
 -------------------------------------
 
 ###
+
+**What is the purpose of this dashboard?**
+
+This dashboard has two purposes:
+
++ Illustrate trends in school shootings
++ Demonstrate how to create a dashboard using `R`
+
+**I want to learn how to create a dashboard just like this.**
+
+Visit the *Tutorial* page of this dashboard to first learn the basics about building a dashboard.
+
+At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE).
+
+We have included the source code (see upper right-hand corner) in this dashboard for more experienced `R` users looking to mimic some of what we did in this dashboard in their own.
 
 **Disclaimer**
 
 The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**.
 
 A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
-
-***
-
-**How do I use this dashboard?**
-
-This dashboard...
-
-**Does [Open Case Studies](https://opencasestudies.github.io){target="_blank"} have more resources I can access to learn about creating this dashboard?**
-
-We created...
 
 Column {data-width=300}
 -------------------------------------
@@ -548,7 +493,7 @@ knitr::include_graphics("nathan-dumlao-xPHmmVKS8lM-unsplash.jpg")
 Tutorial {.storyboard data-icon="fa-list-ol"}
 =========================================   
 
-### Load the `flexdashboard` package.
+### **1)** Load the `flexdashboard` package.
 
 Install the package if you don't have the package installed already
 
@@ -566,66 +511,101 @@ library(shiny)
 
 This all needs to be done separately in the `R` console.
 
-### Create an `RMD` document   
-    
-I was thinking of creating a GIF to show this process as we did with the previous case study. This would highlight the fact that dashboards are mainly a way to display content and, as such, are capable of displaying various types of content.
-    
-*** 
+### **2)** Create an `RMD` document.   
 
-Dashboards created with `flexdashboard`...
+Dashboards can be created with `flexdashboard` in the `HTML` format. 
 
-*Explain the GIF in the content section*
+`flexdashboard` uses `RMarkdown` to produce dashboards that can contain `R` output.
+
+This makes it possible to include several mediums in our dashboard such as plots created with `ggplot` or maps created with `leaflet`.
     
-### Create an appropriate `YAML`.
+### **3)** Create an appropriate `YAML`.
+
+The use of `flexdashboard` alters the way `RMarkdown` documents function. These altered functions are largely dependent on the metadata we use to produce the dashboard. Metadata for the dashboard can be configured in the `YAML` of the `RMD`. 
+
+An `HTML` document created with `RMarkdown` includes a `YAML` that is some variation of this:
 
 ```
 ---
-title: "Your title"
-output: 
-  html_document:
-    includes:
-      after_body: footer.html
+title: "Untitled"
+author: "Michael Ontiveros"
+date: "8/12/2020"
+output: html_document
 ---
 ```
 
-We used the following `YAML` for this dashboard.
+We used the following `YAML` for this dashboard:
 
 ```
----
-title: "School Shootings"
 output: 
   flexdashboard::flex_dashboard:
-    theme: bootstrap
----
+    logo: https://icons.iconarchive.com/icons/icons8/windows-8/48/Programming-Dashboard-icon.png
+    theme: readable
+    orientation: columns
+    source: embed
+    vertical_layout: fill
+runtime: shiny
 ```
 
-### Step 4
+We introduce an icon, provide a theme with a color scheme, define the orientation (and thus order) of coded output, include the code used, limit scrolling, and allow `shiny` widgets to be used.
 
-Design the layout of the dashboard.
+### **4)** Design the layout of the dashboard.
 
 Dashboards are inherently visual, making this step the most time intensive after content creation. We need to present the data in a way that is both meaning and visually appealing.
 
-For this dashboard, we would like to display the locations of school shootings and provide some information about school shootings.
+On this dashboard, we wanted to present static plots of the United States and of individual states. We also wanted to display the locations of school shootings and provide some information about school shootings. Aside from being a dashboard, we wanted to create an educational resource that was reproducible for others. Lastly, as a sensitive topic, we wanted to raise awareness and provide information that could help others act.
 
-We are also interested in providing some context to imporant visualizations.
+Given these goals, we decided on the following page layout:
 
-### Step 5
++ The Data
++ US Statistics
++ State Statistics
++ Map
++ About
++ Tutorial
++ Hotline
++ Source Code
 
-Add content to the dashboard.
+This layout ensured that we did to not include too many components.
 
-```{r, eval=FALSE}
-library(here)
-library(tidyverse)
-library(leaflet)
-library(sf)
-library(rmapshaper)
-library(ggmap)
-library(htmltools)
-library(scales) # not sure if this is still needed
-library(lubridate)
+The first page gives users to the opportunity to look at the data themselves. More complicated components such as the map of each incident were left alone on a single page. US and state-level statistics were separated from one another. This short tutorial on how to create the dashboard and source code were included in the dashboard with programmers at all levels in mind. The goals of the dashboard and actionable information were each given separate pages from the output. 
+
+For your dashboard, this may take as long as the output you would like to share took you to produce. 
+
+### **5)** Add content to the dashboard.
+
+You can begin adding content to the dashboard once you have an initial layout in mind. Keep in mind that this will likely be an iterative process. 
+
+The `RMarkdown` file used to create a dashboard with `flexdashboard` works similarly to any other `RMarkdown`. 
+
+There are some exceptions. Most notably...
+
+```{r, echo = TRUE}
+# This output was created with chunk options: {r, echo = TRUE}
+paste("Code chunks can be explicitly included")
 ```
 
-*This would be a great opportunity to reflect on all of the details we have shown up until this point of the tutorial. For example, discuss how this dashboard—created using `flexdashboard`—displayed a gif, used the `storyboards` feature, and in contained on a separate page. If done, this can highlight how creative of a process this really is*
+```{r}
+# This output was created with chunk options: {r}
+paste("Code chunks are hidden by default")
+```
+
+Pages and columns within pages can be defined.
+
+```
+Page
+=========================================   
+
+Column {data-width=500}
+-------------------------------------
+
+Column {data-width=500}
+-------------------------------------
+```
+
+As mentioned before, the `flexdashboard` metadata included in the `YAML` does also alter how `RMarkdown` functions. For more on how you can leverage both `RMarkdown` and `flexdashboard` to produce a dashboard, click [here](https://rmarkdown.rstudio.com/flexdashboard/index.html).
+
+This [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE) provides a case study on how to create this very dashboard in more detail.
 
 Hotline {data-icon="fa-exclamation-triangle"}
 =========================================   
