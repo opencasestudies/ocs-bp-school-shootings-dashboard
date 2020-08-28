@@ -1,5 +1,6 @@
 ---
-title: "ocs-school-shootings-dashboard"
+title: "Fifty Years of School Shootings in the United States"
+css: style.css
 output:
   html_document:
     self_contained: yes
@@ -13,9 +14,8 @@ output:
     toc: yes
   word_document:
     toc: yes
----
 
-CSS styling not included in this document. 
+---
 
 <style>
 #TOC {
@@ -26,6 +26,10 @@ CSS styling not included in this document.
 }
 </style>
 
+
+<!-- Open all links in new tab-->  
+<!-- <base target="_blank"/>   -->
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
                       message = FALSE, warning = FALSE, cache = FALSE,
@@ -34,10 +38,12 @@ library(here)
 library(knitr)
 ```
 
+#### {.outline }
 ```{r, echo=FALSE}
 knitr::include_graphics(here("screenshots",
                              "final_plot.png"))
 ```
+####
 
 ## {.disclaimer_block}
 
@@ -48,34 +54,117 @@ knitr::include_graphics(here("screenshots",
 
 This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"}  United States License.
 
+## {.reference_block}
+
+To cite this case study please use:
+
+Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://github.com/opencasestudies/ocs-youth-school-shootings-dashboard-case-study. Fifty Years of School Shootings in the United States (Version v1.0.0).
+
 
 ## **Motivation**
 *** 
 
+This case study is motivated by this [article](https://link.springer.com/content/pdf/10.1007/s11920-012-0331-6.pdf):
 
-####
+## {.reference_block}
+
+Flannery, D. J., Modzeleski, W. & Kretschmar, J. M. Violence and School Shootings. Curr Psychiatry Rep 15, 331 (2013). DOI: [10.1007/s11920-012-0331-6](https://doi.org/10.1007/s11920-012-0331-6)
+
+##
+
+This article explores characteristics of school shootings and violence in schools and discusses why these events may occur, as well as their impact on the communities in which they occur.
+
+<span>Photo by <a href="https://unsplash.com/@chrismoore_?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Chris Moore</a> on <a href="https://unsplash.com/s/photos/shooting?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+
+This article states that the shooters of most commonly white males, but that many previous studies of shooter characterisitcs could not identify any particular "profile" of shooters.
+
+> "To date, studies of school shootings have concluded that no
+consistent and reliable profile of school shooters exist, and
+most researchers and clinicians would agree that predicting
+violent behavior is a slippery slope that will usually result in
+more false positives than false negatives."
+
+However previous studies note some commonalites such as:
+
+> "...most shooters were depressed, had experienced some significant
+loss, felt persecuted or bullied by others, and had prior
+difficulty coping or had previously tried suicide. Most of
+the shooters did not, however, have a history of drug abuse
+or violence or cruelty to animals, common psychiatric indicators of risk, nor did they report excessive exposure to
+violence in the media (though many produced their own
+violent themes in writings or drawings)."
+
+
+```{r, echo = FALSE, out.width= "60%"}
+knitr::include_graphics(here::here("img", "joshua-hoehne-CAokgx1GGKE-unsplash.jpg"))
+```
+
+
+<span>Photo by <a href="https://unsplash.com/@mrthetrain?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Joshua Hoehne</a> on <a href="https://unsplash.com/s/photos/high-school?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+
+
+
+> "School shootings are not all the same and may require
+different approaches to prevention and treatment, especially
+with respect to identifying risk factors at the individual, school
+or community levels, and particularly with regard to examining
+the role that mental health issues may play to increase risk for
+perpetration. The field **needs to know more** about shooting
+incidents that are averted, those that result in injury but not
+death and about the characteristics of the more common occurrence of single homicide school shootings."
+
+
+```{r, echo = FALSE, out.width= "60%"}
+knitr::include_graphics(here::here("img", "andre-hunter-AQ908FfdAMw-unsplash.jpg"))
+```
+
+<span>Photo by <a href="https://unsplash.com/@dre0316?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Andre Hunter</a> on <a href="https://unsplash.com/s/photos/high-school?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+
+
+They also point out that:
+
+> "Most media attention is on the mental health of school shooters, but we cannot forget the **impact of school shooting incidents on the surviving victims**, including those who may not have been injured but who may have witnessed the incident or been affected by it in other ways. Psychiatrists must pay attention to the long-term mental health consequences of these incidents on all affected parties (not just formal PTSD diagnoses, but related trauma symptoms) as well as maladaptive coping strategies that some may employ in response to such unpredictable, tragic events."
+
+Given this need for more research to better understand why these events occur and how they could be averted, in this case study we will demonstrate how to create a resource for others to more easily and interactively access data about school shootings. To do so we will create what is called a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report for a database. Dashboards summarize the data in a database and typically allow for users to interact with the data in some way.
 
 
 ## **Main Questions**
 *** 
 
 #### {.main_question_block}
-<b><u> Our main question: </u></b>
+<b><u> Our main questions: </u></b>
 
-1) Where have school shootings occurred in the XXXX - XXXX period?
-2) What characteristics _______. 
+1) What has been the yearly rate of school shootings and where have they occurred in the last 50 years (from January 1970 to June 2020)? 
+
+2) What are the characteristics of these events?
 
 ####
 
 ## **Learning Objectives** 
 *** 
 
-In this case study, we will demonstrate how to create a dashboard. We will especially focus on using packages and functions from the [`Tidyverse`](https://www.tidyverse.org/){target="_blank"}, such as `package_name`, `package_name`. The tidyverse is a library of packages created by RStudio. While some students may be familiar with previous R programming packages, these packages make data science in R especially efficient.
+In this case study, we will demonstrate how to create a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report about a database. We will especially focus on using packages and functions from the [`Tidyverse`](https://www.tidyverse.org/){target="_blank"}, such as `package_name`, `package_name`. The tidyverse is a library of packages created by RStudio. While some students may be familiar with previous R programming packages, these packages make data science in R more legible and intuitive.
 
 
 ```{r, out.width = "20%", echo = FALSE, fig.align ="center"}
 include_graphics("https://tidyverse.tidyverse.org/logo.png")
 ```
+
+The skills, methods, and concepts that students will be familiar with by the end of this case study are:
+
+Avocado update here and in readme!
+
+Data science skills:  
+
+1. Importing text from a google sheets document???
+2. Apply action verbs in `dplyr` for data wrangling  
+3. How to reshape data by pivoting between "long" and "wide" formats and separating columns into additional columns (`tidyr`)  
+4. How to fill in data based on previous values (`tidyr`)
+5. How to create data visualizations with `ggplot2` that are in a similar style to an existing image    
+6. How to add images to plots using `cowplot`
+7. How to create effective bar plots to for multiple comparisons, including adding gaps between bars in bar plots, adding figure legends to the plot area, and adding comparison lines (`ggplot2`)
+
+Statistical concepts and methods:  
 
 
 *** 
@@ -83,16 +172,50 @@ include_graphics("https://tidyverse.tidyverse.org/logo.png")
 
 We will begin by loading the packages that we will need:
 
+
 ```{r}
 library(here)
 library(readr)
 library(dplyr)
+library(flexdashboard)
+library(shiny)
+library(tidyverse)
+library(leaflet)
+library(sf)
+library(rmapshaper)
+library(htmltools)
+library(lubridate)
+library(DT)
 ```
 
 
- Package   | Use                                                                         
+ <u>**Packages used in this case study:** </u>
+
+Package   | Use in this case study                                                                      
 ---------- |-------------
-[here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data
+[here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
+[readr](https://readr.tidyverse.org/) |  to import the data    
+[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data    
+[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data
+[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands 
+[ggmap](https://www.rdocumentation.org/packages/ggmap/versions/2.6.1/topics/geocode) | to geocode the data (which means get the latitude and longitude values for the schools)
+[flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the elements of the dashboard 
+
+[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, to separate a column into additional columns, and to fill out values based on previous values   
+[shiny](https://shiny.rstudio.com/gallery/){target="_blank"}      | to avocado  
+[leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the create the map for our dashboard   
+[sf](https://r-spatial.github.io/sf/) | to Geocode the data avocado
+[rmapshapper](https://cran.r-project.org/web/packages/rmapshaper/vignettes/rmapshaper.html) | avocado
+[htmltools](https://www.rdocumentation.org/packages/htmltools/versions/0.5.0) | to avocado   
+[lubridate](https://lubridate.tidyverse.org/) | to work with the data-time data    
+[DT](https://rstudio.github.io/DT/) | to create the interactive table  
+[ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots  
+[directlabels](http://directlabels.r-forge.r-project.org/docs/index.html){target="_blank"}      | to add labels directly to lines in plots  
+[cowplot](https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html){target="_blank"}      | to add images to plots 
+[forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
+
+[patchwork](https://github.com/thomasp85/patchwork) | to combine plots
+
 
 
 The first time we use a function, we will use the `::` to indicate which package we are using. Unless we have overlapping function names, this is not necessary, but we will include it here to be informative about where the functions we will use come from.
@@ -101,27 +224,239 @@ The first time we use a function, we will use the `::` to indicate which package
 ## **Context**
 *** 
 
+Although school shooting events that result in homicide are rare, they can have a lasting impact on the communities in which they occur. Furthermore, suicide events and shootings with no victims can also be impactful.
+
+According to the [Center for Injury Research and Prevention at the Children's Hospital of Philadelphia](https://injury.research.chop.edu/violence-prevention-initiative/types-violence-involving-youth/school-shootings):
+
+>The most common shootings on school grounds rarely involve large numbers of victims, but even a shooting of just one student at school has ramifications far beyond those directly involved. Students and staff that witness school shootings are likely to suffer from [traumatic stress](https://en.wikipedia.org/wiki/Traumatic_stress) symptoms, become anxious or depressed and have general concerns about their safety. While many witnesses will have temporary symptoms, others will be symptomatic for a much longer period of time and even develop chronic psychiatric disorders. Even short-term impairments can cause severe distress and have profound effects on academic achievement and the social and emotional growth of impacted students. 
+ 
+Furthermore, fatal shootings can have vast and lasting impacts because many students can witness a single event.
+
+Another recently published [article](https://siepr.stanford.edu/sites/default/files/publications/19-036.pdf) indicates that:
+
+> Over **240,000** American students experienced a school shooting in the last two decades.
+
+
+```{r}
+knitr::include_graphics(here::here("img", "exposed.png"))
+
+```
+
+##### [[source]](https://siepr.stanford.edu/sites/default/files/publications/19-036.pdf)
+ 
+This study followed students who experienced a school shootting the United States between 2008 and 2013 and assessed their mental well-being. They found that:
+
+> Fatal school shootings have large and persistent impacts on the mental health of local youth. In the two years following a fatal school shooting, the monthly number of antidepressant prescriptions written to individuals under age 20 is 21.3 percent higher in the shooting-exposed relative to the reference areas. 
+
+```{r, echo = FALSE, outwidth = "40%"}
+knitr::include_graphics(here::here("img", "fernando-cferdo-6x2iKGi6SPU-unsplash.jpg"))
+```
+
+<span>Photo by <a href="https://unsplash.com/@cferdo?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Fernando @cferdo</a> on <a href="https://unsplash.com/s/photos/depression?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+
+
+## {.reference_block}
+
+Rossin-Slater, M., Schnell, M., Schwandt, H., Trejo, S. & Uniat, L. Local Exposure to School Shootings and Youth Antidepressant Use. w26563 http://www.nber.org/papers/w26563.pdf (2019) doi:10.3386/w26563.
+
+##
+ 
 ## **Limitations**
 *** 
 There are some important considerations regarding this data analysis to keep in mind: 
 
-1) This analysis is mainly exploratory and, as such, has a limited ability to provide information for inferential purposes.  
+1) This analysis is exploratory and, as such, does not intend to provide inferential conlcusions.  
 
-2) Limitation 2  
+2) This dashboard only uses one source of data. There may be school shooting events that are not listed in this data or errors in this data.
+
+According to the database website:
+
+>"This database was developed from open-source information and may include reporting errors."
+
+Furthermore, according to this [article](https://link.springer.com/article/10.1007/s11920-012-0331-6) schools are not required to report school shootings unless they resulted in a suicide or homicide, therefore there may be more events that result in only injury or no injuries or death that may not be included.
+
+There are indeed events in the dataset that include zero deaths and zero injuries, but it is very likely that many of these events are not listed.
+
+Avocado... this source from 2013 says that schools are not required to report.. is this still true?
 
 
 ## **What are the data?**
 *** 
 
-If you want to make a table about variable info:
+We will use data from the open-source [K-12 ShoolShooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School) in Monterey, California. This data is updated daily. 
 
-Variable   | Details                                                                        
----------- |-------------
-**variable1**  | Variable info  <br> -- more details <br> -- more detials <br>  **Example**: Content content  
-**variable2**  | Variable info  <br> -- more details <br> -- more detials <br>  **Example**: Content content
+## {.reference_block}
+
+Riedman, David, and Desmond O’Neill. “CHDS – K-12 School Shooting Database.” Center for Homeland Defense and Security, June 2020, [www.chds.us/ssdb](www.chds.us/ssdb).
+
+##
+
+This database includes information about school shooting events in the United States dating back to 1970. The database has additional information not shown on our dashboard including but not limited to: 
+
+- Location of the event at the school  
+- If the event occured during a sporting event  
+- Time of day of the event  
+- Day of the week of the event  
+- source for the shooting information  
+- If the event was pre-planned or not  
+- Shooter's actions immediately following the shooting  
+- Shooter characteristics (affiliation with the school, if they had accomplices, if they took hostages, and their age and race)  
+- victom characteristics(afficliation with the school, if they were targeted, their age and race)  
+
+According to the data base website:
+
+> The School Shooting Database Project is conducted as part of the [Advanced Thinking in Homeland Security (HSx)](https://www.chds.us/c/academic-programs/hsx/) program at the Naval Postgraduate School’s [Center for Homeland Defense and Security (CHDS)](Center for Homeland Defense and Security (CHDS).
+
+>The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. All of the information is based on open-source information and 3rd party reporting.
 
 ## **Data Import**
 *** 
+
+To import the raw data file we will use the `read_csv()` function of the `readr` package. 
+
+We will use the `here()` function of the `here` package to easily locate the data within the `raw_data` directory within the directory that contains the .Rproj file.
+
+We want to skip the first row that states:
+Updated 6/2/2020 - View graphs and research methodology on www.chds.us/ssdb If you have information about other incidents, please email K12ssdb@chds.us."
+
+To do this, we can use the `skip` argument of this function and specify that we wish to only skip 1 row with `skip = 1`. We can also specify that the next row should be used for column names using the `col_names = TRUE` argument. 
+
+
+```{r}
+
+shooting_data <- readr::read_csv(file = here::here("raw_data", "K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv"), col_names = TRUE, skip = 1)
+```
+
+
+We can use the `glimpse` function of the `dplyr` package to take a look at columns within the database:
+
+#### {.scrollable }
+```{r}
+# Scroll through the output!
+glimpse(shooting_data)
+```
+
+####
+
+We can also use the utils `str()` function to see more detials about the values. Typically we would be able to see these with `glimpse()` but some of the columns have very long names, thus obscuring the first few values in the output.
+
+#### {.scrollable }
+```{r}
+# Scroll through the output!
+str(shooting_data)
+```
+
+####
+
+## **Data Exploration and Wrangling**
+***
+Lucily, our dat is already in pretty good shape, but we want to make our data more useful for our dashboard. 
+
+We are interested in creating a map on our dashboard. 
+
+To do so we need to perform a process called [geocoding](https://en.wikipedia.org/wiki/Geocoding). Geocoding is the process of converting addresses into latitude and longtitude coordinates.
+
+To peform the geocoding we need the address of each school in the data set. The data currently does not list the actual address, but does have information about the school where the event occured. Since some schools have the same name, we need the city and state data as well. So we will create a new variable in our data called `address` using the `mutate()` function of the `dplyr` package. This variable will collapse the values in the `School`, `City`, and `State` columns but with spaces in between. It is specified that there will be space in between by the `sep = " "` argument. Note that a space is typed between the quotation marks. Then we can use the address variable to look up the latitude and longtitude for each school.
+
+
+```{r}
+shooting_data <- shooting_data %>%
+  dplyr::mutate(address = 
+          stringr::str_c(School, City, State, sep = " "))
+
+```
+
+Notice that we used a `%>%` in the previous chunk of code. This allows us to create code with a method called piping. 
+
+It allows us to perform many sequential steps efficiently.
+
+***
+<details> <summary>Click here if you are unfamiliar with piping in R, which uses this `%>%` operator.</summary>  
+
+By [piping](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) we mean using the `%>%` pipe operator which is accessible after loading the `tidyverse` or several of the packages within the tidyverse like `dplyr` because they load the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html). 
+This allows us to perform multiple sequential steps on one data input.
+The object on the left side is used as input to any commands to the right or below.
+
+</details>  
+***
+
+We can take a look at just this new `address` variable using the `pull()` function of the `dplyr()` package.
+
+#### {.scrollable }
+```{r}
+shooting_data %>%
+  dplyr::pull(address)
+```
+#### 
+
+Now we can use these addresses to find the latitude and longitude coordinates for each school where a school shooting occured. To do this we will use the `geocode` function of the `ggmap` package to look up these addresses on Google Maps to get the latitude and longitude values. In this command we need to specify that we want to use google as the source using the `source` argument and that we want latitude and longitude using the `output = c("latlon") argument.
+
+Note that this step is time intensive, as there are many addresses to look up! Also, when you use Google you are agreeing to the Google Maps API Terms of Service at https://developers.google.com/maps/terms.
+
+```{r, eval=FALSE}
+
+shooting_data <- shooting_data %>%
+  mutate(coords = geocode(address, output = c("latlon"),
+                         source = c("google")))
+```
+
+
+```{r, eval = FALSE}
+shooting_data <- shooting_data %>%
+  mutate(longitude = shooting_data$coords$lon,
+         latitude = shooting_data$coords$lat) %>%
+  dplyr::select(-coords)
+
+write_csv(shooting_data, path = here("processed_data",
+                              "shooting_data.csv"))
+```
+
+
+
+```{r}
+
+shooting_data_geocoded <- read_csv(here("processed_data",
+              "shooting_data.csv"))
+```
+
+
+```{r, eval = FALSE}
+shooting_data_geocoded <- shooting_data_geocoded %>%
+  filter(!is.na(longitude),
+         !is.na(latitude)) %>%
+  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
+  st_transform(crs = 102008) %>%
+  st_jitter(amount = 50) %>%
+  st_transform(crs = 4326) %>%
+  mutate(longitude = st_coordinates(.)[,1],
+         latitude = st_coordinates(.)[,2]) %>%
+  as_tibble() %>%
+  dplyr::select(-geometry)
+
+state_df <- as_tibble(cbind(state.abb, state.name))
+
+shooting_data_geocoded <- shooting_data_geocoded %>%
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  mutate(Date_year = year(Date)) %>%
+  rename("State_abb" = State) %>%
+  left_join(state_df, by = c("State_abb" = "state.abb")) %>%
+  rename("State" = state.name) %>%
+  mutate(State = str_to_title(tolower(State))) %>%
+  mutate(`Suicide (or attempted suicide) by Shooter (Y/N)` = case_when(`Suicide (or attempted suicide) by Shooter (Y/N)` == "Yes" ~ TRUE,
+                                                                       TRUE ~ FALSE))
+
+start <- 1970
+end <- 2020
+
+write_csv(shooting_data_geocoded, path = here("processed_data",
+                                              "shooting_data_wrangled.csv"))
+
+rm(shooting_data_geocoded)
+
+shooting_data_geocoded <- read_csv(here("processed_data",
+                                        "shooting_data_wrangled.csv"))
+```
+
 
 Put files in docs directory and use `here` package.
 
@@ -135,36 +470,10 @@ INTRODUCE `flexdashboard`
 ## **Data Analysis**
 *** 
 
-### **content header**
-*** 
-
 ## **Data Visualization**
 *** 
 
-## **Summary**
-*** 
 
-## **Suggested Homework**
-*** 
-
-## **Helpful Links**
-*** 
-
-
-<u>Terms and concepts covered:</u>  
-
-[Tidyverse](https://www.tidyverse.org/){target="_blank"}  
-[RStudio cheatsheets](https://rstudio.com/resources/cheatsheets/){target="_blank"}  
-[Inference](https://www.britannica.com/science/inference-statistics){target="_blank"}  
-[Regression](https://lindeloev.github.io/tests-as-linear/){target="_blank"}  
-[Different types of regression](https://www.analyticsvidhya.com/blog/2015/08/comprehensive-guide-regression/){target="_blank"}  
-[Ordinary least squares method](http://setosa.io/ev/ordinary-least-squares-regression/){target="_blank"}  
-
-<u>Packages used in this case study: </u>
-
- Package   | Use                                                                         
----------- |-------------
-[here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
 
 ## RA NOTES
 
@@ -318,77 +627,9 @@ RMarkdown Dashboard Structure
 + Response to Warning Signs
 + Source Code
 
-```{r}
-library(here)
-library(flexdashboard)
-library(shiny)
-library(tidyverse)
-library(leaflet)
-library(sf)
-library(rmapshaper)
-library(htmltools)
-library(lubridate)
-library(DT)
-```
 
-```{r, echo=FALSE}
-#wrangling
 
-shooting_data_geocoded <- read_csv(here("processed_data",
-              "shooting_data.csv"))
 
-shooting_data_geocoded <- shooting_data_geocoded %>%
-  filter(!is.na(longitude),
-         !is.na(latitude)) %>%
-  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
-  st_transform(crs = 102008) %>%
-  st_jitter(amount = 50) %>%
-  st_transform(crs = 4326) %>%
-  mutate(longitude = st_coordinates(.)[,1],
-         latitude = st_coordinates(.)[,2]) %>%
-  as_tibble() %>%
-  dplyr::select(-geometry)
-
-state_df <- as_tibble(cbind(state.abb, state.name))
-
-shooting_data_geocoded <- shooting_data_geocoded %>%
-  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
-  mutate(Date_year = year(Date)) %>%
-  rename("State_abb" = State) %>%
-  left_join(state_df, by = c("State_abb" = "state.abb")) %>%
-  rename("State" = state.name) %>%
-  mutate(State = str_to_title(tolower(State))) %>%
-  mutate(`Suicide (or attempted suicide) by Shooter (Y/N)` = case_when(`Suicide (or attempted suicide) by Shooter (Y/N)` == "Yes" ~ TRUE,
-                                                                       TRUE ~ FALSE))
-
-start <- 1970
-end <- 2020
-
-write_csv(shooting_data_geocoded, path = here("processed_data",
-                                              "shooting_data_wrangled.csv"))
-
-rm(shooting_data_geocoded)
-
-shooting_data_geocoded <- read_csv(here("processed_data",
-                                        "shooting_data_wrangled.csv"))
-```
-
-```{r, eval=FALSE}
-shooting_data <- shooting_data %>%
-  mutate(address = str_c(School, City, State, sep = " "))
-
-shooting_data <- shooting_data %>%
-  mutate(coords =geocode(address, output = c("latlon"),
-                         source = c("google")))
-
-shooting_data <- shooting_data %>%
-  mutate(longitude = shooting_data$coords$lon,
-         latitude = shooting_data$coords$lat) %>%
-  dplyr::select(-coords)
-
-write_csv(shooting_data, path = here("processed_data",
-                              "shooting_data.csv"))
-```
 
 ```{r, eval=FALSE}
 shooting_data_geocoded <- read_csv(here("processed_data",
@@ -1023,6 +1264,11 @@ Column {data-width=600}
 
 From [Sandy Hook Promise](https://www.sandyhookpromise.org/gun-violence/know-the-signs-of-gun-violence/)...
 
+avocado... there were some really interesting things here... but dont know where/if to include
+https://www.sandyhookpromise.org/gun-violence/16-facts-about-gun-violence-and-school-shootings/
+
+The most important seems to be that shooters usually warn someone
+
 <style>
 div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 </style>
@@ -1064,3 +1310,157 @@ Call 911 if you feel there is an immediate threat.
 
 Call [+1-844-5-SAYNOW](tel:18445729669) if you would to submit an anonymous safety concern.
 ```
+
+## **Summary**
+*** 
+
+### Summary Plot
+
+### Synopsis
+
+## **Suggested Homework**
+*** 
+
+Create another dashboard with graphs and statistics featuring other elements within this dataset. For example, students may create graphs that explore what school events are reported to have more shootings.
+
+
+## **Additional Information**
+***
+
+### Helpful Links
+
+[RStudio](https://rstudio.com/products/rstudio/features/){target="_blank"}  
+[Cheatsheet on RStuido IDE](https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf){target="_blank"}  
+[Other RStudio cheatsheets](https://rstudio.com/resources/cheatsheets/){target="_blank"}   
+[Tidyverse](https://www.tidyverse.org/){target="_blank"}   
+
+[Response bias](https://en.wikipedia.org/wiki/Response_bias)  
+[Cross-Sectional data](https://en.wikipedia.org/wiki/Cross-sectional_data?oldformat=true)
+[Population](https://en.wikipedia.org/wiki/Population?oldformat=true)
+[Sample](https://en.wikipedia.org/wiki/Sampling_(statistics)?oldformat=true)
+[Sampling methods](https://en.wikipedia.org/wiki/Sampling_(statistics)?oldformat=true){target="_blank"} 
+[Inference](https://www.britannica.com/science/inference-statistics) 
+
+[American Community Survey (ASC)](https://www.census.gov/programs-surveys/acs)  
+
+See [here](https://en.wikipedia.org/wiki/American_Community_Survey) for more detailed information about the survey  
+[Measure of America](https://www.ssrc.org/programs/view/moa/)   
+[Social Science Research Council](https://www.ssrc.org/) 
+   
+
+[Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
+[Writing functions](https://r4ds.had.co.nz/functions.html)   
+Also see [this case study](https://opencasestudies.github.io/ocs-bloomberg-vaping-case-study/){target="_blank"}  for more information on writing functions.   
+[String manipulation cheatsheet](https://rstudio.com/resources/cheatsheets/){target="_blank"}  
+[Table formats](https://en.wikipedia.org/wiki/Wide_and_narrow_data){target="_blank"}
+
+[Regression](https://lindeloev.github.io/tests-as-linear/)    
+[simple linear regression](https://en.wikipedia.org/wiki/Simple_linear_regression)   
+[monotonic association](https://www.statisticshowto.com/monotonic-relationship/)   
+[Kendall rank correlation coefficient](https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient?oldformat=true)   
+[Null hypothesis](https://en.wikipedia.org/wiki/Null_hypothesis)   
+[Alternative hypothesis](https://en.wikipedia.org/wiki/Alternative_hypothesis)   
+[Probability](https://en.wikipedia.org/wiki/Probability)   
+[one-sided and two-sided hypotheses](https://en.wikipedia.org/wiki/One-_and_two-tailed_tests)   
+[Nonparametric](https://en.wikipedia.org/wiki/Nonparametric_statistics)     [Parametric](https://en.wikipedia.org/wiki/Parametric_statistics) 
+[significance threshold](https://en.wikipedia.org/wiki/Statistical_significance)  
+[Z score](https://en.wikipedia.org/wiki/Standard_score)   
+[Z score table](https://socratic.org/questions/5986a3e1b72cff6fd48a5408)  
+[Z score to p-value calculator](https://www.socscistatistics.com/pvalues/normaldistribution.aspx)   
+
+
+[`ggplot2` package](http://ggplot2.tidyverse.org){target="_blank"}    
+Please see [this case study](https://opencasestudies.github.io/ocs-bp-co2-emissions/)  for more details on using `ggplot2`    
+[grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html){target="_blank"}   
+[`ggplot2` themes](https://ggplot2.tidyverse.org/reference/ggtheme.html){target="_blank"}   
+[`directlabels` package methods](http://directlabels.r-forge.r-project.org/docs/index.html){target="_blank"}    
+[Hmong people](https://en.wikipedia.org/wiki/Hmong_people)   
+[Intersections](https://www.vox.com/the-highlight/2019/5/20/18542843/intersectionality-conservatism-law-race-gender-discrimination)   
+
+[Motivating article for this case study about youth disconnection/opportunity youth](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6243446/)
+
+
+To learn more about importing and wrangling PDFs using the `pdftools` package see this [case study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/) and this [case study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/). 
+
+To learn more about what you can do with the `magick` package see this [vingette](https://cran.r-project.org/web/packages/magick/vignettes/intro.html).   
+
+To learn more about the **Mann-Kendall trend test** see
+[here](https://www.statisticshowto.com/mann-kendall-trend-test/) and [here](https://www.statisticshowto.com/wp-content/uploads/2016/08/Mann-Kendall-Analysis-1.pdf).  
+
+To learn more about hypothesis testing, see this [case study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/).    
+
+
+<u>**Packages used in this case study:** </u>
+
+Package   | Use in this case study                                                                      
+---------- |-------------
+[here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
+[pdftools](https://readr.tidyverse.org/)      | to import PDF documents  
+[magick](https://cran.r-project.org/web/packages/magick/vignettes/intro.html#Kernel_convolution)      | for importing images and extracting text from images   
+[knitr](https://yihui.org/knitr/) |  for showing images in reports    
+[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data   
+[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate strings  
+[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands 
+[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, to separate a column into additional columns, and to fill out values based on previous values   
+[tibble](https://tibble.tidyverse.org/){target="_blank"}      | to create tibbles    
+[ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots  
+[directlabels](http://directlabels.r-forge.r-project.org/docs/index.html){target="_blank"}      | to add labels directly to lines in plots  
+[cowplot](https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html){target="_blank"}      | to add images to plots 
+[forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
+[kendall](https://cran.r-project.org/web/packages/Kendall/Kendall.pdf) | to implement the Mann-Kendall trend test in R   
+[patchwork](https://github.com/thomasp85/patchwork) | to combine plots
+
+#### {.emphasis_block}
+
+**Warning Signs**
+
+From [Sandy Hook Promise](https://www.sandyhookpromise.org/gun-violence/know-the-signs-of-gun-violence/)...
+
+Here is a list of potential warning signs that can signal an individual may be in crisis and/or need help:
+
++ Suddenly withdrawing from people and activities
++ Consistent bullying or intimidating others, or being bullied by others
++ Extreme mood or personality changes
++ Victim of constant social rejection
++ Talking about plans or actively making plans to harm themselves or others
++ Bringing a weapon to school – or threatening or talking about doing so
++ Bragging about or warning others about an upcoming act of violence
++ Recruiting others to join in a planned act of violence
++ Warning students to stay away from school or events
++ Expressing fascination with guns and/or school shootings
++ Expressing hopelessness about the future
++ Extreme, prolonged sadness or distress
++ Expressing or showing feelings of isolation
++ Bragging about access to guns
+
+**NOTE**
+
+This list is not a comprehensive list of warning signs nor does exhibiting one of these signs indicate imminent violence.
+
+When concerned about seeing troubling behaviors, tell a trusted adult or call 911, if there is an immediate threat.
+
+**Respond to Warning Signs**
+
+Call 911 if you feel there is an immediate threat. 
+
+Call [+1-844-5-SAYNOW](tel:18445729669) if you would to submit an anonymous safety concern.
+
+
+If you or your child or student experienced a shooting please see this [website](https://kidshealth.org/en/parents/ptsd.html) and this [website](https://www.verywellmind.com/shooting-ptsd-from-a-shooting-2797200) for guidance about dealing with the trauma.
+
+
+####
+
+### Session Info
+
+```{r}
+sessionInfo()
+```
+
+
+### Acknowledgements
+
+We would like to acknowledge [Elizabeth Stuart](https://www.jhsph.edu/faculty/directory/profile/1792/elizabeth-a-stuart) for assisting in framing the major direction of the case study.
+
+We would also like to acknowledge the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/) for funding this work. 
+
