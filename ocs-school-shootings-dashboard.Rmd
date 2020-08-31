@@ -45,36 +45,40 @@ knitr::include_graphics(here("screenshots",
 ```
 ####
 
-## {.disclaimer_block}
+#### {.disclaimer_block}
 
 **Disclaimer**: The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**. A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
 
+####
 
-## {.license_block}
+#### {.license_block}
 
 This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"}  United States License.
 
-## {.reference_block}
+####
+
+#### {.reference_block}
 
 To cite this case study please use:
 
 Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://github.com/opencasestudies/ocs-youth-school-shootings-dashboard-case-study. Fifty Years of School Shootings in the United States (Version v1.0.0).
 
+####
 
 ## **Motivation**
 *** 
 
 This case study is motivated by this [article](https://link.springer.com/content/pdf/10.1007/s11920-012-0331-6.pdf):
 
-## {.reference_block}
+#### {.reference_block}
 
 Flannery, D. J., Modzeleski, W. & Kretschmar, J. M. Violence and School Shootings. Curr Psychiatry Rep 15, 331 (2013). DOI: [10.1007/s11920-012-0331-6](https://doi.org/10.1007/s11920-012-0331-6)
 
-##
+####
 
 This article explores characteristics of school shootings and violence in schools and discusses why these events may occur, as well as their impact on the communities in which they occur.
 
-<span>Photo by <a href="https://unsplash.com/@chrismoore_?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Chris Moore</a> on <a href="https://unsplash.com/s/photos/shooting?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
+
 
 This article states that the shooters of most commonly white males, but that many previous studies of shooter characterisitcs could not identify any particular "profile" of shooters.
 
@@ -198,7 +202,7 @@ Package   | Use in this case study
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data    
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data
 [magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands 
-[ggmap](https://www.rdocumentation.org/packages/ggmap/versions/2.6.1/topics/geocode) | to geocode the data (which means get the latitude and longitude values for the schools)
+[ggmap](https://cran.r-project.org/web/packages/ggmap/ggmap.pdf) | to geocode the data (which means get the latitude and longitude values for the schools)
 [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the elements of the dashboard 
 
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, to separate a column into additional columns, and to fill out values based on previous values   
@@ -255,11 +259,11 @@ knitr::include_graphics(here::here("img", "fernando-cferdo-6x2iKGi6SPU-unsplash.
 <span>Photo by <a href="https://unsplash.com/@cferdo?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Fernando @cferdo</a> on <a href="https://unsplash.com/s/photos/depression?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 
 
-## {.reference_block}
+#### {.reference_block}
 
 Rossin-Slater, M., Schnell, M., Schwandt, H., Trejo, S. & Uniat, L. Local Exposure to School Shootings and Youth Antidepressant Use. w26563 http://www.nber.org/papers/w26563.pdf (2019) doi:10.3386/w26563.
 
-##
+####
  
 ## **Limitations**
 *** 
@@ -285,11 +289,11 @@ Avocado... this source from 2013 says that schools are not required to report.. 
 
 We will use data from the open-source [K-12 ShoolShooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School) in Monterey, California. This data is updated daily. 
 
-## {.reference_block}
+#### {.reference_block}
 
 Riedman, David, and Desmond O’Neill. “CHDS – K-12 School Shooting Database.” Center for Homeland Defense and Security, June 2020, [www.chds.us/ssdb](www.chds.us/ssdb).
 
-##
+####
 
 This database includes information about school shooting events in the United States dating back to 1970. The database has additional information not shown on our dashboard including but not limited to: 
 
@@ -350,11 +354,13 @@ str(shooting_data)
 
 ## **Data Exploration and Wrangling**
 ***
-Lucily, our dat is already in pretty good shape, but we want to make our data more useful for our dashboard. 
+Luckily, our data is already in pretty good shape, but we want to make our data more useful for our dashboard. 
 
 We are interested in creating a map on our dashboard. 
 
 To do so we need to perform a process called [geocoding](https://en.wikipedia.org/wiki/Geocoding). Geocoding is the process of converting addresses into latitude and longtitude coordinates.
+
+### Geocoding with the `ggmap` oackage
 
 To peform the geocoding we need the address of each school in the data set. The data currently does not list the actual address, but does have information about the school where the event occured. Since some schools have the same name, we need the city and state data as well. So we will create a new variable in our data called `address` using the `mutate()` function of the `dplyr` package. This variable will collapse the values in the `School`, `City`, and `State` columns but with spaces in between. It is specified that there will be space in between by the `sep = " "` argument. Note that a space is typed between the quotation marks. Then we can use the address variable to look up the latitude and longtitude for each school.
 
@@ -391,27 +397,99 @@ shooting_data %>%
 
 Now we can use these addresses to find the latitude and longitude coordinates for each school where a school shooting occured. To do this we will use the `geocode` function of the `ggmap` package to look up these addresses on Google Maps to get the latitude and longitude values. In this command we need to specify that we want to use google as the source using the `source` argument and that we want latitude and longitude using the `output = c("latlon") argument.
 
-Note that this step is time intensive, as there are many addresses to look up! Also, when you use Google you are agreeing to the Google Maps API Terms of Service at https://developers.google.com/maps/terms.
+
+This step requires registering with the Google Cloud Platform to get an API key, which currently requires registering your payment information and agreeing to the [Google Maps API Terms of Service](https://developers.google.com/maps/terms).
+
+Therefore, we will simply demonstrate how this process works in general, but you are not required to do this yourself. 
+
+<details><summary> Click here to see how we registered with the Google Cloud Platform.</summary>
+
+If you were to do this process yourself, you could get an API key [here](https://cloud.google.com/maps-platform/). Again this requires registering your payment information, but it is free to got an API key and enable the APIs, however you can be billed based on how many addresses you look up using the APIs. You need to look up thousands before getting billed.
+
+Then you need to enable the maps and places APIs, by clicking on the boxes next to each:
+
+```{r,echo = FALSE}
+knitr::include_graphics(here::here("img", "enable.png"))
+```
+
+Then you would register like so after copying the API key: (Note this is a fake key)
+
+```{r, eval = FALSE}
+ggmap::register_google(key = "mQkzTpiaLYjPqXQBotesgif3EfGL2dbrNVOrogg") 
+```
+
+***
+</details>
+
+
+Once we have obtained an API key and registered, we can geocode our data.
+
+Note that this step is time intensive, as there are many addresses to look up! Therefore, we will just show how this is done.
 
 ```{r, eval=FALSE}
 
 shooting_data <- shooting_data %>%
-  mutate(coords = geocode(address, output = c("latlon"),
+  mutate(coords = ggmap::geocode(address, output = c("latlon"),
                          source = c("google")))
 ```
 
+This results in tibble called `coords` being added to our `shooting_data` tibble. That's right we can have a tibble as a column or variable within a tibble.   Using the `glimpse` function again, and looking at the last few variables, we can see that now the last variable listed is `coords` of class `<tibble>`.
+
+```{r,echo = FALSE, out.width="70%"}
+knitr::include_graphics(here::here("img", "shooting_data_coords.png"))
+```
+
+If we take a look at the first couple of values of the `coords` tibble, using the `slice_head()` function of the dplyr package, we see a tibble that looks like this:
+
+```{r, eval = FALSE}
+test %>%
+ pull(coords) %>%
+ dplyr::slice_head(n = 2)
+```
+
+
+```{r,echo = FALSE, out.width="40%"}
+knitr::include_graphics(here::here("img", "coords.png"))
+```
+
+
+It would be better if each of these were their own columns in the tibble, so we will create new `longitude` and `latitude` variables again using the `mutate` function like so:
 
 ```{r, eval = FALSE}
 shooting_data <- shooting_data %>%
-  mutate(longitude = shooting_data$coords$lon,
-         latitude = shooting_data$coords$lat) %>%
+  mutate(longitude = pull(coords,lon),
+         latitude = pull(coords,lat))
+```
+
+In this case we use the `pull()` function to grab the `lat` and `lon` variables within the `coords` tibble which is a variable of the `shooting_data` tibble.
+
+We can now remove the `coords` tibble like so, using the `select()` funtion of the `dplyr` package:
+
+```{r, eval = FALSE}  
+shooting_data <- shooting_data %>%
   dplyr::select(-coords)
 
-write_csv(shooting_data, path = here("processed_data",
+```
+
+
+Now using `glimpse()` and looking at the last several variables, we can see that we no longer have a `coords` variable, but we do have two variables calld `longitude` and `latitude` that are of class double as indicated by the `<dbl>`:
+
+```{r,echo = FALSE, out.width="70%"}
+knitr::include_graphics(here::here("img", "double.png"))
+```
+
+
+Now we will save the geocoded data in the `processed_data` directory using the `write_csv` function of the `readr` package.
+
+This requires listing the R object, followed by the path for where the file should be saved and what it should be called. In this case it will be called "shooting_data.csv".
+
+```{r, eval = FALSE} 
+readr::write_csv(shooting_data, path = here("processed_data",
                               "shooting_data.csv"))
 ```
 
 
+Great now we will work with this data, thus you do not need to get an API key to get to this point. We can read our processed geocoded data into R by using the `read_csv()` function of the `readr` package.
 
 ```{r}
 
@@ -420,11 +498,17 @@ shooting_data_geocoded <- read_csv(here("processed_data",
 ```
 
 
+### Geometry lists with the `sf` package
+
+Now we will use the `sf` (which stands for simple features) package to 
+create what is called a geometry list of our latitude and longitude  information for the schools where shootings occured. This will allow us to create a map of these events.
+`crs` stands for coordinate reference system
+
 ```{r, eval = FALSE}
 shooting_data_geocoded <- shooting_data_geocoded %>%
   filter(!is.na(longitude),
          !is.na(latitude)) %>%
-  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
+  sf::st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
   st_transform(crs = 102008) %>%
   st_jitter(amount = 50) %>%
   st_transform(crs = 4326) %>%
