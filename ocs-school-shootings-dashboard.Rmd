@@ -181,11 +181,16 @@ We will begin by loading the packages that we will need:
 library(here)
 library(readr)
 library(dplyr)
+library(tidyr)
+library(magrittr)
+library(ggmap)
+library(sf)
+
 library(flexdashboard)
 library(shiny)
 library(tidyverse)
 library(leaflet)
-library(sf)
+
 library(rmapshaper)
 library(htmltools)
 library(lubridate)
@@ -435,7 +440,7 @@ shooting_data <- shooting_data %>%
 
 This results in tibble called `coords` being added to our `shooting_data` tibble. That's right we can have a tibble as a column or variable within a tibble.   Using the `glimpse` function again, and looking at the last few variables, we can see that now the last variable listed is `coords` of class `<tibble>`.
 
-```{r,echo = FALSE, out.width="70%"}
+```{r,echo = FALSE, out.width="80%"}
 knitr::include_graphics(here::here("img", "shooting_data_coords.png"))
 ```
 
@@ -448,7 +453,7 @@ test %>%
 ```
 
 
-```{r,echo = FALSE, out.width="40%"}
+```{r,echo = FALSE, out.width="30%"}
 knitr::include_graphics(here::here("img", "coords.png"))
 ```
 
@@ -474,7 +479,7 @@ shooting_data <- shooting_data %>%
 
 Now using `glimpse()` and looking at the last several variables, we can see that we no longer have a `coords` variable, but we do have two variables calld `longitude` and `latitude` that are of class double as indicated by the `<dbl>`:
 
-```{r,echo = FALSE, out.width="70%"}
+```{r,echo = FALSE, out.width="80%"}
 knitr::include_graphics(here::here("img", "double.png"))
 ```
 
@@ -500,15 +505,235 @@ shooting_data_geocoded <- read_csv(here("processed_data",
 
 ### Geometry lists with the `sf` package
 
-Now we will use the `sf` (which stands for simple features) package to 
-create what is called a geometry list of our latitude and longitude  information for the schools where shootings occured. This will allow us to create a map of these events.
-`crs` stands for coordinate reference system
+From this section on, we are now going to use a special pipe operator from the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) called the compound assignment pipe-operator or sometimes the double pipe operator, that looks like this `%<>%`. 
 
+This allows us to use the an input and reassign it at the end after all the subsequent steps have been performed. We can therefore use `data_input %<>%` instead of `data_input <- data_input %>%`. We will deomonstrate this in the code below.
+
+We will use the `sf` (which stands for simple features) package to 
+create what is called a geometry list of our latitude and longitude  information for the schools where shootings occured. This will allow us to create a map of these events.
+
+
+The first thing we need to do is create an sf object (meaning an object that the `sf` package recognizes) using the `st_as_sf()` function.
+
+However, to do this we first need to remove rows with `NA` values for the `latitude` and `longitude` variables. In otherwords, we need to remove rows of events that happened at schools with locations that were not identified by google. We can remove this rows using the `drop_na()` function of the `tidyr` package. We will use a `.` to indicate that we want to use the data that we are using as an input with our pipe, but then we will specify that we want to only drop rows were there is an `NA` value for either the `latitude` or `longitude` variables.
+
+```{r}
+dim(shooting_data_geocoded)
+
+#using previous method:
+# shooting_data_geocoded <- shooting_data_geocoded %>%
+#    tidyr::drop_na(., c(latitude, longitude))
+
+#using magrittr %<>% compound assignment pipe-operator
+shooting_data_geocoded %<>%
+ tidyr::drop_na(., c(latitude, longitude))
+
+dim(shooting_data_geocoded)
+```
+
+Now let's take a look at the variables in our data related to location by using the `select()` function of the `dplyr` package:
+
+```{r}
+shooting_data_geocoded %>%
+  select(School, City, State, latitude, longitude)
+```
+
+We can see (using the base `dim()` function) that the dimensions were 1156 rows of 51 variables, but they are now 1551 rows of 50 variables. This is becuase 5 events occured at schools with unidentified complete locations (missing either latitude, longitude, or both). 
+
+Now, we are ready to convert our coordinates variables (`latitude` and `longitude`) into a coordiante simple feature using the `st_as_sf()` function. We need to specify what our coordinate variables are and we will also specify what [coordinate reference system](https://www.w3.org/2015/spatial/wiki/Coordinate_Reference_Systems),(crs) we would like to use. In our case we will use the [ESPG](https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset) reference number [4326](https://spatialreference.org/ref/epsg/4326/), known as ESPG:4326 or the [World Geodetic System (WGS) version 84](https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84) which is one of the most commonly used CPS and used by by most global positioning systems, known as GPS. **This tells R  to use the values for the variables called `latitude` and `longitude` as latitude and longitude coordinates.**
+
+```{r}
+shooting_data_geocoded %<>%
+  sf::st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
+
+dim(shooting_data_geocoded)
+
+```
+
+We can see that our `latitude` and `longitude` variables were used to create a single new variable called `geometry` of class  `<POINT` [$^{\circ}$]`>`, thus we have one less column.
+
+In this case, we can take a look at just the first 4 variables and we will also see our last `sf` variable as well appeneded at the end. So now we can see the variables related to location by simply typing `[1:4]` next to the name of our tibble `shooting_data_geocoded`.
+
+```{r}
+shooting_data_geocoded[1:4]
+```
+
+
+Now to allow our points to have a bit more range so that they don't overlap one another on our map, we will transform the coordinates using the `st_transform()` function  of the `sf` package into a two dimensional projection (called the [Albers equal-area conic projection](https://en.wikipedia.org/wiki/Albers_projection#:~:text=The%20Albers%20equal%2Darea%20conic,that%20uses%20two%20standard%20parallels.&text=The%20Albers%20projection%20is%20used,the%20United%20States%20Census%20Bureau.)) with units in meters using the [crs 102008](https://spatialreference.org/ref/esri/102008/html/) and then use the `st_jitter()` of the `sf` package function
+to allow a specified amount of range near the actual original GPS coordinates. In this case we will allow for 50 meters of range.
+
+To learn more about geospatial coordinate systems see [here](https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf) and [here](https://guides.library.duke.edu/r-geospatial/CRS).
+
+So here we can see the output after transforming our data:
+
+```{r}
+shooting_data_geocoded  %<>%
+  st_transform(crs = 102008) 
+```
+
+```{r}
+shooting_data_geocoded[1:4]
+```
+And here we can see the output after adding the jitter:
+
+```{r}
+shooting_data_geocoded  %<>%
+   st_jitter(amount = 50)
+
+shooting_data_geocoded[1:4]
+```
+
+Notice how the `geometry` values have changed.
+
+Now we will transform our coordinates back into the 3D latitude and longitude degree system again using the `st_transform()` function and the [ESPG:4326](https://spatialreference.org/ref/epsg/4326/), corrdinate system.
+
+```{r}
+shooting_data_geocoded  %<>%
+  st_transform(crs = 4326)
+
+shooting_data_geocoded[1:4]
+```
+
+Notice how the `geometry` variables are different from what they were orginally with this coordinate system:
+
+```{r, echo = FALSE, out.width= "90%"}
+knitr::include_graphics(here::here("img", "geometry.png"))
+```
+
+
+Now we will separate the `geometry` variable into `longitude` and `latitude` variables again. We can use the ` st_coordinates()` function of the `sf` package to extract the coordinates from our tibble as a matrix.
+
+```{r}
+shooting_data_geocoded %<>% 
+  mutate(coordinates = as.tibble(st_coordinates(.)))
+
+shooting_data_geocoded %>%
+  pull(coordinates) %>%
+  slice_head(n = 4)
+```
+
+Now, just as we did previously we will create new variables called `latitude` and `longitude` from the `X` and `Y` variables within the `coordinates` tibble that is part of our `shooting_data_geocoded` using the `pull()` function.
+
+We will also convert our `shooting_data_geocoded` object which is currently a `sf` into a tibble using the `as_tibble()` function of the `tibble` package and then we will remove the `geometry` and `coordinates` variables using the `select()` function of the `dplyr` package with a negative sign infront of the names of the variables to remove.
+
+```{r}
+shooting_data_geocoded %<>%
+  mutate(longitude = pull(coordinates,X),
+          latitude = pull(coordinates,Y)) %>%
+  tibble::as_tibble() %>%
+  select(-geometry) %>%
+  select(-coordinates)
+```
+
+And now we can take a look at  our last 3 variables using the `last_col()` function, which is a select helper function `tidyr` package. See [here](https://tidyselect.r-lib.org/reference/select_helpers.html) for other select helper functions. This allows us to select either the last column, or with a specified offset we can select a number of columns before the last column. Thus 2 columns before the last column  would be `last_col(offset = 2)` and then the `:` symbol is interpreted as through, thus we are selecting for the third to last column through the last column with `last_col(offset = 2): last_col()`.
+
+```{r}
+shooting_data_geocoded %>% 
+  select(last_col(offset = 2):last_col()) %>% 
+  slice_head(n = 4)
+
+```
+
+
+Great! That looks like we expected. We can see that the coordinate values are slightly different now.
+
+```{r}
+original_shooting_data_geocoded <- read_csv(here("processed_data",
+              "shooting_data.csv"))
+
+original_shooting_data_geocoded %>%select(longitude, latitude) %>% slice_head(n = 4)
+```
+### Adding state name
+
+Now we will add the full state name to the data using data related to the US 50 states in a dataset called `state` that is automatically loaded with R sessions in the `datasets` package. The `state.abb` object is a list of the state abbreviations and `state.name` is a list of the state names.
+
+```{r}
+state.abb
+state.name
+```
+
+We will combine these using the `tibble()` function of the `tibble()` package. 
+
+```{r}
+state_df <- tibble(state.abb, state.name)
+
+slice_head(state_df, n= 4)
+```
+
+Now we will combine this with our data using the `left_join()` function of the `dplyr` package. avocado add explanation and join images
+
+```{r}
+shooting_data_geocoded %<>%
+  rename("State_abb" = State) %>%
+  left_join(state_df, by = c("State_abb" = "state.abb")) %>%
+  rename("State" = state.name)
+```
+
+```{r}
+shooting_data_geocoded %>%
+  select(School, City, State_abb, State) %>%
+  slice_head(n = 4)
+```
+
+### Reformating dates
+We also want to reformat our date values and create a `Date_year` variable based on the year in each date. We can use the `lubridate` package for this.
+
+The `mdy()` function converts dates into a format where dates are listed as month, date, and year with hyphens in between.
+The `year()` function can then be used to extract just the year from each date.
+
+```{r}
+shooting_data_geocoded %<>%
+       mutate(Date = lubridate::mdy(Date)) %>%
+  mutate(Date_year = lubridate::year(Date))
+
+shooting_data_geocoded %>% select(Date, Date_year)
+```
+Looks good!
+
+One last thing to do is to convert `Yes` and `No` values into `TRUE` and `FALSE`.
+
+
+First let's take a look at our data:
+
+```{r, echo = FALSE}
+DT::datatable(shooting_data_geocoded)
+```
+
+We see that many of the varaibles that are of class character, which is indicated by the `<chr>` below the variable name have either `Yes` or `No` values or `Y` and `N` values. We can make these consistently `TRUE` and `FALSE` by using the `recode()` function of the `dplyr` package. This function allows us to specify new values for existing values. The exisiting values are written on the left of the `=` sign (no quotation marks necessary) and new values are written on the right (quotations marks are necessary as these are new values). We will also use the `across()` function of the `dplyr` package and the `where()` function of the `tidyselect` packge to allow us to apply this to all of the variables that are of class character. This will be specified using the base `is.character()` function. The columns that are of class character are selected using the `where()` function and the `across()` function then applies the recode function to all of these variables. Notice that the `~` symbol is necessary before the funtion that is applied using `across()`.
+
+```{r}
+shooting_data_geocoded %<>%
+      mutate(dplyr::across(.cols = where(is.character), ~ dplyr::recode(.,
+                      Yes = "TRUE",
+                       No = "FALSE",
+                        Y = "TRUE",
+                        N = "TRUE")))
+
+```
+```{r, echo = FALSE}
+DT::datatable(shooting_data_geocoded)
+```
+
+Looks good!
+
+Now we will save our wrangled data, again using `write_csv()`.
+
+```{r}
+write_csv(shooting_data_geocoded, path = here("processed_data",
+                                 "shooting_data_wrangled2.csv"))
+```
+
+
+
+from Michael:
 ```{r, eval = FALSE}
+shooting_data_geocoded <- read_csv(here("processed_data",
+              "shooting_data.csv"))
 shooting_data_geocoded <- shooting_data_geocoded %>%
   filter(!is.na(longitude),
          !is.na(latitude)) %>%
   sf::st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
+  
   st_transform(crs = 102008) %>%
   st_jitter(amount = 50) %>%
   st_transform(crs = 4326) %>%
@@ -542,10 +767,6 @@ shooting_data_geocoded <- read_csv(here("processed_data",
 ```
 
 
-Put files in docs directory and use `here` package.
-
-## **Data Exploration and Wrangling**
-*** 
 
 INTRODUCE THE CONCEPT OF DASHBOARDS
 
@@ -553,6 +774,14 @@ INTRODUCE `flexdashboard`
 
 ## **Data Analysis**
 *** 
+
+First let's load the data by reading in our wrangled version of the data.
+
+```{r}
+
+shooting_data_geocoded <- read_csv(here("processed_data",
+                                        "shooting_data_wrangled.csv"))
+```
 
 ## **Data Visualization**
 *** 
