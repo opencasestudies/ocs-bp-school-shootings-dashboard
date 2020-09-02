@@ -185,7 +185,7 @@ library(tidyr)
 library(magrittr)
 library(ggmap)
 library(sf)
-
+library(waffle)
 library(flexdashboard)
 library(shiny)
 library(tidyverse)
@@ -208,6 +208,7 @@ Package   | Use in this case study
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data
 [magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands 
 [ggmap](https://cran.r-project.org/web/packages/ggmap/ggmap.pdf) | to geocode the data (which means get the latitude and longitude values for the schools)
+[waffle](https://github.com/hrbrmstr/waffle) | to make waffle proportion plot
 [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the elements of the dashboard 
 
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, to separate a column into additional columns, and to fill out values based on previous values   
@@ -520,6 +521,10 @@ However, to do this we first need to remove rows with `NA` values for the `latit
 ```{r}
 dim(shooting_data_geocoded)
 
+shooting_data_geocoded %>% filter(is.na(latitude )) %>%select(matches(c("long", "lat", "add")))
+
+
+
 #using previous method:
 # shooting_data_geocoded <- shooting_data_geocoded %>%
 #    tidyr::drop_na(., c(latitude, longitude))
@@ -528,7 +533,21 @@ dim(shooting_data_geocoded)
 shooting_data_geocoded %<>%
  tidyr::drop_na(., c(latitude, longitude))
 
+
+
 dim(shooting_data_geocoded)
+
+cols_to_select <-c("School","Date","State", "City", "Narrative (Detailed Summary/ Background)", "Killed (includes shooter)")
+
+setdiff(select(shooting_data, cols_to_select),
+        select(shooting_data_geocoded, cols_to_select))
+
+different <-setdiff(shooting_data[1:48], shooting_data_geocoded[1:48])
+
+diff_narrative<-setdiff(shooting_data$`Narrative (Detailed Summary/ Background)`, shooting_data_geocoded$`Narrative (Detailed Summary/ Background)`)
+
+
+
 ```
 
 Now let's take a look at the variables in our data related to location by using the `select()` function of the `dplyr` package:
@@ -695,24 +714,86 @@ One last thing to do is to convert `Yes` and `No` values into `TRUE` and `FALSE`
 
 First let's take a look at our data:
 
-```{r, echo = FALSE}
-DT::datatable(shooting_data_geocoded)
+#### {.scrollable }
+```{r}
+str(shooting_data_geocoded)
+
 ```
 
-We see that many of the varaibles that are of class character, which is indicated by the `<chr>` below the variable name have either `Yes` or `No` values or `Y` and `N` values. We can make these consistently `TRUE` and `FALSE` by using the `recode()` function of the `dplyr` package. This function allows us to specify new values for existing values. The exisiting values are written on the left of the `=` sign (no quotation marks necessary) and new values are written on the right (quotations marks are necessary as these are new values). We will also use the `across()` function of the `dplyr` package and the `where()` function of the `tidyselect` packge to allow us to apply this to all of the variables that are of class character. This will be specified using the base `is.character()` function. The columns that are of class character are selected using the `where()` function and the `across()` function then applies the recode function to all of these variables. Notice that the `~` symbol is necessary before the funtion that is applied using `across()`.
+####
+
+We see that many of the varaibles have either `Yes` or `No` values or `Y` and `N` values.  These are the variables that have `Y/N` in the name or the `Targeted Specific Victim(s)`, `Random Victims`, `Pre-planned school attack` variables. We can make these consistently `TRUE` and `FALSE` by using the `case_when()` function of the `dplyr` package. This function allows us to specify new values for existing values, simlarly to the `recode()` function also of `dplyr`. The benefit of the `case_when()` function, is that changing the values to `TRUE` or `FALSE` also results in the class type of the variable changing to type logical (which is interpreted as a binary variable with `TRUE` and `FALSE` values) otherwise, with `recode()` the variables would remain as class type character. 
+
+<details><summary> click here for more details about the differences between `recode()` and case_when()`</summary>
+
+avocado check on these statements  - this does not seem to be true for case_when despite what the documentation says "If no cases match, NA is returned."
+
+Note, that with `recode()` there is the option that other values be recoded to `NA` althought this is not the default, however with `case_when()` other values not explicitly assigned in the case_when() statement will be `NA`. Further more only values can be used on the left side when using `recode()` whereas `case_when()` accepts expressions that need to be evaluated, unless using the `:=` opperator.???
+
+
+***
+
+</details>
+
+avocado add links about this/ maybe add /check if we already added the class type stuff from the other case studies - indeed casewhen in other cases seems to automatically make all other cases NA but was that the case here?
+
+To implement the `case_when()` recoding of values, the exisiting values are written on the left of the `~` sign (quotation marks necessary) and new values are written on the right (quotations marks are not necessary as these are `TRUE` and `FALSE` statments). We will also use the `across()` function of the `dplyr` package and the `matches()` function of the `tidyselect` packge to allow us to apply this to all of the variables that have a pattern that that matches any of those of the variables we want to change. The `|` symbol is interpreted as an or, thus any variables that has a name that matches any of these patterns will be changed. fThe `across()` function then applies the `case_when()` function to all of these variables. Notice that the `~` symbol is necessary before the funtion that is applied using `across()`.
 
 ```{r}
+
+shooting_data_geocoded %>% filter(`Targeted Specific Victim(s)` == "No victoms")
+
+shooting_data_geocoded %>% select(matches("Y/N|Specific|Random|Pre-planned"))
+
 shooting_data_geocoded %<>%
+       mutate(dplyr::across(.cols = matches("Y/N|Specific|Random|Pre-planned"),
+                    ~ dplyr::case_when(. == "Yes" ~ TRUE,
+                                         .== "No" ~ FALSE,
+                                          .== "Y" ~ TRUE,
+                                          .== "N" ~ TRUE)))
+
+shooting_data_geocoded %>% select(matches("Y/N|Specific|Random|Pre-planned"))
+
+shooting_data_geocoded %>% filter(`Targeted Specific Victim(s)` == "No victoms")
+```
+
+```{r}
+shooting_data_geocoded %>% select(matches("Y/N|Specific|Random|Pre-planned"))
+```
+
+
+```{r, eval = FALSE}
+shooting_data_geocoded %>%
       mutate(dplyr::across(.cols = where(is.character), ~ dplyr::recode(.,
                       Yes = "TRUE",
                        No = "FALSE",
                         Y = "TRUE",
-                        N = "TRUE")))
+                        N = "TRUE"))) %>%
+ mutate(dplyr::across(.cols = where(is.character), ~ as.logical(.)))
+
+
+shooting_data_geocoded %>%
+       mutate(dplyr::across(.cols = where(is.character) & n_distinct(.) <=2, ~ (dplyr::case_when(. == "Yes" ~ TRUE,
+                       .== "No" ~ FALSE,
+                        .== "Y" ~ TRUE,
+                       .== "N" ~ TRUE))))
+
+#where(is.character & n_distinct(.)<2)
+
+shooting_data_geocoded %>%
+       mutate(dplyr::across(.cols = where(is.character) & contains("Y/N|Specific|Random"), ~ (dplyr::case_when(. == "Yes" ~ TRUE))))
+              
 
 ```
-```{r, echo = FALSE}
-DT::datatable(shooting_data_geocoded)
+
+
+#### {.scrollable }
+```{r}
+str(shooting_data_geocoded)
+
 ```
+
+####
 
 Looks good!
 
@@ -720,7 +801,7 @@ Now we will save our wrangled data, again using `write_csv()`.
 
 ```{r}
 write_csv(shooting_data_geocoded, path = here("processed_data",
-                                 "shooting_data_wrangled2.csv"))
+                                 "shooting_data_wrangled.csv"))
 ```
 
 
@@ -772,7 +853,7 @@ INTRODUCE THE CONCEPT OF DASHBOARDS
 
 INTRODUCE `flexdashboard`
 
-## **Data Analysis**
+## **Data Analysis and Visualization**
 *** 
 
 First let's load the data by reading in our wrangled version of the data.
@@ -783,9 +864,287 @@ shooting_data_geocoded <- read_csv(here("processed_data",
                                         "shooting_data_wrangled.csv"))
 ```
 
-## **Data Visualization**
-*** 
 
+There are several elements we would like to include in our dashboard. 
+
+One thing we would like is an interactive table.
+
+We can done so using the `datatable()` function of the `DT` package.
+
+```{r, eval = FALSE}
+DT::datatable(shooting_data)
+```
+This creates a searchable table and the order in which the data is displayed can be toggled to change for each variable.
+
+However, we have many varaibles, so this get's to be overwhelming. Since there are so many this even modifies the way the rmarkdown for this case study is rendered, thus instead of displaying all of the variables, let's choose only some of the most interesting to display on our dashboard.
+
+
+```{r}
+DT_table <- shooting_data%>%
+  dplyr::select(Date,
+                School,
+                City,
+                State,
+                `Killed (includes shooter)`,
+                `Narrative (Detailed Summary/ Background)`) %>%
+  rename("Narrative" = `Narrative (Detailed Summary/ Background)`)
+
+DT::datatable(DT_table)
+```
+
+
+Now we would also like to make some visualizations of our data.
+
+### Yearly Deaths
+
+First, we would like to create a plot of the number of shootings per year.
+
+To do this we will first count the number of shootings per year by using the `group_by()` function  and the `count()` function of the `dplyr` package. The `group_by()` functions allows us to summarize the data across specific groups specified by a variable or multiple variables. By grouping by `Date_year` we can then use the `count()` function to count the number of rows with shooting event information 
+for each unique value of the `Date_year` variable.
+
+We then want to use the `ungroup()` function to get the data out of this grouping based on the `Data_year` varaible.
+
+
+```{r}
+
+shooting_per_year<- shooting_data %>%
+       mutate(Date = lubridate::mdy(Date)) %>%
+  mutate(Date_year = lubridate::year(Date)) %>%
+    group_by(Date_year) %>%
+    count() %>%
+    ungroup()
+
+
+shooting_per_year
+
+```
+Nice looks good!
+
+Now to make a plot of this data we will use the `ggplot2` package.
+
+<details><summary> Click here for an introduction about this package if you are  new to using `ggplot2` </summary>
+
+The [ggplot2 package](http://ggplot2.tidyverse.org) is generally intuitive for beginners because it is based on a  [grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html) or the `gg` in `ggplot2`. 
+The idea is that you can construct many sentences by learning just a few nouns, adjectives, and verbs. There are specific “words” that we will need to learn and once we do, you will be able to create (or “write”) hundreds of different plots.
+
+The critical part to making graphics using `ggplot2` is the data needs to be in a _tidy_ format. 
+Given that we have just spent time putting our data in _tidy_ format, we are primed to take advantage of all that `ggplot2` has to offer! 
+
+We will show how it is easy to pipe _tidy_ data (output) as input to other functions that create plots. 
+This all works because we are working 
+within the _tidyverse_. 
+
+**What is the `ggplot()` function?** 
+As explained by Hadley Wickham:
+
+> The grammar tells us that a statistical graphic is a mapping from data to aesthetic attributes (colour, shape, size) of geometric objects (points, lines, bars). The plot may also contain statistical transformations of the data and is drawn on a specific coordinates system.
+
+`ggplot2` Terminology: 
+
+- **ggplot** - the main function where you specify the dataset and variables to plot (this is where we define the `x` and
+`y` variable names)
+- **geoms** - geometric objects
+    - e.g. `geom_point()`, `geom_bar()`, `geom_line()`, `geom_histogram()`
+- **aes** - aesthetics
+    - shape, transparency, color, fill, line types
+- **scales** - define how your data will be plotted
+    - continuous, discrete, log, etc
+
+The function `aes()` is an aesthetic mapping function inside the `ggplot()` object. 
+We use this function to specify plot attributes (e.g. `x` and `y` variable names) that will not change as we add more layers.  
+
+Anything that goes in the `ggplot()` object becomes a global setting. 
+From there, we use the `geom` objects to add more layers to the base `ggplot()` object. 
+These will define what we are interested in illustrating using the data.
+
+***
+</details>
+
+For more of an introduction on creating plots with `ggplot2` , see this [case study]()
+
+First, we start with the `ggplot()` function of the `ggplot2` package.
+
+This function requires that the aesthetics `aes()` be specified. This involves choosing what variable will be plotted on the x-axis and the y axis. 
+
+This will create an empty plot area, next we need to use one of the `geom*` functions of the `ggplot2` package to specify what type of plot we want to create.
+
+Type geom into the RStudio console and you will see many options to scroll through.
+
+We will be creating a `geom_col()` plot, which is a particular type of bar plot that uses the acutal values to plot, rather than counts, which is the default of `geom_bar()` We will specify with the `fill` argument, that we want our bars to be filled with the color black.
+
+We will also modify the x-axis using the `scale_x_continuous()` function. This function allows for specification of the range or limits of the axis using the `limits` argument. We can use the base `seq()` function to create a sequence of numbers for each tick mark.
+
+
+We can add labels to our plot using the `labs()` function of `ggplot2`. This has arguments such as `x` and `y` for the axes and `title` and `subtitle` for titles.
+
+We will also modify the overall aesthetics of the plot using a `theme_*` function. See [here](https://ggplot2.tidyverse.org/reference/ggtheme.html) for a list of options.
+
+```{r}
+start <- 1970
+end <- 2020
+
+
+shooting_per_year %>%
+    ggplot(aes(x = Date_year, y = n)) +
+    geom_col( fill = "black") +
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start-1, end+1)) +
+    theme_minimal() +
+    labs(title = "Yearly Deaths Attributable to School Shootings",
+         subtitle = "United States",
+         x = "School Shootings",
+         y = "")
+```
+
+### Yearly Cumulative Deaths
+
+Now let's make another plot of the cumulative deaths each year including those of the previous years. In this case we can use the `shooting_per_year` object that we previously made. We want to add a new variable using the `mutate` function called `n_cum_sum` by using the `cumsum()` function to calculate a cumulative sum based on the yearly count. 
+
+```{r}
+
+shooting_per_year
+
+shooting_per_year_cum <- shooting_per_year%>%
+    mutate(n_cumsum = cumsum(n))
+
+shooting_per_year_cum 
+
+```
+
+Great, this looks like we would expect!
+
+Now let's make a plot like we did before:
+
+```{r}
+
+shooting_per_year_cum %>%
+    ggplot(aes(x = Date_year, y = n_cumsum)) +
+    geom_col(fill = "black") +
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start-1, end+1)) +
+    theme_minimal() +
+    labs(title = "Yearly Cumulative Deaths Attributable to School Shootings",
+         subtitle = "United States",
+         x = "School Shootings",
+         y = "")
+```
+
+### Deaths per Shooting
+
+Now, lets make a plot of the number of deaths per shooting based on the `Killed (includes shooter)` varaible. Our first plot could also have been made using `geom_bar()` instead of `geom_col()` this makes a similar plot but automatically uses the count for one of the axes. 
+
+```{r}
+# This is equivalent:
+# deaths_per_event <- shooting_data %>%
+#     group_by(`Killed (includes shooter)`) %>%
+#     count() %>%
+#     ungroup()
+# 
+# deaths_per_event %>%
+#     ggplot(aes(y = `Killed (includes shooter)`, x = n)) +
+#     geom_col(fill = "black")+
+#     theme_minimal() +
+#     labs(title = "Deaths per School Shooting",
+#          subtitle = "United States",
+#          x = "School Shootings",
+#          y = "")
+
+shooting_data %>%
+    ggplot(aes(x = `Killed (includes shooter)`)) +
+    geom_bar(fill = "black") +
+  # scale_x_continuous(breaks = seq(0,10, by = 1),
+  #                    labels = seq(0,10, by = 1),
+  #                    limits = c(-1,10)) +
+    theme_minimal() +
+    labs(title = "Deaths per School Shooting",
+         subtitle = "United States",
+         x = "School Shootings",
+         y = "")
+
+```
+It is a bit difficult to see the shootings that had more numerious deaths, so we will add a facet that zooms in on this portion of the plot. We can do so, using the `facet_zoom()` function of the `ggforce` package.
+
+```{r}
+library(ggforce)
+
+
+shooting_data %>%
+    ggplot(aes(x = `Killed (includes shooter)`)) +
+    geom_bar(fill = "black") +
+  # scale_x_continuous(breaks = seq(0,10, by = 1),
+  #                    labels = seq(0,10, by = 1),
+  #                    limits = c(-1,10)) +
+ggforce::facet_zoom(xlim = c(10, max(pull(shooting_data, `Killed (includes shooter)`))))+
+theme_minimal() +
+    labs(title = "Deaths per School Shooting",
+         subtitle = "United States",
+         x = "School Shootings",
+         y = "")
+```
+
+```{r}
+
+shooting_data %>%
+    ggplot(aes(x = `Killed (includes shooter)`)) +
+    geom_freqpoly()
+```
+
+```{r}
+deaths_perc_event <-shooting_data %>%
+   count(`Killed (includes shooter)`) %>%
+  rename("num_events"= n) %>%
+   mutate(percent = (num_events/sum(num_events)*100))
+
+greater_than4<-deaths_perc_event %>% filter(`Killed (includes shooter)` >=4) %>% colSums()
+greater_than4
+
+deaths_perc_event %<>%  bind_rows(greater_than4) %>% mutate(category = paste(`Killed (includes shooter)`, "deaths")) 
+
+last(pull(deaths_perc_event, category))
+
+# deaths_perc_event %<>% mutate(category= recode(category, "85 deaths" = "4+deaths"))
+
+deaths_perc_event %<>% mutate(category= case_when(category ==  last(pull(deaths_perc_event, category)) ~ "4+deaths", TRUE ~category ))
+
+library(waffle)
+
+deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
+  filter(percent>.5) %>%
+  mutate(percent = round(percent)) %>%
+  select(-num_events) %>%
+  pivot_wider(names_from = category, values_from = percent) %>%
+  waffle( colors = c("grey54", "black", "red","grey77", "#009bda" ),
+          legend_pos = "bottom")
+
+
+
+deaths_perc_event %>%
+  filter(percent>0.5) %>%
+    ggplot(aes(x = "", y = percent, fill = category)) +
+    geom_bar(stat = "identity", color = "black") +
+    coord_polar("y", start = 0) + scale_y_continuous(breaks= NULL)+
+  scale_fill_viridis_d()
+
+```
+
+
+
+avocado! columbine - which had 12 deaths is not included...
+
+also better to plot differently to show high values - maybe a zoom
+
+## **Dashboard**
+***
+
+```{r}
+DT::datatable(shooting_data_geocoded)
+```
+
+```{r}
+DT::datatable(shooting_data)
+```
 
 
 ## RA NOTES
