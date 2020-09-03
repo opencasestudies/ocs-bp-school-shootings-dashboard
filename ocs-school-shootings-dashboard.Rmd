@@ -131,6 +131,23 @@ They also point out that:
 
 Given this need for more research to better understand why these events occur and how they could be averted, in this case study we will demonstrate how to create a resource for others to more easily and interactively access data about school shootings. To do so we will create what is called a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report for a database. Dashboards summarize the data in a database and typically allow for users to interact with the data in some way.
 
+[Here](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/) you can see an example of a dashboard created in R.
+
+
+```{r}
+knitr::include_url("https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/")
+```
+On the website the tabs and and plots are interactive. The dashboard allows for users to get to know the data in a simple and quick way.
+
+The data about food sales  is succinctly summarized in an impactful manner.
+
+```{r, echo = FALSE, out.width= "60%"}
+knitr::include_graphics(here::here("img", "dashboard.png"))
+```
+
+####[[source]](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/)
+
+Now let's learn how to do this with our data of interest.
 
 ## **Main Questions**
 *** 
@@ -212,8 +229,8 @@ Package   | Use in this case study
 [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the elements of the dashboard 
 
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, to separate a column into additional columns, and to fill out values based on previous values   
-[shiny](https://shiny.rstudio.com/gallery/){target="_blank"}      | to avocado  
-[leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the create the map for our dashboard   
+[shiny](https://shiny.rstudio.com/){target="_blank"}      | to allow our dashboard to be interactive  
+[leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
 [sf](https://r-spatial.github.io/sf/) | to Geocode the data avocado
 [rmapshapper](https://cran.r-project.org/web/packages/rmapshaper/vignettes/rmapshaper.html) | avocado
 [htmltools](https://www.rdocumentation.org/packages/htmltools/versions/0.5.0) | to avocado   
@@ -449,8 +466,6 @@ DT::datatable(shooting_data)
 
 ```{r}
 
-shooting_data %>% filter(`Targeted Specific Victim(s)` == "No victoms")
-
 shooting_data%>% select(matches("Y/N|Specific|Random|Pre-planned"))
 
 shooting_data %<>%
@@ -462,7 +477,6 @@ shooting_data %<>%
 
 shooting_data %>% select(matches("Y/N|Specific|Random|Pre-planned"))
 
-shooting_data %>% filter(`Targeted Specific Victim(s)` == "No victoms")
 ```
 
 
@@ -557,7 +571,7 @@ We can take a look at just this new `address` variable using the `pull()` functi
 
 #### {.scrollable }
 ```{r}
-shooting_data %<>%
+shooting_data %>%
   dplyr::pull(address)
 ```
 #### 
@@ -663,12 +677,6 @@ shooting_data_geocoded <- read_csv(here("processed_data",
 ```
 
 
-Need to join our wrangled data with the lat/long data 
-```{r, eval = FALSE}
-
-inner_join(shooting_data_geocoded, shooting_data, by = c("Narrative (Detailed Summary/ Background)" = "Narrative (Detailed Summary/ Background)" ))
-```
-
 
 ### Geometry lists with the `sf` package
 
@@ -711,12 +719,6 @@ setdiff(select(shooting_data, cols_to_select),
         select(shooting_data_geocoded, cols_to_select))
 ```
 
-```{r, eval = FALSE}
-different <-setdiff(shooting_data[1:48], shooting_data_geocoded[1:48])
-
-diff_narrative<-setdiff(shooting_data$`Narrative (Detailed Summary/ Background)`, shooting_data_geocoded$`Narrative (Detailed Summary/ Background)`)
-
-```
 
 Now let's take a look at the variables in our data related to location by using the `select()` function of the `dplyr` package:
 
@@ -910,7 +912,7 @@ First let's load the data by reading in our wrangled version of the data.
 
 ```{r}
 shooting_data <- read_csv(here("processed_data",
-                                        "shooting_data.csv"))
+                                        "shooting_data_pre_geo_wrangled.csv"))
 
 shooting_data_geocoded <- read_csv(here("processed_data",
                                         "shooting_data_wrangled.csv"))
@@ -947,7 +949,7 @@ DT::datatable(DT_table)
 
 Now we would also like to make some visualizations of our data.
 
-### Yearly Deaths
+### Yearly Shootings
 
 First, we would like to create a plot of the number of shootings per year.
 
@@ -959,15 +961,14 @@ We then want to use the `ungroup()` function to get the data out of this groupin
 
 ```{r}
 
-shooting_per_year<- shooting_data %>%
-       mutate(Date = lubridate::mdy(Date)) %>%
-  mutate(Date_year = lubridate::year(Date)) %>%
+shootings_per_year<- shooting_data %>%
     group_by(Date_year) %>%
     count() %>%
+  rename("Shootings" = n) %>%
     ungroup()
 
 
-shooting_per_year
+shootings_per_year
 
 ```
 Nice looks good!
@@ -1036,48 +1037,140 @@ start <- 1970
 end <- 2020
 
 
-shooting_per_year %>%
-    ggplot(aes(x = Date_year, y = n)) +
+shootings_per_year_p <-shootings_per_year %>%
+    ggplot(aes(x = Date_year, y = Shootings)) +
     geom_col( fill = "black") +
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
     theme_minimal() +
-    labs(title = "Yearly Deaths Attributable to School Shootings",
+      labs(title = "Yearly School Shootings",
+
+   # labs(title = "Yearly Deaths Attributable to School Shootings",
          subtitle = "United States",
-         x = "School Shootings",
-         y = "")
+         x = "",
+         y = "School Shootings")
+
+shootings_per_year_p 
 ```
 
-### Yearly Cumulative Deaths
+### Yearly Deaths
+
+Notice how when using summarize we dont use mutate here.
+```{r}
+
+deaths_per_year<-shooting_data %>% 
+  group_by(Date_year) %>%
+  summarize(Deaths =sum(`Killed (includes shooter)`))
+
+deaths_per_year_p <-deaths_per_year %>%
+    ggplot(aes(x = Date_year, y = Deaths)) +
+    geom_col( fill = "black")+
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start-1, end+1)) +
+    theme_minimal() +
+   labs(title = "Yearly Deaths Attributable to School Shootings",
+         subtitle = "United States",
+         y = "School Shootings",
+         x = "")
+deaths_per_year_p
+
+
+per_year<-full_join(shootings_per_year, deaths_per_year)
+per_year %<>%pivot_longer( cols = (-Date_year), 
+                           values_to = "events", 
+                           names_to = "id")
+per_year %>%
+    ggplot(aes(x = Date_year, y = events, fill =id)) +
+    #geom_col(aes(fill = id), position = "dodge") +
+  geom_area()+
+  facet_grid(~id)+
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start-1, end+1)) +
+    theme_minimal() +
+   labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
+         subtitle = "United States",
+         y = "",
+         x = "")+
+  scale_fill_manual(values = c("black", "black"))+
+  theme(legend.position = "none", 
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90))
+ 
+
+
+```
+
+### Yearly Cumulative Shootings
 
 Now let's make another plot of the cumulative deaths each year including those of the previous years. In this case we can use the `shooting_per_year` object that we previously made. We want to add a new variable using the `mutate` function called `n_cum_sum` by using the `cumsum()` function to calculate a cumulative sum based on the yearly count. 
 
 ```{r}
 
-shooting_per_year
+shootings_per_year
 
-shooting_per_year_cum <- shooting_per_year%>%
-    mutate(n_cumsum = cumsum(n))
+shootings_per_year_cum <- shootings_per_year%>%
+    mutate("Shootings_cumsum" = cumsum(Shootings))
 
-shooting_per_year_cum 
+shootings_per_year_cum 
 
+deaths_per_year_cum <- deaths_per_year%>%
+    mutate(Deaths_cumsum = cumsum(Deaths))
+
+shootings_per_year_cum 
+
+
+
+per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
+
+
+per_year_cum %<>%pivot_longer( cols = c(Shootings_cumsum,
+                                        Deaths_cumsum ), 
+                           values_to = "events", 
+                           names_to = "id")
+
+per_year_cum
 ```
 
-Great, this looks like we would expect!
+Good, this looks like we would expect.
 
 Now let's make a plot like we did before:
 
 ```{r}
+per_year_cum %>%
+    ggplot(aes(x = Date_year, y = events, fill =id)) +
+    #geom_col(aes(fill = id), position = "dodge") +
+  geom_col()+
+  facet_grid(~id)+
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start-1, end+1)) +
+    theme_minimal() +
+   labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
+         subtitle = "United States",
+         y = "",
+         x = "")+
+   scale_fill_viridis_d()+
+  theme(legend.position = "none", 
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90))
+ 
 
-shooting_per_year_cum %>%
-    ggplot(aes(x = Date_year, y = n_cumsum)) +
+```
+
+```{r}
+
+shootings_per_year_cum %>%
+    ggplot(aes(x = Date_year, y = Shootings_cumsum)) +
     geom_col(fill = "black") +
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
     theme_minimal() +
-    labs(title = "Yearly Cumulative Deaths Attributable to School Shootings",
+  labs(title = "Yearly Cumulative Number of School Shootings",
+#    labs(title = "Yearly Cumulative Deaths Attributable to School Shootings",
          subtitle = "United States",
          x = "School Shootings",
          y = "")
@@ -1128,12 +1221,12 @@ shooting_data %>%
   # scale_x_continuous(breaks = seq(0,10, by = 1),
   #                    labels = seq(0,10, by = 1),
   #                    limits = c(-1,10)) +
-ggforce::facet_zoom(xlim = c(10, max(pull(shooting_data, `Killed (includes shooter)`))))+
+ggforce::facet_zoom(xlim = c(3, max(pull(shooting_data, `Killed (includes shooter)`))), ylim = c(0,30))+
 theme_minimal() +
     labs(title = "Deaths per School Shooting",
          subtitle = "United States",
-         x = "School Shootings",
-         y = "")
+         x = "Deaths per shooting",
+         y = "Number of shootings")
 ```
 
 ```{r}
@@ -1167,11 +1260,10 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
   mutate(percent = round(percent)) %>%
   select(-num_events) %>%
   pivot_wider(names_from = category, values_from = percent) %>%
-  waffle( colors = c("grey54", "black", "red","grey77", "#009bda" ),
-          legend_pos = "bottom")
+  waffle( 
+          legend_pos = "bottom") +  scale_fill_viridis_d()
 
-
-
+#colors = c("grey54", "black", "red","grey77", "#009bda" ),
 deaths_perc_event %>%
   filter(percent>0.5) %>%
     ggplot(aes(x = "", y = percent, fill = category)) +
@@ -1181,63 +1273,117 @@ deaths_perc_event %>%
 
 ```
 
-
-
-avocado! columbine - which had 12 deaths is not included...
-
-also better to plot differently to show high values - maybe a zoom
-
 ## **Dashboard**
 ***
 
-```{r}
-DT::datatable(shooting_data_geocoded)
+OK, now we are ready to make our dashboard!
+
+
+### Dashboard packages
+To make our dashboard we will use 3 very useful packages:
+
+1) [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)
+
+Flexdashboard is a package that was created by RStudio and [released](https://blog.rstudio.com/2016/05/17/flexdashboard-easy-interactive-dashboards-for-r/) in May of 2016. This package allows for users to more easily create dashboards using [R markdown](http://rmarkdown.rstudio.com/). 
+
+See [here](https://rstudio.com/resources/webinars/introducing-flexdashboards/) for a video about flexdashboard and [here](https://rmarkdown.rstudio.com/flexdashboard/) for a more information on how to use this package.
+
+2) [leaflet](https://rstudio.github.io/leaflet/)
+
+[Leaflet](https://leafletjs.com/) is the leading open-source JavaScript library for interactive maps and is used by many websites. The [leaflet](https://rstudio.github.io/leaflet/) R package allows for users to more easily integrate leaflet maps in R, to create maps like the one below. We will use this package to create a map of where school shootings have occured in the US.
+
+```{r,echo=FALSE}
+library(maps)
+mapStates = map("state", fill = TRUE, plot = FALSE)
+leaflet(data = mapStates) %>% addTiles() %>%
+  addPolygons(fillColor = topo.colors(10, alpha = NULL), stroke = FALSE)
 ```
 
-```{r}
-DT::datatable(shooting_data)
+
+3) [shiny](https://shiny.rstudio.com/)
+
+[Shiny](https://shiny.rstudio.com/) is an R package that makes it easier to create interactive web applications in R. See [here](https://shiny.rstudio.com/gallery/) for a gallery of examples. People have created a variety of diverse applications using this package- from [interactive websites](https://shiny.rstudio.com/gallery/real-estate-investment.html) to [games](https://shiny.rstudio.com/gallery/hex-memory.html).
+
+```{r, echo = FALSE, out.width= "60%"}
+knitr::include_graphics(here::here("img", "game.png"))
 ```
 
+##### [[source]](https://shiny.rstudio.com/gallery/hex-memory.html)
 
-## RA NOTES
+See [here](https://rmarkdown.rstudio.com/flexdashboard/using.html#components) for a list of other packages that are useful for adding elements to dashboards created with the `flexdashboard` package.
 
-### General Notes
+***
 
-Consult this document for a general overview:
+### Rmarkdown
 
-+ case-study-structure-MO-notes
+The case study that you are reading right now was created using an [R markdown document](https://rmarkdown.rstudio.com/). This means that it is a document that uses the `Markdown` language. 
 
-There are several datasets involved in this case study
+In fact if you click the button that says "code" on the upper right corner you will download the [R Markdown](https://rmarkdown.rstudio.com/articles_intro.html#:~:text=R%20Markdown%20is%20a%20file,code%2C%20like%20the%20document%20below.) document for this case study. 
 
-+ Raw dataset (raw_data/K-12 SSDB (Public) - K-12 SSDB (Public) Linked.csv)
-+ Geocoded dataset  (processed_data/shooting_data.csv)
-+ Wrangled dataset (processed_data/shooting_data_wrangled)
+[R Markdown](https://rmarkdown.rstudio.com/articles_intro.html#:~:text=R%20Markdown%20is%20a%20file,code%2C%20like%20the%20document%20below.) is a file format that contains markdown sytax and embedded R code (it can also incoperate code from some other languages like [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) and [SQL](https://en.wikipedia.org/wiki/SQL)).
 
-This document uses the geocoded dataset to produce the wrangled dataset.
 
-The wrangled dataset is then used to produce the dashboard in the other document.
 
-Code to geocode and then wrangle the datasets are included in this document.
 
-The goecoding required to produce this case study took approximately 1.5-2 hours on a Macbook Air (2015). 
+```{r}
+library("vembedr")
+embed_url("https://vimeo.com/178485416") %>%
+  div(class = "vembedr") %>%
+  div(align = "center")
+```
 
-The maps we created were largely restrictred to efficient maps. Maps with multiple layers required a lot of computational power which we chose not to use. 
+##### [[source]](https://rmarkdown.rstudio.com/lesson-1.html) 
 
-### Important Links
+It is converted into the [Markdown](https://en.wikipedia.org/wiki/Markdown) language by software called [pandoc](https://en.wikipedia.org/wiki/Pandoc) and rendered into a variety of file outputs like PDF, word, HTML etc. by the  [`knitr`](https://yihui.org/knitr/) and [`rmarkdown`](https://cran.r-project.org/web/packages/rmarkdown/rmarkdown.pdf) packages.
 
-[RStudio/flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)
+[Markdown](https://en.wikipedia.org/wiki/Markdown) (which has been implemented by many other languages besides R, such as [Perl](https://en.wikipedia.org/wiki/Perl), [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Python](https://en.wikipedia.org/wiki/Python_(programming_language)), [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)), [Ruby](https://en.wikipedia.org/wiki/Ruby_(programming_language)), etc.) is a language of a particular class of programming languages called [lightweight markup languages(LML)](https://en.wikipedia.org/wiki/Lightweight_markup_language). 
 
-[Leaflet](https://rstudio.github.io/leaflet/)
+LMLs have relatively simple and intuative syntax, and are therefore relatively easy to write and read and are converted by software into some type of less human-freindly language to create an ouput document like a PDF or an HTML file.  In fact, multiple output files can be created from the same LML file!
 
-### Metadeta
+In our case we are interested in rendering our markdown document into a website. Thus the code in our R markdown document will be interpreted and converted to html code.
 
-Flexdashboard requires metadeta to work. A good example of what we did can be found on the layout section of the `RStudio/flexdashboard/Home` link included above. 
+Although LMLs tend to be quite similar, here you can see some of the differences in syntax:
+
+```{r, echo = FALSE, out.width= "60%"}
+knitr::include_graphics(here::here("img", "syntax.png"))
+```
+##### [[source]](https://en.wikipedia.org/wiki/Lightweight_markup_language)
+
+See this [book](https://bookdown.org/yihui/rmarkdown/) for more information on working with R markdown files. 
+
+### Flexdashboard Layout
+
+
+There are several important features about the R markdown that the `flexdashboard` package utilizes. 
+
+This metadata specifies the layout and elements of the dashboard.
+
+
+
+
+
+Components within the dashboard must be delinated by using `###` - if you are familiar with markdown notation, this is a level 3 markdown header.
+
+
+
+
+By default dashboards will have a column based layout.
+
+
 
 ### Columns & Rows
 
-In the metadata, we specify whether we want our output to be oriented in rows (left to right) or columns (top to bottom). If I created two plots with columnwise settings, the first plot will be at the top and the second at the bottom. If I do the same thing for rowwise settigns, the first plot will be on the left and the second plot will be on the right. Each time we specify a new column or row, the output is shown in this way in a specific column/row. See `Multiple Columns` and `Row Orientation` on the `RStudio/flexdashboard/Home` link included above for an example. 
+In the metadata, we specify whether we want our output to be oriented in rows (left to right) or columns (top to bottom). 
 
-We specify a column/row with this.
+If we create two plots with columnwise settings, the first plot will be at the top and the second at the bottom.
+
+If we create two plots with rowwise settigns, the first plot will be on the left and the second plot will be on the right. 
+
+Each time we specify a new column or row, the output is shown in this way in a specific column/row. 
+
+See `Multiple Columns` and `Row Orientation` on the `RStudio/flexdashboard/Home` link included above for an example. 
+
+To specify a column or row we can use a dashed line like so:
 
 ```
 -------------------------------------
@@ -1249,7 +1395,7 @@ orientation: columns is the default from my understanding.
 
 You need to specify orientation: rows if you want rowwise orientation
 
-You can add tabsets to columns/rows with: 
+To add tabsets to columns/rows we can use the following: 
 
 ```
 Column {.tabset}
@@ -1260,6 +1406,8 @@ See the Tabsets section on `RStudio/flexdashboard/Using` for clear examples of h
 ### Graphics & Titles
 
 Most plots can be plotted by specifying a title chunk with the title specified.
+
+avocado clarify
 
 ### Shiny
 
@@ -1298,6 +1446,31 @@ If the title is unspecified...
 the graphics will be recognized but no title will be shown for that particular graphic.
 
 `fig-width` and `fig.height` operate in the code chunk options. 
+
+
+## RA NOTES
+
+
+Consult this document for a general overview:
+
++ case-study-structure-MO-notes
+
+There are several datasets involved in this case study
+
++ Raw dataset (raw_data/K-12 SSDB (Public) - K-12 SSDB (Public) Linked.csv)
++ Geocoded dataset  (processed_data/shooting_data.csv)
++ Wrangled dataset (processed_data/shooting_data_wrangled)
+
+This document uses the geocoded dataset to produce the wrangled dataset.
+
+The wrangled dataset is then used to produce the dashboard in the other document.
+
+
+The goecoding required to produce this case study took approximately 1.5-2 hours on a Macbook Air (2015). 
+
+
+### Metadeta
+
 
 ## RA Code
 
@@ -1351,34 +1524,6 @@ RMarkdown Dashboard Structure
 + Response to Warning Signs
 + Source Code
 
-
-
-
-
-```{r, eval=FALSE}
-shooting_data_geocoded <- read_csv(here("processed_data",
-              "shooting_data.csv"))
-
-shooting_data_geocoded <- shooting_data_geocoded %>%
-  filter(!is.na(longitude),
-         !is.na(latitude)) %>%
-  st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
-  st_transform(crs = 102008) %>%
-  st_jitter(amount = 50) %>%
-  st_transform(crs = 4326) %>%
-  mutate(longitude = st_coordinates(.)[,1],
-         latitude = st_coordinates(.)[,2]) %>%
-  as_tibble() %>%
-  dplyr::select(-geometry)
-
-DT_table <- shooting_data_geocoded %>%
-  dplyr::select(Date,
-                School,
-                City,
-                State,
-                `Narrative (Detailed Summary/ Background)`) %>%
-  rename("Narrative" = `Narrative (Detailed Summary/ Background)`)
-```    
 
 We create the **The Data** page. 
 
