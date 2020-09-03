@@ -84,13 +84,13 @@ Column {data-width=700 .tabset .tabset-fade}
 ### Yearly Deaths
 
 ```{r}
-shooting_data_geocoded_us <- shooting_data_geocoded %>%
+shooting_per_year <- shooting_data_geocoded %>%
     group_by(Date_year) %>%
     count() %>%
     ungroup()
 start <- 1970
 end <- 2020
-shooting_data_geocoded_us %>%
+shooting_per_year %>%
     ggplot(aes(x = Date_year, y = n)) +
     geom_bar(stat = "identity", fill = "black") +
     scale_x_continuous(breaks = seq(start, end, by = 5),

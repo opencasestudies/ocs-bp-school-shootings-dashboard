@@ -362,19 +362,180 @@ str(shooting_data)
 ***
 Luckily, our data is already in pretty good shape, but we want to make our data more useful for our dashboard. 
 
-We are interested in creating a map on our dashboard. 
+### Adding state name
+
+It would be useful to have the full state name in our data, rather than just the abbreviation.
+
+We can do so by using data related to the US 50 states in a dataset called `state` that is automatically loaded with R sessions in the `datasets` package. The `state.abb` object is a list of the state abbreviations and `state.name` is a list of the state names.
+
+```{r}
+state.abb
+state.name
+```
+
+We will combine these using the `tibble()` function of the `tibble()` package. 
+
+```{r}
+state_df <- tibble(State_abb = state.abb, State = state.name)
+
+slice_head(state_df, n= 4)
+```
+
+Now we will combine this with our data using the `left_join()` function of the `dplyr` package. avocado add explanation and join images
+https://dplyr.tidyverse.org/reference/join.html
+
+
+```{r}
+shooting_data %<>%
+  rename("State_abb" = State) %>%
+  left_join(state_df, by = c("State_abb" = "State_abb"))
+```
+
+```{r}
+shooting_data %>%
+  select(School, City, State_abb, State) %>%
+  slice_head(n = 4)
+```
+
+### Reformating dates
+We also want to reformat our date values and create a `Date_year` variable based on the year in each date. We can use the `lubridate` package for this.
+
+The `mdy()` function converts dates into a format where dates are listed as month, date, and year with hyphens in between.
+The `year()` function can then be used to extract just the year from each date.
+
+```{r}
+shooting_data %<>%
+       mutate(Date = lubridate::mdy(Date)) %>%
+  mutate(Date_year = lubridate::year(Date))
+
+shooting_data %>% select(Date, Date_year)
+```
+Looks good!
+
+One last thing to do is to convert `Yes` and `No` values into `TRUE` and `FALSE`.
+
+
+First let's take a look at our data:
+
+#### {.scrollable }
+```{r}
+str(shooting_data)
+
+```
+
+####
+
+We see that many of the varaibles have either `Yes` or `No` values or `Y` and `N` values.  These are the variables that have `Y/N` in the name or the `Targeted Specific Victim(s)`, `Random Victims`, `Pre-planned school attack` variables. We can make these consistently `TRUE` and `FALSE` by using the `case_when()` function of the `dplyr` package. This function allows us to specify new values for existing values, simlarly to the `recode()` function also of `dplyr`. The benefit of the `case_when()` function, is that changing the values to `TRUE` or `FALSE` also results in the class type of the variable changing to type logical (which is interpreted as a binary variable with `TRUE` and `FALSE` values) otherwise, with `recode()` the variables would remain as class type character. 
+
+<details><summary> click here for more details about the differences between `recode()` and case_when()`</summary>
+
+avocado check on these statements  - this does not seem to be true for case_when despite what the documentation says "If no cases match, NA is returned."
+
+Note, that with `recode()` there is the option that other values be recoded to `NA` althought this is not the default, however with `case_when()` other values not explicitly assigned in the case_when() statement will be `NA`. Further more only values can be used on the left side when using `recode()` whereas `case_when()` accepts expressions that need to be evaluated, unless using the `:=` opperator.???
+
+
+***
+
+</details>
+
+avocado add links about this/ maybe add /check if we already added the class type stuff from the other case studies - indeed casewhen in other cases seems to automatically make all other cases NA but was that the case here?
+
+To implement the `case_when()` recoding of values, the exisiting values are written on the left of the `~` sign (quotation marks necessary) and new values are written on the right (quotations marks are not necessary as these are `TRUE` and `FALSE` statments). We will also use the `across()` function of the `dplyr` package and the `matches()` function of the `tidyselect` packge to allow us to apply this to all of the variables that have a pattern that that matches any of those of the variables we want to change. The `|` symbol is interpreted as an or, thus any variables that has a name that matches any of these patterns will be changed. fThe `across()` function then applies the `case_when()` function to all of these variables. Notice that the `~` symbol is necessary before the funtion that is applied using `across()`.
+```{r}
+
+DT::datatable(shooting_data)
+```
+
+
+```{r}
+
+shooting_data %>% filter(`Targeted Specific Victim(s)` == "No victoms")
+
+shooting_data%>% select(matches("Y/N|Specific|Random|Pre-planned"))
+
+shooting_data %<>%
+       mutate(dplyr::across(.cols = matches("Y/N|Specific|Random|Pre-planned"),
+                    ~ dplyr::case_when(. == "Yes" ~ TRUE,
+                                         .== "No" ~ FALSE,
+                                          .== "Y" ~ TRUE,
+                                          .== "N" ~ TRUE)))
+
+shooting_data %>% select(matches("Y/N|Specific|Random|Pre-planned"))
+
+shooting_data %>% filter(`Targeted Specific Victim(s)` == "No victoms")
+```
+
+
+
+#### {.scrollable }
+```{r}
+str(shooting_data)
+
+```
+
+####
+
+Looks good!
+
+
+
+from Michael:
+```{r, eval = FALSE}
+shooting_data_geocoded <- read_csv(here("processed_data",
+              "shooting_data.csv"))
+shooting_data_geocoded <- shooting_data_geocoded %>%
+  filter(!is.na(longitude),
+         !is.na(latitude)) %>%
+  sf::st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
+  
+  st_transform(crs = 102008) %>%
+  st_jitter(amount = 50) %>%
+  st_transform(crs = 4326) %>%
+  mutate(longitude = st_coordinates(.)[,1],
+         latitude = st_coordinates(.)[,2]) %>%
+  as_tibble() %>%
+  dplyr::select(-geometry)
+
+state_df <- as_tibble(cbind(state.abb, state.name))
+
+shooting_data_geocoded <- shooting_data_geocoded %>%
+  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
+  mutate(Date_year = year(Date)) %>%
+  rename("State_abb" = State) %>%
+  left_join(state_df, by = c("State_abb" = "state.abb")) %>%
+  rename("State" = state.name) %>%
+  mutate(State = str_to_title(tolower(State))) %>%
+  mutate(`Suicide (or attempted suicide) by Shooter (Y/N)` = case_when(`Suicide (or attempted suicide) by Shooter (Y/N)` == "Yes" ~ TRUE,
+                                                                       TRUE ~ FALSE))
+
+start <- 1970
+end <- 2020
+
+write_csv(shooting_data_geocoded, path = here("processed_data",
+                                              "shooting_data_wrangled.csv"))
+
+rm(shooting_data_geocoded)
+
+shooting_data_geocoded <- read_csv(here("processed_data",
+                                        "shooting_data_wrangled.csv"))
+```
+
+
+
+
+We are also interested in creating a map on our dashboard. 
 
 To do so we need to perform a process called [geocoding](https://en.wikipedia.org/wiki/Geocoding). Geocoding is the process of converting addresses into latitude and longtitude coordinates.
 
-### Geocoding with the `ggmap` oackage
+### Geocoding with the `ggmap` package
 
 To peform the geocoding we need the address of each school in the data set. The data currently does not list the actual address, but does have information about the school where the event occured. Since some schools have the same name, we need the city and state data as well. So we will create a new variable in our data called `address` using the `mutate()` function of the `dplyr` package. This variable will collapse the values in the `School`, `City`, and `State` columns but with spaces in between. It is specified that there will be space in between by the `sep = " "` argument. Note that a space is typed between the quotation marks. Then we can use the address variable to look up the latitude and longtitude for each school.
 
 
 ```{r}
-shooting_data <- shooting_data %>%
+shooting_data %<>%
   dplyr::mutate(address = 
-          stringr::str_c(School, City, State, sep = " "))
+          stringr::str_c(School, City, State_abb, sep = " "))
 
 ```
 
@@ -396,7 +557,7 @@ We can take a look at just this new `address` variable using the `pull()` functi
 
 #### {.scrollable }
 ```{r}
-shooting_data %>%
+shooting_data %<>%
   dplyr::pull(address)
 ```
 #### 
@@ -435,8 +596,11 @@ Note that this step is time intensive, as there are many addresses to look up! T
 ```{r, eval=FALSE}
 
 shooting_data <- shooting_data %>%
-  mutate(coords = ggmap::geocode(address, output = c("latlon"),
-                         source = c("google")))
+  mutate(coords = ggmap::geocode(address, output = c("latlon"), source = c("google")))
+
+readr::write_csv(shooting_data, path = here("processed_data",
+                              "shooting_data_geo.csv"))
+
 ```
 
 This results in tibble called `coords` being added to our `shooting_data` tibble. That's right we can have a tibble as a column or variable within a tibble.   Using the `glimpse` function again, and looking at the last few variables, we can see that now the last variable listed is `coords` of class `<tibble>`.
@@ -446,12 +610,6 @@ knitr::include_graphics(here::here("img", "shooting_data_coords.png"))
 ```
 
 If we take a look at the first couple of values of the `coords` tibble, using the `slice_head()` function of the dplyr package, we see a tibble that looks like this:
-
-```{r, eval = FALSE}
-test %>%
- pull(coords) %>%
- dplyr::slice_head(n = 2)
-```
 
 
 ```{r,echo = FALSE, out.width="30%"}
@@ -491,7 +649,8 @@ This requires listing the R object, followed by the path for where the file shou
 
 ```{r, eval = FALSE} 
 readr::write_csv(shooting_data, path = here("processed_data",
-                              "shooting_data.csv"))
+                              "shooting_data_geo.csv"))
+
 ```
 
 
@@ -500,7 +659,14 @@ Great now we will work with this data, thus you do not need to get an API key to
 ```{r}
 
 shooting_data_geocoded <- read_csv(here("processed_data",
-              "shooting_data.csv"))
+              "shooting_data_geo.csv"))
+```
+
+
+Need to join our wrangled data with the lat/long data 
+```{r, eval = FALSE}
+
+inner_join(shooting_data_geocoded, shooting_data, by = c("Narrative (Detailed Summary/ Background)" = "Narrative (Detailed Summary/ Background)" ))
 ```
 
 
@@ -518,12 +684,14 @@ The first thing we need to do is create an sf object (meaning an object that the
 
 However, to do this we first need to remove rows with `NA` values for the `latitude` and `longitude` variables. In otherwords, we need to remove rows of events that happened at schools with locations that were not identified by google. We can remove this rows using the `drop_na()` function of the `tidyr` package. We will use a `.` to indicate that we want to use the data that we are using as an input with our pipe, but then we will specify that we want to only drop rows were there is an `NA` value for either the `latitude` or `longitude` variables.
 
+
 ```{r}
 dim(shooting_data_geocoded)
 
-shooting_data_geocoded %>% filter(is.na(latitude )) %>%select(matches(c("long", "lat", "add")))
+shooting_data_geocoded %>% filter(is.na(latitude)) %>%select(matches(c("long", "lat", "add")))
+```
 
-
+```{r}
 
 #using previous method:
 # shooting_data_geocoded <- shooting_data_geocoded %>%
@@ -532,21 +700,21 @@ shooting_data_geocoded %>% filter(is.na(latitude )) %>%select(matches(c("long", 
 #using magrittr %<>% compound assignment pipe-operator
 shooting_data_geocoded %<>%
  tidyr::drop_na(., c(latitude, longitude))
+```
 
-
-
+```{r, eval = FALSE}
 dim(shooting_data_geocoded)
 
 cols_to_select <-c("School","Date","State", "City", "Narrative (Detailed Summary/ Background)", "Killed (includes shooter)")
 
 setdiff(select(shooting_data, cols_to_select),
         select(shooting_data_geocoded, cols_to_select))
+```
 
+```{r, eval = FALSE}
 different <-setdiff(shooting_data[1:48], shooting_data_geocoded[1:48])
 
 diff_narrative<-setdiff(shooting_data$`Narrative (Detailed Summary/ Background)`, shooting_data_geocoded$`Narrative (Detailed Summary/ Background)`)
-
-
 
 ```
 
@@ -578,7 +746,7 @@ shooting_data_geocoded[1:4]
 ```
 
 
-Now to allow our points to have a bit more range so that they don't overlap one another on our map, we will transform the coordinates using the `st_transform()` function  of the `sf` package into a two dimensional projection (called the [Albers equal-area conic projection](https://en.wikipedia.org/wiki/Albers_projection#:~:text=The%20Albers%20equal%2Darea%20conic,that%20uses%20two%20standard%20parallels.&text=The%20Albers%20projection%20is%20used,the%20United%20States%20Census%20Bureau.)) with units in meters using the [crs 102008](https://spatialreference.org/ref/esri/102008/html/) and then use the `st_jitter()` of the `sf` package function
+Now to allow our points to not overlap for events that took place in the same location, we will add a bit more range so that they don't overlap one another on our map, we will transform the coordinates using the `st_transform()` function  of the `sf` package into a two dimensional projection (called the [Albers equal-area conic projection](https://en.wikipedia.org/wiki/Albers_projection#:~:text=The%20Albers%20equal%2Darea%20conic,that%20uses%20two%20standard%20parallels.&text=The%20Albers%20projection%20is%20used,the%20United%20States%20Census%20Bureau.)) with units in meters using the [crs 102008](https://spatialreference.org/ref/esri/102008/html/) and then use the `st_jitter()` of the `sf` package function
 to allow a specified amount of range near the actual original GPS coordinates. In this case we will allow for 50 meters of range.
 
 To learn more about geospatial coordinate systems see [here](https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf) and [here](https://guides.library.duke.edu/r-geospatial/CRS).
@@ -662,129 +830,8 @@ original_shooting_data_geocoded <- read_csv(here("processed_data",
 
 original_shooting_data_geocoded %>%select(longitude, latitude) %>% slice_head(n = 4)
 ```
-### Adding state name
-
-Now we will add the full state name to the data using data related to the US 50 states in a dataset called `state` that is automatically loaded with R sessions in the `datasets` package. The `state.abb` object is a list of the state abbreviations and `state.name` is a list of the state names.
-
-```{r}
-state.abb
-state.name
-```
-
-We will combine these using the `tibble()` function of the `tibble()` package. 
-
-```{r}
-state_df <- tibble(state.abb, state.name)
-
-slice_head(state_df, n= 4)
-```
-
-Now we will combine this with our data using the `left_join()` function of the `dplyr` package. avocado add explanation and join images
-
-```{r}
-shooting_data_geocoded %<>%
-  rename("State_abb" = State) %>%
-  left_join(state_df, by = c("State_abb" = "state.abb")) %>%
-  rename("State" = state.name)
-```
-
-```{r}
-shooting_data_geocoded %>%
-  select(School, City, State_abb, State) %>%
-  slice_head(n = 4)
-```
-
-### Reformating dates
-We also want to reformat our date values and create a `Date_year` variable based on the year in each date. We can use the `lubridate` package for this.
-
-The `mdy()` function converts dates into a format where dates are listed as month, date, and year with hyphens in between.
-The `year()` function can then be used to extract just the year from each date.
-
-```{r}
-shooting_data_geocoded %<>%
-       mutate(Date = lubridate::mdy(Date)) %>%
-  mutate(Date_year = lubridate::year(Date))
-
-shooting_data_geocoded %>% select(Date, Date_year)
-```
-Looks good!
-
-One last thing to do is to convert `Yes` and `No` values into `TRUE` and `FALSE`.
 
 
-First let's take a look at our data:
-
-#### {.scrollable }
-```{r}
-str(shooting_data_geocoded)
-
-```
-
-####
-
-We see that many of the varaibles have either `Yes` or `No` values or `Y` and `N` values.  These are the variables that have `Y/N` in the name or the `Targeted Specific Victim(s)`, `Random Victims`, `Pre-planned school attack` variables. We can make these consistently `TRUE` and `FALSE` by using the `case_when()` function of the `dplyr` package. This function allows us to specify new values for existing values, simlarly to the `recode()` function also of `dplyr`. The benefit of the `case_when()` function, is that changing the values to `TRUE` or `FALSE` also results in the class type of the variable changing to type logical (which is interpreted as a binary variable with `TRUE` and `FALSE` values) otherwise, with `recode()` the variables would remain as class type character. 
-
-<details><summary> click here for more details about the differences between `recode()` and case_when()`</summary>
-
-avocado check on these statements  - this does not seem to be true for case_when despite what the documentation says "If no cases match, NA is returned."
-
-Note, that with `recode()` there is the option that other values be recoded to `NA` althought this is not the default, however with `case_when()` other values not explicitly assigned in the case_when() statement will be `NA`. Further more only values can be used on the left side when using `recode()` whereas `case_when()` accepts expressions that need to be evaluated, unless using the `:=` opperator.???
-
-
-***
-
-</details>
-
-avocado add links about this/ maybe add /check if we already added the class type stuff from the other case studies - indeed casewhen in other cases seems to automatically make all other cases NA but was that the case here?
-
-To implement the `case_when()` recoding of values, the exisiting values are written on the left of the `~` sign (quotation marks necessary) and new values are written on the right (quotations marks are not necessary as these are `TRUE` and `FALSE` statments). We will also use the `across()` function of the `dplyr` package and the `matches()` function of the `tidyselect` packge to allow us to apply this to all of the variables that have a pattern that that matches any of those of the variables we want to change. The `|` symbol is interpreted as an or, thus any variables that has a name that matches any of these patterns will be changed. fThe `across()` function then applies the `case_when()` function to all of these variables. Notice that the `~` symbol is necessary before the funtion that is applied using `across()`.
-
-```{r}
-
-shooting_data_geocoded %>% filter(`Targeted Specific Victim(s)` == "No victoms")
-
-shooting_data_geocoded %>% select(matches("Y/N|Specific|Random|Pre-planned"))
-
-shooting_data_geocoded %<>%
-       mutate(dplyr::across(.cols = matches("Y/N|Specific|Random|Pre-planned"),
-                    ~ dplyr::case_when(. == "Yes" ~ TRUE,
-                                         .== "No" ~ FALSE,
-                                          .== "Y" ~ TRUE,
-                                          .== "N" ~ TRUE)))
-
-shooting_data_geocoded %>% select(matches("Y/N|Specific|Random|Pre-planned"))
-
-shooting_data_geocoded %>% filter(`Targeted Specific Victim(s)` == "No victoms")
-```
-
-```{r}
-shooting_data_geocoded %>% select(matches("Y/N|Specific|Random|Pre-planned"))
-```
-
-
-```{r, eval = FALSE}
-shooting_data_geocoded %>%
-      mutate(dplyr::across(.cols = where(is.character), ~ dplyr::recode(.,
-                      Yes = "TRUE",
-                       No = "FALSE",
-                        Y = "TRUE",
-                        N = "TRUE"))) %>%
- mutate(dplyr::across(.cols = where(is.character), ~ as.logical(.)))
-
-
-shooting_data_geocoded %>%
-       mutate(dplyr::across(.cols = where(is.character) & n_distinct(.) <=2, ~ (dplyr::case_when(. == "Yes" ~ TRUE,
-                       .== "No" ~ FALSE,
-                        .== "Y" ~ TRUE,
-                       .== "N" ~ TRUE))))
-
-#where(is.character & n_distinct(.)<2)
-
-shooting_data_geocoded %>%
-       mutate(dplyr::across(.cols = where(is.character) & contains("Y/N|Specific|Random"), ~ (dplyr::case_when(. == "Yes" ~ TRUE))))
-              
-
-```
 
 
 #### {.scrollable }
@@ -799,7 +846,10 @@ Looks good!
 
 Now we will save our wrangled data, again using `write_csv()`.
 
-```{r}
+```{r, eval = FALSE}
+
+readr::write_csv(shooting_data, path = here("processed_data",
+                              "shooting_data_pre_geo_wrangled.csv"))
 write_csv(shooting_data_geocoded, path = here("processed_data",
                                  "shooting_data_wrangled.csv"))
 ```
@@ -859,6 +909,8 @@ INTRODUCE `flexdashboard`
 First let's load the data by reading in our wrangled version of the data.
 
 ```{r}
+shooting_data <- read_csv(here("processed_data",
+                                        "shooting_data.csv"))
 
 shooting_data_geocoded <- read_csv(here("processed_data",
                                         "shooting_data_wrangled.csv"))
