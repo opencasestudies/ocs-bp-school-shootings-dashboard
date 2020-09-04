@@ -1107,6 +1107,8 @@ per_year %>%
 
 Now let's make another plot of the cumulative deaths each year including those of the previous years. In this case we can use the `shooting_per_year` object that we previously made. We want to add a new variable using the `mutate` function called `n_cum_sum` by using the `cumsum()` function to calculate a cumulative sum based on the yearly count. 
 
+avocado explain pivot longer
+
 ```{r}
 
 shootings_per_year
@@ -1218,17 +1220,21 @@ library(ggforce)
 shooting_data %>%
     ggplot(aes(x = `Killed (includes shooter)`)) +
     geom_bar(fill = "black") +
-  # scale_x_continuous(breaks = seq(0,10, by = 1),
-  #                    labels = seq(0,10, by = 1),
+   scale_x_continuous(breaks = seq(0, max(pull(shooting_data, `Killed (includes shooter)`)), by = 1),
+                      labels = seq(0, max(pull(shooting_data, `Killed (includes shooter)`)), by = 1))+
   #                    limits = c(-1,10)) +
-ggforce::facet_zoom(xlim = c(3, max(pull(shooting_data, `Killed (includes shooter)`))), ylim = c(0,30))+
+ggforce::facet_zoom(xlim = c(4, max(pull(shooting_data, `Killed (includes shooter)`))), ylim = c(0,20))+
 theme_minimal() +
     labs(title = "Deaths per School Shooting",
          subtitle = "United States",
          x = "Deaths per shooting",
-         y = "Number of shootings")
+         y = "Number of events with given number of deaths")+
+  theme(axis.text.x = element_text(angle = 90))
 ```
 
+This is still a bit difficult to interpret. Let's try some other options.
+
+The `geom_freqpoly()` function creates a graph that makes it very easy to see that most shootings result in zero or one death and that the maximum number of deaths in this data for a single event is in the upper twenties. 
 ```{r}
 
 shooting_data %>%
@@ -1236,40 +1242,119 @@ shooting_data %>%
     geom_freqpoly()
 ```
 
+This really shows that most shooting events luckily result in no deaths, but what are the actual proportions. One way to look at this is to calucate the percentage of events that resulted in each number of deaths. 
+
 ```{r}
 deaths_perc_event <-shooting_data %>%
    count(`Killed (includes shooter)`) %>%
   rename("num_events"= n) %>%
    mutate(percent = (num_events/sum(num_events)*100))
 
-greater_than4<-deaths_perc_event %>% filter(`Killed (includes shooter)` >=4) %>% colSums()
+deaths_perc_event
+
+deaths_perc_event %>%
+  ggplot(aes(x =`Killed (includes shooter)` , y = percent)) +
+    geom_col()
+```
+
+Ok, this is easier to interpret than the raw count values. We can see that greater than 60% of the events had no deaths. It is however, still a bit difficult to interpret.
+
+So now, we will also collapse the events that resulted in 4 or more deaths together and we will create a pie chart which you are likely familiar with as well as alternative plot called a waffle plot.
+
+
+First to collapse the percentage for the events that had 4 or more deaths, we need to do a bit of wrangling.
+
+We will start with filtering the data to only these events and then we will sum  each of the columns using the base `colSums()` function with the goal of creating a new row in the `deaths_perc_event` object that will contain information about all events with 4 or more deaths.
+
+```{r}
+greater_than4<-deaths_perc_event %>% 
+  filter(`Killed (includes shooter)` >= 4) %>% 
+  colSums()
+
 greater_than4
 
-deaths_perc_event %<>%  bind_rows(greater_than4) %>% mutate(category = paste(`Killed (includes shooter)`, "deaths")) 
+```
+Good, now we know the overall percentage for the events that unforuntately resulted in a larger number of deaths. 
 
+Now we can combine this with the rest of our data using the `bind_rows()` function of the `dplyr` package.
+
+```{r}
+deaths_perc_event %<>%  bind_rows(greater_than4)
+
+deaths_perc_event 
+```
+
+Now we want to add a new variable so that it is easy to plot and interpet the number of deaths for each percentage. We will simply add the word "deaths" to each value in the `Killed (includes shooter)` variable using the base `paste()` function. Note that this function automatically will result in a space between pasted elements. If you didnt want a space you could specify for example an underscore using the `sep` argument. 
+
+```{r}
+deaths_perc_event %<>% mutate(category = paste(`Killed (includes shooter)`, "deaths")) 
+
+deaths_perc_event
+```
+
+We would like to change the value for the last row about the events that resulted in 4+ deaths. 
+
+We can use the `last()` function of the `dplyr` package combined with the `pull()` function to specifically grab this value.
+
+```{r}
 last(pull(deaths_perc_event, category))
 
-# deaths_perc_event %<>% mutate(category= recode(category, "85 deaths" = "4+deaths"))
+```
 
-deaths_perc_event %<>% mutate(category= case_when(category ==  last(pull(deaths_perc_event, category)) ~ "4+deaths", TRUE ~category ))
 
-library(waffle)
+Now we can use the `case_when()` function yet again to change this value. Note that we could have used a stringr function to replace the specific value of "85 deaths", but this would not be reproducible. Say we used this code again after the data got updated. Then there may be more deaths in this category and therefore this value would no longer be "85 deaths". Instead, by using `case_when()`, we can use an expression for the last value of the `deaths_perc_event` tibble and replace that, regardless of what the value is, with "4+deaths". Recall that `case_when()` replaces all other values that are not specified with `NA`. We do not want to lose the other values for the `category` variable. So to avoid this, we  assign each of the values that are not the last value to what they currently are for the `category` variable, using `TRUE ~ category`.
 
-deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
-  filter(percent>.5) %>%
-  mutate(percent = round(percent)) %>%
-  select(-num_events) %>%
-  pivot_wider(names_from = category, values_from = percent) %>%
-  waffle( 
-          legend_pos = "bottom") +  scale_fill_viridis_d()
+```{r}
+deaths_perc_event %<>% 
+  mutate(category = case_when(
+    category ==  last(pull(deaths_perc_event, category)) ~ "4+ deaths",
+    category == "1 deaths" ~ "1 death",
+    TRUE ~ category))
 
-#colors = c("grey54", "black", "red","grey77", "#009bda" ),
+deaths_perc_event
+```
+
+Looks as we hoped. Ok, now we are ready to make more plots. 
+
+First we will start with the pie chart. This is a bit of a controversial type of plot. However, it can be very useful when you are actually looking at percentages and the goal is to see major trends in the data, such as all the groups are roughly equal or one group is particularly larger than the rest. When this is the case and you are presenting the data to an audiance that is less familiar with data science, they may expect to see a pie chart. Thus it is useful to know how to make one. However, in most other cases pie charts do a poor job at allowing us to see more subtle differences, and they are particularly confusing when we are not looking at proportions but raw counts. In those cases it is better to use a bar chart as we have already done. 
+
+There is no `geom_*` function that allows you to create a pie chart directly. Instead we will create our bar plot as we have and then use the `coord_polar()` function to wrap our y axis into a circular shape.
+
+```{r}
 deaths_perc_event %>%
   filter(percent>0.5) %>%
     ggplot(aes(x = "", y = percent, fill = category)) +
-    geom_bar(stat = "identity", color = "black") +
-    coord_polar("y", start = 0) + scale_y_continuous(breaks= NULL)+
-  scale_fill_viridis_d()
+  # adding color here adds a black outline
+    geom_col(color = "black") +
+    coord_polar("y", start = 0) +
+  scale_y_continuous(breaks= NULL)+
+  theme_minimal()+
+  theme(axis.title = element_blank())+
+  scale_fill_viridis_d()+
+  labs(title = "Percentages of school shooting deaths\n(including the shooter)")
+
+```
+
+This is actually a fairly easy plot to interpret. We can see that most events resulted in zero deaths and that the next largest proportion resulted in one death, while a sizable but small proportion resulted in two deaths. A very small proportion resulted in three or four or more deaths.
+
+Now we will also create a waffle plot. This plot offers one advantage over the pie chart, in that it also allows for easier interpretation of more subtle proportion differences while also showing big picture differences in efficent manner. 
+
+This requires that the data be in wide format. Thus we need to use `pivot_wider()` of the `tidyr` package to do so.
+
+```{r}
+library(waffle)
+
+deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
+  filter(category %in% c("0 deaths", "1 death", "2 deaths", "3 deaths", "4+ deaths")) %>%
+  mutate(percent = round(percent)) %>%
+  select(-num_events) %>%
+  tidyr::pivot_wider(names_from = category, 
+                    values_from = percent) %>%
+  waffle::waffle(legend_pos = "bottom") +  scale_fill_viridis_d()
+  
+
+#colors = c("grey54", "black", "red","grey77", "#009bda" ),
+
 
 ```
 
@@ -1280,7 +1365,7 @@ OK, now we are ready to make our dashboard!
 
 
 ### Dashboard packages
-To make our dashboard we will use 3 very useful packages:
+To make our dashboard we will use three very useful packages:
 
 1) [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)
 
@@ -1314,13 +1399,13 @@ See [here](https://rmarkdown.rstudio.com/flexdashboard/using.html#components) fo
 
 ***
 
-### Rmarkdown
+### R Markdown
 
-The case study that you are reading right now was created using an [R markdown document](https://rmarkdown.rstudio.com/). This means that it is a document that uses the `Markdown` language. 
+The case study that you are reading right now was created using an [R Markdown document](https://rmarkdown.rstudio.com/). This means that it is a document that uses the `Markdown` language syntax. 
 
 In fact if you click the button that says "code" on the upper right corner you will download the [R Markdown](https://rmarkdown.rstudio.com/articles_intro.html#:~:text=R%20Markdown%20is%20a%20file,code%2C%20like%20the%20document%20below.) document for this case study. 
 
-[R Markdown](https://rmarkdown.rstudio.com/articles_intro.html#:~:text=R%20Markdown%20is%20a%20file,code%2C%20like%20the%20document%20below.) is a file format that contains markdown sytax and embedded R code (it can also incoperate code from some other languages like [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) and [SQL](https://en.wikipedia.org/wiki/SQL)).
+[R Markdown (Rmd)](https://rmarkdown.rstudio.com/articles_intro.html#:~:text=R%20Markdown%20is%20a%20file,code%2C%20like%20the%20document%20below.) is a file format that contains Markdown sytax and embedded R code (it can also incoperate code from some other languages like [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) and [SQL](https://en.wikipedia.org/wiki/SQL)).
 
 
 
@@ -1334,84 +1419,132 @@ embed_url("https://vimeo.com/178485416") %>%
 
 ##### [[source]](https://rmarkdown.rstudio.com/lesson-1.html) 
 
-It is converted into the [Markdown](https://en.wikipedia.org/wiki/Markdown) language by software called [pandoc](https://en.wikipedia.org/wiki/Pandoc) and rendered into a variety of file outputs like PDF, word, HTML etc. by the  [`knitr`](https://yihui.org/knitr/) and [`rmarkdown`](https://cran.r-project.org/web/packages/rmarkdown/rmarkdown.pdf) packages.
+These Rmd files are rendered into a variety of file outputs like PDF, word, HTML etc. by the  [`knitr`](https://yihui.org/knitr/) and [`rmarkdown`](https://cran.r-project.org/web/packages/rmarkdown/rmarkdown.pdf) packages.
 
-[Markdown](https://en.wikipedia.org/wiki/Markdown) (which has been implemented by many other languages besides R, such as [Perl](https://en.wikipedia.org/wiki/Perl), [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Python](https://en.wikipedia.org/wiki/Python_(programming_language)), [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)), [Ruby](https://en.wikipedia.org/wiki/Ruby_(programming_language)), etc.) is a language of a particular class of programming languages called [lightweight markup languages(LML)](https://en.wikipedia.org/wiki/Lightweight_markup_language). 
+This relies on conversion of the Rmd file into the [Markdown](https://en.wikipedia.org/wiki/Markdown) language by software called [Pandoc](https://en.wikipedia.org/wiki/Pandoc).
+
+[Markdown](https://en.wikipedia.org/wiki/Markdown) (which has been implemented by many languages, such as [Perl](https://en.wikipedia.org/wiki/Perl), [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Python](https://en.wikipedia.org/wiki/Python_(programming_language)), [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)), [Ruby](https://en.wikipedia.org/wiki/Ruby_(programming_language)), etc.) is a language of a particular class of programming languages called [lightweight markup languages(LML)](https://en.wikipedia.org/wiki/Lightweight_markup_language). 
 
 LMLs have relatively simple and intuative syntax, and are therefore relatively easy to write and read and are converted by software into some type of less human-freindly language to create an ouput document like a PDF or an HTML file.  In fact, multiple output files can be created from the same LML file!
 
-In our case we are interested in rendering our markdown document into a website. Thus the code in our R markdown document will be interpreted and converted to html code.
+In our case we are interested in rendering our Rmd document into a website. Thus the code in our R Markdown document will be interpreted and converted ultimately into html code.
 
 Although LMLs tend to be quite similar, here you can see some of the differences in syntax:
 
-```{r, echo = FALSE, out.width= "60%"}
+```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "syntax.png"))
 ```
+
 ##### [[source]](https://en.wikipedia.org/wiki/Lightweight_markup_language)
 
-See this [book](https://bookdown.org/yihui/rmarkdown/) for more information on working with R markdown files. 
+See this [book](https://bookdown.org/yihui/rmarkdown/) for more information on working with R Markdown files. 
 
-### Flexdashboard Layout
+The RStudio [cheatsheet for R Markdown](file:///Users/carriewright/Downloads/rmarkdown-2.0%20(1).pdf) and this [tutorial](https://ourcodingclub.github.io/tutorials/rmarkdown/) are great for getting started. 
+
+avocado- how do you feel about including this tutorial - it is very good - and not code academy- but I am not familiar with the coding club but they seem like a nice group 
+
+
+### Flexdashboard
 
 
 There are several important features about the R markdown that the `flexdashboard` package utilizes. 
 
-This metadata specifies the layout and elements of the dashboard.
+These are used to specify the layout and elements of the dashboard.
 
+Here are some major R markdown features to keep in mind for `flexdashboard`
 
+1) The beginning of an R markdown document is what is called the [YAML](https://en.wikipedia.org/wiki/YAML) header. This is delinated by `---` three dashmarks before and after the header YAML code.
 
-
-
-Components within the dashboard must be delinated by using `###` - if you are familiar with markdown notation, this is a level 3 markdown header.
-
-
-
-
-By default dashboards will have a column based layout.
-
-
-
-### Columns & Rows
-
-In the metadata, we specify whether we want our output to be oriented in rows (left to right) or columns (top to bottom). 
-
-If we create two plots with columnwise settings, the first plot will be at the top and the second at the bottom.
-
-If we create two plots with rowwise settigns, the first plot will be on the left and the second plot will be on the right. 
-
-Each time we specify a new column or row, the output is shown in this way in a specific column/row. 
-
-See `Multiple Columns` and `Row Orientation` on the `RStudio/flexdashboard/Home` link included above for an example. 
-
-To specify a column or row we can use a dashed line like so:
-
-```
--------------------------------------
+Like so:
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "yaml.png"))
 ```
 
-It does not matter whether you write column/row above that. The only thing that matters is the orientation set-up in the metadeta. 
+##### [[source]](https://ourcodingclub.github.io/tutorials/rmarkdown/)
 
-orientation: columns is the default from my understanding.
+[YAML](https://en.wikipedia.org/wiki/YAML) is yet another language, but unlike Markdown it is a data-oriented language and is often used for the [configuration](https://en.wikipedia.org/wiki/Configuration_file) of software or to set up how a software program should work.
 
-You need to specify orientation: rows if you want rowwise orientation
+Thus whatever code you put in the YAML header will inclufuence the rest of the document and essentially set up how the R markdown document will render. In the example the type of output is specified.
 
-To add tabsets to columns/rows we can use the following: 
+But other more complicated features can be included. For example, we can specify that we are creating a dashboard with flexdashboard and we can specify how we want the layout of our dashboard to be displayed like so:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "yaml_dashboard.png"))
+```
+
+##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)
+
+We will describe this in more detail soon.
+
+2) Components within the dashboard are delinated by using `###` - if you are familiar with markdown notation, this is a level 3 markdown header.
+
+This can include text or not
+
+
+3) To  include a plot or any output from R, use the following syntax:
+`"```{r}"` on it's own line followed by your code, followed by `"```"`. This creates what is called a code chunk.
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "code_chunk.png"))
+```
+
+##### [[source]](https://ourcodingclub.github.io/tutorials/rmarkdown/)
+
+4) To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modifed to specify to create rows, than this same sytnax will be used to create rows.
+
+### Layout
+
+#### Adding Columns
+
+To add multiple columns the following syntax is used `---------` for each  column and nothing additional is required in the header.
+
+Additional features about the columns, such as the width can be specified using brackets`{}`like in the example below. Note that the word `Column` isn't necessary. In this example two columns are created that will be oriented next to one another and elements within the columns will be placed top to bottom. 
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "columns.png"))
+```
+
+##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)
+
+
+#### Adding Rows
+To add multiple rows - the yaml needs to state that the orientation is for rows instead of for columns (see the image below),  and then the same syntax is used `---------`  for each row instead of columns. In this example two rows are created that will be oriented on top of one another and elements within the rows will be placed next to eachother.
+
+Again the word `Row` is not actually necessary.
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "rows.png"))
+```
+
+##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)
+
+See [here](https://rmarkdown.rstudio.com/flexdashboard/layouts.html) for template options.
+
+
+##### Tabs
+
+To add tabs columns/rows we can use the following: 
 
 ```
 Column {.tabset}
 ```
 
-See the Tabsets section on `RStudio/flexdashboard/Using` for clear examples of how this can be done.
+Here is an example, where two columns are created and then two tabs are added to the second column.
 
-### Graphics & Titles
-
-Most plots can be plotted by specifying a title chunk with the title specified.
-
-avocado clarify
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "tab.png"))
+```
 
 ### Shiny
 
-Shiny can be used with `flexdashboard`. Coding with packages that have shiny functionality requires shiny-specific code is shiny is enabled. In our case, shiny is enabled. Packages such as `DT` or `Leaflet` may operate differently as a result. 
+Interactive elements can be added to flexdashboards. In our dashboard we will use packages such as `DT` and `Leaflet` that have shiny functionality. This requires that shiny is enabled in the YAML header by including `runtime:shiny` in the YAML.
+
+Here is an example of a YML that includes this:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "shiny_yml.png"))
+```
+
 
 ### Leaflet
 
@@ -1468,8 +1601,6 @@ The wrangled dataset is then used to produce the dashboard in the other document
 
 The goecoding required to produce this case study took approximately 1.5-2 hours on a Macbook Air (2015). 
 
-
-### Metadeta
 
 
 ## RA Code
