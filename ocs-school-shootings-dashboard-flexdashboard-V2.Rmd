@@ -5,10 +5,12 @@ output:
     logo: https://icons.iconarchive.com/icons/icons8/windows-8/48/Military-Gun-icon.png
     theme: readable
     orientation: columns
-    source: embed
+    source_code: embed
     vertical_layout: fill
 runtime: shiny
 ---
+
+
 
 ```{r}
 library(here)
@@ -32,6 +34,7 @@ The Data {data-icon="fa-database"}
 ===================================== 
 
 ```{r, echo=FALSE}
+# Create the DT table first
 DT_table <- shooting_data_geocoded %>%
   dplyr::select(Date,
                 School,
@@ -61,8 +64,8 @@ DT::renderDataTable({
                     div(HTML('<a href="https://www.chds.us/ssdb/dataset/)">Click here to be redirected to a page where this data can be downloaded.</a>')))),
                 options = list(autoWidth = TRUE,
                                pageLength = 10,
-                               scroller = TRUE,
-                               scrollY = '450px'))
+                               scroller = TRUE))
+                               #scrollY = '450px'))
 })
 ```
 
@@ -471,7 +474,7 @@ output:
     logo: https://icons.iconarchive.com/icons/icons8/windows-8/48/Programming-Dashboard-icon.png
     theme: readable
     orientation: columns
-    source: embed
+    source_code: embed
     vertical_layout: fill
 runtime: shiny
 ```

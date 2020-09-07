@@ -28,7 +28,7 @@ output:
 
 
 <!-- Open all links in new tab-->  
-<!-- <base target="_blank"/>   -->
+<base target="_blank"/> 
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
@@ -941,6 +941,7 @@ DT_table <- shooting_data%>%
                 State,
                 `Killed (includes shooter)`,
                 `Narrative (Detailed Summary/ Background)`) %>%
+  rename("Deaths" = `Killed (includes shooter)`) %>%
   rename("Narrative" = `Narrative (Detailed Summary/ Background)`)
 
 DT::datatable(DT_table)
@@ -1358,10 +1359,12 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
 
 ```
 
-## **Dashboard**
+## **Dashboard Basics**
 ***
 
-OK, now we are ready to make our dashboard!
+OK, now we have our data and our plots for our dashboard!
+
+Now we will introduce some basics about creating dashboards in R with the `flexdashboard` package.
 
 
 ### Dashboard packages
@@ -1439,7 +1442,7 @@ knitr::include_graphics(here::here("img", "syntax.png"))
 
 See this [book](https://bookdown.org/yihui/rmarkdown/) for more information on working with R Markdown files. 
 
-The RStudio [cheatsheet for R Markdown](file:///Users/carriewright/Downloads/rmarkdown-2.0%20(1).pdf) and this [tutorial](https://ourcodingclub.github.io/tutorials/rmarkdown/) are great for getting started. 
+The RStudio [cheatsheet for R Markdown](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) and this [tutorial](https://ourcodingclub.github.io/tutorials/rmarkdown/) are great for getting started. 
 
 avocado- how do you feel about including this tutorial - it is very good - and not code academy- but I am not familiar with the coding club but they seem like a nice group 
 
@@ -1490,7 +1493,9 @@ knitr::include_graphics(here::here("img", "code_chunk.png"))
 
 ##### [[source]](https://ourcodingclub.github.io/tutorials/rmarkdown/)
 
-4) To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modifed to specify to create rows, than this same sytnax will be used to create rows.
+4) To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modifed to specify to create rows, than this same sytnax will be used to create rows. The number of dashes does not matter.
+
+5) To add a page to a navigation bar (also called a navbar) the following syntax is used `=======`. The number of dashes does not matter.
 
 ### Layout
 
@@ -1544,6 +1549,250 @@ Here is an example of a YML that includes this:
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "shiny_yml.png"))
 ```
+
+***
+
+## **Our Dashboard**
+**
+
+OK! Now that we know a bit about the basics of creating a dashboard, let's create our own.
+
+We want to create a dashboard that has several tabs that will look like this:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "dashboard_school.png"))
+```
+
+### Getting started
+
+The first thing we need to do to create our dashboard is to create a new .Rmd document like so in R Studio:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "newrmd.png"))
+```
+
+Then we need to specify what kind of R Markdown document to create:
+
+```{r}
+knitr::include_graphics(here::here("img", "rmdtype.png"))
+
+```
+
+### YAML header
+
+Next we need to update the YAML header to look like this:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "our_yaml.png"))
+```
+
+
+As you might expect, `title:` indicates the title of our dashboard.
+
+The `output:` line specifies what type of output we want the .Rmd file to be rendered.
+
+We need to include `flexdashboard::flex_dashboard:` as the output to create a dashboard with the `flexdashboard` package. This can be included on the same line as `output:` or on the next line with a preceding tab.
+
+Note that YAML is sensative to spacing, thus this tab is required to get the proper output.
+
+Then the next four lines are arguments for how the dashboard should be created.
+
+1) `logo:` allows you to include a logo on top of your dashboard. With this theme this will be in the upper left corner. The logo we chose to use came from [here](https://iconarchive.com/), but you could theoretically use any png of appropriate size.
+
+2) `theme:` allows you to specify how the dashboard will look in general. Note that this can be used to modify the genearl look of any type of R Markdown output, not just flexdashboards. See [here](https://www.datadreaming.org/post/r-markdown-theme-gallery/) for a list of options. In our case the theme is called readable and will create documents that look like this:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "readable.png"))
+```
+
+##### [[source]](https://www.datadreaming.org/post/r-markdown-theme-gallery/)
+
+3) `orientation:` the options are `columns` or `rows` and specifies if the `--------` syntax creates rows or columns for the layout. This is not necessary if the option is `columns`.
+
+4) `source_code:` specifies if a URL will be included as a navigation bar item with access to the source code. 
+
+5) `vertical_layout:` The options are `fill` or `scroll`. Fill causes the charts to resize to fill the page, while the scroll option renders plots as their natural height which may or may not require scrolling the page.
+
+There are many other argument options for how the dashboard is displayed.
+
+You can run the following command in the console to see more information about the arguments in the help pane of the R Studio [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment).
+
+```{r}
+?flexdashboard::flex_dashboard()
+```
+
+Also see the cran [documentation](https://cran.r-project.org/web/packages/flexdashboard/flexdashboard.pdf) for more details.
+
+### Loading the packages and data
+
+We also need to load the necessary packages and the wrangled data that we created in this Rmd file.
+
+```{r,eval = FALSE}
+library(here)
+library(flexdashboard)
+library(shiny)
+library(tidyverse)
+library(leaflet)
+library(sf)
+library(rmapshaper)
+library(htmltools)
+library(lubridate)
+library(DT)
+```
+
+```{r,eval = FALSE}
+shooting_data_geocoded <- read_csv(here("processed_data",
+                                        "shooting_data_wrangled.csv"))
+```
+
+
+### Creating pages
+
+Recall that `===` is used to designate elements that are part of the naviagation bar.
+
+
+We want 7 items besides the source code (which was added automatically based on the YAML code).
+
+
+So first we will create 7 divisions for these main pages. We will add icons to each from [Font Awesome](https://fontawesome.com/icons?d=gallery).
+
+Use this [link](https://fontawesome.com/icons?d=gallery) to find other icon options. If you click on the "start using this icon" botton it will take you to a page with html code like this:  
+
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics(here::here("img", "fontawesome.png"))
+```
+
+#### [[source]](https://fontawesome.com/icons/database?style=solid)
+
+
+Only  the `fa-database` portion is requrired in the brackets after `data-icon=` to add the icon to the navigation bar.
+
+```
+The Data {data-icon="fa-database"}
+===================================== 
+
+US Statistics {data-icon="fa-flag"}
+=====================================
+
+State Statistics {data-icon=fa-flag-checkered}
+====================================
+
+Map {data-icon="fa-map"}
+====================================
+
+About {data-icon="fa-question-circle"}
+====================================
+
+Tutorial {.storyboard data-icon="fa-list-ol"}
+====================================
+
+Hotline {data-icon="fa-exclamation-triangle"}
+====================================
+
+```
+
+### **The Data** page. 
+
+To create the structure for a page that will display the data we will will have two columns, with the first one (on the left) wider than the other:
+
+```
+The Data {data-icon="fa-database"}
+===================================== 
+
+
+Column {data-width=700}
+-------------------------------------
+
+Column {data-width=300}
+-------------------------------------
+
+```
+
+
+Then we will add our `DT_table` to the first column. First we need to include the code that we previously used to create `DT_table` in this R markdown document :
+
+
+```{r}
+DT_table <- shooting_data%>%
+  dplyr::select(Date,
+                School,
+                City,
+                State,
+                `Killed (includes shooter)`,
+                `Narrative (Detailed Summary/ Background)`) %>%
+  rename("Deaths" = `Killed (includes shooter)`) %>%
+  rename("Narrative" = `Narrative (Detailed Summary/ Background)`)
+```
+
+
+
+We then include some code to render this interactive table in our dashboard. Since we have `shiny` enabled in our YAML header, we can use the `renderDataTable()` of the `DT` package to produce the output we desire. We also want to use the `options` argument to specify how the data is rendered. The `scroller = TRUE` argument adds a scroll bar to the table, the scrollY argument specifies that the scroll bar should be for they Y axis direction (up and down) of the table and specifies how large the scroller should be, the `pageLength` argument specifies how many rows should be displayed simultaneously within the table, and the `autoWidth = TRUE` argument specifies that the table should fit the space of the column or page it is within. We will also add a caption with a link to the original data using the `tags()` and `withTags()` functions of the `htmltools` package. Different options for types of tags can be selected using the `$`.
+
+
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics(here::here("img", "tags.png"))
+```
+
+```{r, eval=FALSE}
+DT::renderDataTable({
+  DT::datatable(DT_table,
+                caption = htmltools::tags$caption(
+                  style = 'caption-side: top; text-align: Left;',
+                  htmltools::withTags(
+                    div(HTML('<a href="https://www.chds.us/ssdb/dataset/)">Click here to be redirected to a page where this data can be downloaded.</a>')))),
+                options = list(autoWidth = TRUE,
+                               pageLength = 10,
+                               scroller = TRUE,
+                               scrollY = '450px'))
+})
+```
+
+In a separate column, we will add a relevant photo to approve the visual appeal of the dashboard. Note that the width of this column is set to 300. Size specifications on `flexdashboard` are unitless; the width of any column included on a page is a function of the width set for a column against the sum of widths for all columns on that page. If we set columns sizes of 600 and 300 on a page with two columns, one column will be twice as large as the other column. 
+
+We include a figure caption to credit the author of the photograph.
+
+Note that there is no text next to the area where we would normally specify a header. In this case, no header is necessary for this content. `flexdashboard` & `RMarkdown` recognize this and removes the header option. 
+
+```
+Column {data-width=300}
+-------------------------------------
+
+###
+
+'''{r, echo=FALSE, fig.cap="[Photograph by Rubén Rodriguez](https://unsplash.com/photos/IXTvnOOSTyU)", out.width = '100%'}
+knitr::include_graphics("ruben-rodriguez-IXTvnOOSTyU-unsplash.jpg")
+'''
+```
+
+
+```
+Column {data-width=700}
+-------------------------------------
+
+
+```
+
+###
+
+```{r, echo=FALSE, fig.cap="[Photograph by Rubén Rodriguez](https://unsplash.com/photos/IXTvnOOSTyU)", out.width = '100%'}
+knitr::include_graphics("ruben-rodriguez-IXTvnOOSTyU-unsplash.jpg")
+```
+
+
+```
+Column {data-width=700}
+-------------------------------------
+
+The data is from the K-12 school shooting database. This database was compiled using several steps to identify and authenticate incidents. Methods are outlined [here](https://www.chds.us/ssdb/methods/).
+
+The database includes a codebook that defines each variable.
+
+###
+```
+
+## Getting started
+
+In our dashboard we will also use this syntax `=====` to designate items on the navigation bar.
 
 
 ### Leaflet
