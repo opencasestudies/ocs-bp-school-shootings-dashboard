@@ -26,34 +26,121 @@ library(DT)
 ```
 
 ```{r}
+shooting_data <- read_csv(here("processed_data",
+                                        "shooting_data_pre_geo_wrangled.csv"))
+
 shooting_data_geocoded <- read_csv(here("processed_data",
                                         "shooting_data_wrangled.csv"))
 ```
 
+About {data-icon="fa-question-circle"}
+===================================== 
+
+Column {data-width=70}
+-------------------------------------
+
+### 
+
+**What is the purpose of this dashboard?**
+
+This dashboard has two purposes:
+
+1. To Illustrate trends in school shooting events in the United States
+2. To demonstrate how to create a dashboard using `R`
+
+
+This dashboard uses data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School). This data was downloaded in June of 2020.
+
+
+Riedman, David, and Desmond O’Neill. “CHDS – K-12 School Shooting Database.” Center for Homeland Defense and Security, June 2020, [www.chds.us/ssdb](www.chds.us/ssdb).
+
+
+This database includes information about school shooting events for students in grades K-12 in the United States dating back to 1970. The database has additional information not shown on our dashboard including but not limited to: 
+
+* Location of the event at the school  
+* If the event occured during a sporting event  
+* Time of day of the event  
+* Day of the week of the event  
+* Source for the shooting information  
+* If the event was pre-planned or not  
+* Shooter's actions immediately following the shooting  
+* Shooter characteristics (affiliation with the school, if they had accomplices, if they took hostages, and their age and race)  
+* Victom characteristics (afficliation with the school, if they were targeted, their age and race)  
+
+According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) website:
+
+> The School Shooting Database Project is conducted as part of the [Advanced Thinking in Homeland Security (HSx)](https://www.chds.us/c/academic-programs/hsx/) program at the Naval Postgraduate School’s [Center for Homeland Defense and Security (CHDS)](Center for Homeland Defense and Security (CHDS).
+
+> The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. All of the information is based on open-source information and 3rd party reporting.
+
+> "This database was developed from open-source information and may include reporting errors."
+
+**Want to learn how to create a dashboard just like this?**
+
+Visit the *Tutorial* page of this dashboard to first learn the basics about building a dashboard with the `flexdashboard` package.
+
+At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE), which provides more detailed information about how ***this dashboard*** was created.
+
+We have also included the source code (see upper right-hand corner) in this dashboard for more experienced `R` users looking to mimic some of what we did in this dashboard in their own.
+
+**Disclaimer**
+
+The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**.
+
+A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
+
+We are simply using data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/), we did not create this database. We acknowlege (like their website) that there may be reporting errors in this database. 
+
+**License**
+
+This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"} United States License.
+
+
+Column {data-width=30}
+-------------------------------------
+
+###
+
+
+```{r, echo=FALSE, fig.cap="[Photograph by Nathan Dumlao](https://unsplash.com/photos/xPHmmVKS8lM)", out.width = '100%'}
+knitr::include_graphics(here::here("img", "nathan-dumlao-xPHmmVKS8lM-unsplash.jpg"))
+```
+
+
+
 The Data {data-icon="fa-database"}
 ===================================== 
 
+
+Column {data-width=70}
+-------------------------------------
+
+###
+
+The data used in this dashboard is from the [**Center for Homeland Defense and Security (CHDS)**](Center for Homeland Defense and Security (CHDS)) [**K-12 Shool Shooting Database**](https://www.chds.us/ssdb/dataset/). 
+
+Their methods for identifying and authenticating incidents are outlined [here](https://www.chds.us/ssdb/methods/).
+
+According to their website: 
+
+>*"This database was developed from open-source information and may include reporting errors."*
+
+***
+
+
 ```{r, echo=FALSE}
 # Create the DT table first
-DT_table <- shooting_data_geocoded %>%
+DT_table <- shooting_data %>%
   dplyr::select(Date,
                 School,
                 City,
                 State,
+                `Killed (includes shooter)`,
                 `Narrative (Detailed Summary/ Background)`) %>%
+  rename("Deaths" = `Killed (includes shooter)`) %>%
   rename("Narrative" = `Narrative (Detailed Summary/ Background)`)
-
-# Instead of depending on the st_jitter algorithm to generate random placement, a custom function placing the points side by side at a set distance could be used to make points occuring at the same location neatly apart.
-```    
-
-Column {data-width=700}
--------------------------------------
-
-The data is from the K-12 school shooting database. This database was compiled using several steps to identify and authenticate incidents. Methods are outlined [here](https://www.chds.us/ssdb/methods/).
-
-The database includes a codebook that defines each variable.
-
-###
+# Instead of depending on the st_jitter algorithm to generate random placement, a custom function placing the points side by side at a set distance could be used to make points occuring at the same location appear neatly apart.
+```
 
 ```{r, echo=FALSE}
 DT::renderDataTable({
@@ -64,18 +151,18 @@ DT::renderDataTable({
                     div(HTML('<a href="https://www.chds.us/ssdb/dataset/)">Click here to be redirected to a page where this data can be downloaded.</a>')))),
                 options = list(autoWidth = TRUE,
                                pageLength = 10,
-                               scroller = TRUE))
-                               #scrollY = '450px'))
+                               scroller = TRUE,
+                               scrollY = '450px'))
 })
 ```
 
-Column {data-width=300}
+Column {data-width=30}
 -------------------------------------
 
 ###
 
-```{r, echo=FALSE, fig.cap="[Photograph by Rubén Rodriguez](https://unsplash.com/photos/IXTvnOOSTyU)", out.width = '100%'}
-knitr::include_graphics("ruben-rodriguez-IXTvnOOSTyU-unsplash.jpg")
+```{r, echo=FALSE, fig.cap="[Photograph by Rubén Rodriguez](https://unsplash.com/photos/IXTvnOOSTyU)"}
+knitr::include_graphics(here::here("img", "ruben-rodriguez-IXTvnOOSTyU-unsplash.jpg"))
 ```
 
 US Statistics {data-icon="fa-flag"}
@@ -384,43 +471,7 @@ leaflet(shooting_data_geocoded) %>%
 # need to jitter coordinates by a few meters for repeats
 ```
 
-About {data-icon="fa-question-circle"}
-===================================== 
 
-Column {data-width=700}
--------------------------------------
-
-###
-
-**What is the purpose of this dashboard?**
-
-This dashboard has two purposes:
-
-+ Illustrate trends in school shootings
-+ Demonstrate how to create a dashboard using `R`
-
-**I want to learn how to create a dashboard just like this.**
-
-Visit the *Tutorial* page of this dashboard to first learn the basics about building a dashboard.
-
-At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE).
-
-We have included the source code (see upper right-hand corner) in this dashboard for more experienced `R` users looking to mimic some of what we did in this dashboard in their own.
-
-**Disclaimer**
-
-The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**.
-
-A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
-
-Column {data-width=300}
--------------------------------------
-
-###
-
-```{r, echo=FALSE, fig.cap="[Photograph by Rubén Rodriguez](https://unsplash.com/photos/IXTvnOOSTyU)", out.width = '100%'}
-knitr::include_graphics("nathan-dumlao-xPHmmVKS8lM-unsplash.jpg")
-```
 
 Tutorial {.storyboard data-icon="fa-list-ol"}
 =========================================   

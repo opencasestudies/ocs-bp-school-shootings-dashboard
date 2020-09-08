@@ -53,7 +53,7 @@ knitr::include_graphics(here("screenshots",
 
 #### {.license_block}
 
-This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"}  United States License.
+This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"} United States License.
 
 ####
 
@@ -310,7 +310,7 @@ Avocado... this source from 2013 says that schools are not required to report.. 
 ## **What are the data?**
 *** 
 
-We will use data from the open-source [K-12 ShoolShooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School) in Monterey, California. This data is updated daily. 
+We will use data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School) in Monterey, California. This data is updated daily. The data  used in this case study was downloaded in June of 2020. 
 
 #### {.reference_block}
 
@@ -318,23 +318,24 @@ Riedman, David, and Desmond O’Neill. “CHDS – K-12 School Shooting Database
 
 ####
 
-This database includes information about school shooting events in the United States dating back to 1970. The database has additional information not shown on our dashboard including but not limited to: 
+This database includes information about school shooting events for students in grades K-12 in the United States dating back to 1970. The database has additional information not shown on our dashboard including but not limited to: 
 
-- Location of the event at the school  
-- If the event occured during a sporting event  
-- Time of day of the event  
-- Day of the week of the event  
-- source for the shooting information  
-- If the event was pre-planned or not  
-- Shooter's actions immediately following the shooting  
-- Shooter characteristics (affiliation with the school, if they had accomplices, if they took hostages, and their age and race)  
-- victom characteristics(afficliation with the school, if they were targeted, their age and race)  
 
-According to the data base website:
+* Location of the event at the school  
+* If the event occured during a sporting event  
+* Time of day of the event  
+* Day of the week of the event  
+* Source for the shooting information  
+* If the event was pre-planned or not  
+* Shooter's actions immediately following the shooting  
+* Shooter characteristics (affiliation with the school, if they had accomplices, if they took hostages, and their age and race)  
+* Victom characteristics (afficliation with the school, if they were targeted, their age and race)  
+
+According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) website:
 
 > The School Shooting Database Project is conducted as part of the [Advanced Thinking in Homeland Security (HSx)](https://www.chds.us/c/academic-programs/hsx/) program at the Naval Postgraduate School’s [Center for Homeland Defense and Security (CHDS)](Center for Homeland Defense and Security (CHDS).
 
->The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. All of the information is based on open-source information and 3rd party reporting.
+> The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. All of the information is based on open-source information and 3rd party reporting.
 
 ## **Data Import**
 *** 
@@ -1481,7 +1482,7 @@ We will describe this in more detail soon.
 
 2) Components within the dashboard are delinated by using `###` - if you are familiar with markdown notation, this is a level 3 markdown header.
 
-This can include text or not
+If this includes text like so: `### text`, this adds header text to the component, however this is not required. 
 
 
 3) To  include a plot or any output from R, use the following syntax:
@@ -1625,7 +1626,7 @@ Also see the cran [documentation](https://cran.r-project.org/web/packages/flexda
 
 ### Loading the packages and data
 
-We also need to load the necessary packages and the wrangled data that we created in this Rmd file.
+Since we are creating our dashboard in a new Rmd file, we need to load the necessary packages and the wrangled data that we created in this Rmd file. In that Rmd file, it looks something like this. Note that all the rest of the code shown would be added to the Rmd file for the dashboard and are simply shown here for illustrative purposes.
 
 ```{r,eval = FALSE}
 library(here)
@@ -1641,6 +1642,10 @@ library(DT)
 ```
 
 ```{r,eval = FALSE}
+
+shooting_data <- read_csv(here("processed_data",
+                                        "shooting_data_pre_geo_wrangled.csv"))
+
 shooting_data_geocoded <- read_csv(here("processed_data",
                                         "shooting_data_wrangled.csv"))
 ```
@@ -1668,6 +1673,10 @@ knitr::include_graphics(here::here("img", "fontawesome.png"))
 Only  the `fa-database` portion is requrired in the brackets after `data-icon=` to add the icon to the navigation bar.
 
 ```
+
+About {data-icon="fa-question-circle"}
+====================================
+
 The Data {data-icon="fa-database"}
 ===================================== 
 
@@ -1680,9 +1689,6 @@ State Statistics {data-icon=fa-flag-checkered}
 Map {data-icon="fa-map"}
 ====================================
 
-About {data-icon="fa-question-circle"}
-====================================
-
 Tutorial {.storyboard data-icon="fa-list-ol"}
 ====================================
 
@@ -1691,25 +1697,172 @@ Hotline {data-icon="fa-exclamation-triangle"}
 
 ```
 
-### **The Data** page. 
+### The About page
 
-To create the structure for a page that will display the data we will will have two columns, with the first one (on the left) wider than the other:
+OK, we will start with the About page.
+
+On this page we will have two columns - one which will be wider than the other.  Size specifications on `flexdashboard` are unitless; the width of any column included on a page is a function of the width set for a column against the sum of widths for all columns on that page. If we set columns sizes of 600 and 300 on a page with two columns, one column will be twice as large as the other column. We want the left column to be quite a bit larger than the right, so we will set the left as `70` and the right as `30`.
+
+
+Thus we will start out like so:
+
+```
+About {data-icon="fa-question-circle"}
+===================================== 
+
+Column {data-width = 70}
+-------------------------------------
+
+###
+
+Column {data-width = 30}
+-------------------------------------
+
+###
+
+```
+
+
+Recall that `###` is used to add elements to columns and rows. Note that there is no text next to the `###` syntax that designates an element of our dashboard. Previously in the examples that we showed a header was used like so `### header`:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "tab.png"))
+```
+
+We don't actually want a header now, so we can simply use `###` without any text following it. Note that you can get away with not using the `###` but some elements will not render properly. 
+
+Now we will add a block of text describing the dashboard to the first column and we will add an image to the second column like the following. Notice that two astrix `**` around text makes them appear as bold and one `*` makes it appear as italic. See [this RStudio cheatsheet](https://rmarkdown.rstudio.com/lesson-15.html) for some basic markdown syntax for stylizing text:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "markdownsyntax.png"))
+```
+
+
+Thus this is what the code for this page looks like:
+
+```
+About {data-icon="fa-question-circle"}
+===================================== 
+
+Column {data-width=700}
+-------------------------------------
+
+### About
+
+**What is the purpose of this dashboard?**
+
+This dashboard has two purposes:
+
+1. To Illustrate trends in school shooting events in the United States
+2. To demonstrate how to create a dashboard using `R`
+
+
+This dashboard uses data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School). This data was downloaded in June of 2020.
+
+
+Riedman, David, and Desmond O’Neill. “CHDS – K-12 School Shooting Database.” Center for Homeland Defense and Security, June 2020, [www.chds.us/ssdb](www.chds.us/ssdb).
+
+
+This database includes information about school shooting events for students in grades K-12 in the United States dating back to 1970. The database has additional information not shown on our dashboard including but not limited to: 
+
+* Location of the event at the school  
+* If the event occured during a sporting event  
+* Time of day of the event  
+* Day of the week of the event  
+* Source for the shooting information  
+* If the event was pre-planned or not  
+* Shooter's actions immediately following the shooting  
+* Shooter characteristics (affiliation with the school, if they had accomplices, if they took hostages, and their age and race)  
+* Victom characteristics (afficliation with the school, if they were targeted, their age and race)  
+
+According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) website:
+
+> The School Shooting Database Project is conducted as part of the [Advanced Thinking in Homeland Security (HSx)](https://www.chds.us/c/academic-programs/hsx/) program at the Naval Postgraduate School’s [Center for Homeland Defense and Security (CHDS)](Center for Homeland Defense and Security (CHDS).
+
+> The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. All of the information is based on open-source information and 3rd party reporting.
+
+> "This database was developed from open-source information and may include reporting errors."
+
+
+**Want to learn how to create a dashboard just like this?**
+
+Visit the *Tutorial* page of this dashboard to first learn the basics about building a dashboard with the `flexdashboard` package.
+
+At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE), which provides more detailed information about how ***this dashboard*** was created.
+
+We have also included the source code (see upper right-hand corner) in this dashboard for more experienced `R` users looking to mimic some of what we did in this dashboard in their own.
+
+
+**Disclaimer**
+
+The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**.
+
+A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
+
+We are simply using data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/), we did not create this database. We acknowlege (like their website) that there may be reporting errors in this database. 
+
+**License**
+
+This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"} United States License.
+
+Column {data-width=300}
+-------------------------------------
+
+###
+
+'''{r, echo=FALSE, fig.cap="[Photograph by Nathan Dumlao](https://unsplash.com/photos/xPHmmVKS8lM)"}
+knitr::include_graphics(here::here("img", "nathan-dumlao-xPHmmVKS8lM-unsplash.jpg"))
+'''
+```
+
+The image used in this second column is from a website called unsplash (https://unsplash.com/) which hosts images for free use but includes information about the photographer if you chose to credit them. A short link for this image was found by clicking on it and then clicking the share button.
+
+Notice the `echo = FALSE` specification for the code chunk which causes the code to be evaluated but but not shown, while `fig.cap` adds the figure caption.
+
+The image is included using the `include_graphics()` function of the `knitr` package. We need to specify where this image is located for this to work. You can do this without specifying a path if the image file is in the same directory as your .Rmd file that you are using to create your dashboard. However using the `here()` function of the `here` package we can oranize our files a bit. This function will automatically start the path wherever we have included an RStudio project file, this can be done in RStudio like so:
+
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics(here::here("img" , "project.png"))
+```
+If you are new to using RStudio projects, please see this [link](https://r4ds.had.co.nz/workflow-projects.html) for more information.
+
+Then if we create a directory or folder called `img` and place our image files in this directory, then we can specify the full path to this file on our computer, by just using `here::here("img", "name_of_image.png")`. The `include_graphics()` function works for a variety image file types. 
+
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics(here::here("img" , "newdir.png"))
+```
+
+### The Data page
+
+To create the structure for this page that will display the data, we will have two columns, with the first one (on the left) wider than the other. Again we will have a block of text in the column on the left like so:
 
 ```
 The Data {data-icon="fa-database"}
 ===================================== 
 
 
-Column {data-width=700}
+Column {data-width=70}
 -------------------------------------
 
-Column {data-width=300}
+###
+
+The data is from the [Center for Homeland Defense and Security (CHDS)](Center for Homeland Defense and Security (CHDS) [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/). Methods are outlined [here](https://www.chds.us/ssdb/methods/) as to how incidents were identified and authenticated.
+
+According to their website: 
+> "This database was developed from open-source information and may include reporting errors."
+
+
+
+Column {data-width=30}
 -------------------------------------
+
+###
 
 ```
 
 
-Then we will add our `DT_table` to the first column. First we need to include the code that we previously used to create `DT_table` in this R markdown document :
+
+Now we will add our `DT_table` to the first column. First we need to include the code that we previously used to create the `DT_table` in our dashboard .Rmd file:
 
 
 ```{r}
@@ -1723,7 +1876,6 @@ DT_table <- shooting_data%>%
   rename("Deaths" = `Killed (includes shooter)`) %>%
   rename("Narrative" = `Narrative (Detailed Summary/ Background)`)
 ```
-
 
 
 We then include some code to render this interactive table in our dashboard. Since we have `shiny` enabled in our YAML header, we can use the `renderDataTable()` of the `DT` package to produce the output we desire. We also want to use the `options` argument to specify how the data is rendered. The `scroller = TRUE` argument adds a scroll bar to the table, the scrollY argument specifies that the scroll bar should be for they Y axis direction (up and down) of the table and specifies how large the scroller should be, the `pageLength` argument specifies how many rows should be displayed simultaneously within the table, and the `autoWidth = TRUE` argument specifies that the table should fit the space of the column or page it is within. We will also add a caption with a link to the original data using the `tags()` and `withTags()` functions of the `htmltools` package. Different options for types of tags can be selected using the `$`.
@@ -1747,180 +1899,44 @@ DT::renderDataTable({
 })
 ```
 
-In a separate column, we will add a relevant photo to approve the visual appeal of the dashboard. Note that the width of this column is set to 300. Size specifications on `flexdashboard` are unitless; the width of any column included on a page is a function of the width set for a column against the sum of widths for all columns on that page. If we set columns sizes of 600 and 300 on a page with two columns, one column will be twice as large as the other column. 
 
-We include a figure caption to credit the author of the photograph.
+We will also add another image to the column on the right, overall the code looks like this:
 
-Note that there is no text next to the area where we would normally specify a header. In this case, no header is necessary for this content. `flexdashboard` & `RMarkdown` recognize this and removes the header option. 
 
 ```
-Column {data-width=300}
+Column {data-width=70}
 -------------------------------------
 
 ###
 
-'''{r, echo=FALSE, fig.cap="[Photograph by Rubén Rodriguez](https://unsplash.com/photos/IXTvnOOSTyU)", out.width = '100%'}
-knitr::include_graphics("ruben-rodriguez-IXTvnOOSTyU-unsplash.jpg")
+The data used in this dashboard is from the [**Center for Homeland Defense and Security (CHDS)**](Center for Homeland Defense and Security (CHDS)) [**K-12 Shool Shooting Database**](https://www.chds.us/ssdb/dataset/). 
+
+Their methods for identifying and authenticating incidents are outlined [here](https://www.chds.us/ssdb/methods/).
+
+According to their website: 
+
+>*"This database was developed from open-source information and may include reporting errors."*
+
+***
+
+
+
+'''{r, echo=FALSE}
+# Create the DT table first
+DT_table <- shooting_data %>%
+  dplyr::select(Date,
+                School,
+                City,
+                State,
+                `Killed (includes shooter)`,
+                `Narrative (Detailed Summary/ Background)`) %>%
+  rename("Deaths" = `Killed (includes shooter)`) %>%
+  rename("Narrative" = `Narrative (Detailed Summary/ Background)`)
 '''
-```
-
-
-```
-Column {data-width=700}
--------------------------------------
-
-
-```
-
-###
-
-```{r, echo=FALSE, fig.cap="[Photograph by Rubén Rodriguez](https://unsplash.com/photos/IXTvnOOSTyU)", out.width = '100%'}
-knitr::include_graphics("ruben-rodriguez-IXTvnOOSTyU-unsplash.jpg")
-```
-
-
-```
-Column {data-width=700}
--------------------------------------
-
-The data is from the K-12 school shooting database. This database was compiled using several steps to identify and authenticate incidents. Methods are outlined [here](https://www.chds.us/ssdb/methods/).
-
-The database includes a codebook that defines each variable.
-
-###
-```
-
-## Getting started
-
-In our dashboard we will also use this syntax `=====` to designate items on the navigation bar.
-
-
-### Leaflet
-
-`Leaflet` widgets can be included within dashboards created with `flexdashboard`.
-
-`Leaflet` works by provided by adding base data (such as a map) and then adding markers if desired in layers. This is very similar to how `ggplot` functions (pun intended).
-
-The layers displayed can be controlled using a sort of legend. Depending on the type of layers, some information may be displayed mutually exclusive of the other layers; other layers (such as circles/general markers) can be toggled on and off. 
-
-A minimap can be added.
-
-The layers displayed when the widget is first opened can also be controlled. We did that in this case study. 
-
-`groups` in leaflet can be thought of as layer-specific IDs that create labels for legends and allow specific layers to be referred to in separate functions. 
-
-If we called a group "Layer 1" and then in a subsequent layer referred to "Layer 1", `Leaflet` will correctly identify which layer is being referenced.
-
-`Leaflet` can require a lot of computational power; this can have an impact on the types of maps produced.
-
-Clustering options can be applied to circles/markers. Some examples of this can be found on the bottom of [this page](https://rstudio.github.io/leaflet/markers.html).
-
-```
-### Specified Title
-```
-
-If the title is unspecified...
-
-```
-###
-```
-
-the graphics will be recognized but no title will be shown for that particular graphic.
-
-`fig-width` and `fig.height` operate in the code chunk options. 
-
-
-## RA NOTES
-
-
-Consult this document for a general overview:
-
-+ case-study-structure-MO-notes
-
-There are several datasets involved in this case study
-
-+ Raw dataset (raw_data/K-12 SSDB (Public) - K-12 SSDB (Public) Linked.csv)
-+ Geocoded dataset  (processed_data/shooting_data.csv)
-+ Wrangled dataset (processed_data/shooting_data_wrangled)
-
-This document uses the geocoded dataset to produce the wrangled dataset.
-
-The wrangled dataset is then used to produce the dashboard in the other document.
-
-
-The goecoding required to produce this case study took approximately 1.5-2 hours on a Macbook Air (2015). 
 
 
 
-## RA Code
-
-We will employ the following layout for the dashboard.
-
-RMarkdown Dashboard Structure
-
-+ Icon (48 x 48)
-+ The Data
-+ Column 1: Interactive Table
-+ Column 2: Photo
-+ US Statistics
-+ Column 1 
-+ Yearly Deaths
-+ Yearly Cumulative Deaths
-+ Deaths per Shooting
-+ Column 2
-+ Wounded
-+ Deaths
-+ Shooting Completed/Attempted Suicide
-+ Median Shots Fired
-+ Deaths, Shooter was Only Victim
-+ Use of a Single Handgun
-+ State Statistics
-+ Sidebar
-+ Column 1
-+ Yearly Deaths
-+ Yearly Cumulative Deaths
-+ Deaths per Shooting
-+ Map
-+ Zoom (+)
-+ Zoom (-)
-+ Layer Controls
-+ Provider Tiles
-+ Circle Markers
-+ Mini-map
-+ About
-+ Column 1
-+ Disclaimer
-+ How do I use this dashboard?
-+ Does Open Case Studies have more resources I can access to learn about creating this dashboard?
-+ Column 2: Photo
-+ Tutorial
-+ Step 1: Load the `flexdashboard` package
-+ Step 2: Create and `RMD` document
-+ Step 3: Create an appropriate `YAML`.
-+ Step 4: Design the layout of the dashboard.
-+ Step 5: Add content to the dashboard.
-+ Hotline
-+ Warning Signs
-+ Response to Warning Signs
-+ Source Code
-
-
-We create the **The Data** page. 
-
-```
-Column {data-width=700}
--------------------------------------
-
-The data is from the K-12 school shooting database. This database was compiled using several steps to identify and authenticate incidents. Methods are outlined [here](https://www.chds.us/ssdb/methods/).
-
-The database includes a codebook that defines each variable.
-
-###
-```
-
-We then insert an interactive table. Since we have `shiny` enabled, we need to use `DF::renderDataTable` to produce the output we desire. 
-
-```{r, eval=FALSE}
+'''{r, echo=FALSE}
 DT::renderDataTable({
   DT::datatable(DT_table,
                 caption = htmltools::tags$caption(
@@ -1932,40 +1948,40 @@ DT::renderDataTable({
                                scroller = TRUE,
                                scrollY = '450px'))
 })
-```
+'''
 
-In a separate column, we will add a relevant photo to approve the visual appeal of the dashboard. Note that the width of this column is set to 300. Size specifications on `flexdashboard` are unitless; the width of any column included on a page is a function of the width set for a column against the sum of widths for all columns on that page. If we set columns sizes of 600 and 300 on a page with two columns, one column will be twice as large as the other column. 
-
-We include a figure caption to credit the author of the photograph.
-
-Note that there is no text next to the area where we would normally specify a header. In this case, no header is necessary for this content. `flexdashboard` & `RMarkdown` recognize this and removes the header option. 
-
-```
-Column {data-width=300}
+Column {data-width=30}
 -------------------------------------
 
 ###
 
-'''{r, echo=FALSE, fig.cap="[Photograph by Rubén Rodriguez](https://unsplash.com/photos/IXTvnOOSTyU)", out.width = '100%'}
-knitr::include_graphics("ruben-rodriguez-IXTvnOOSTyU-unsplash.jpg")
+'''{r, echo=FALSE, fig.cap="[Photograph by Rubén Rodriguez](https://unsplash.com/photos/IXTvnOOSTyU)"}
+knitr::include_graphics(here::here("img", "ruben-rodriguez-IXTvnOOSTyU-unsplash.jpg"))
 '''
 ```
 
-Let's create a page for **US Statistics** we would like to share. 
+
+### Statistics page
+
+Now Let's create a page for **US Statistics** we would like to share. This time we will use  the `.tabset` and `.tabset-fade` options specified for our first column. 
+
 
 ```
 US Statistics {data-icon="fa-flag"}
 ===================================== 
-```
 
-Let's create a column. Note the `.tabset` and `.tabset-fade` options specified for the column. 
 
-```
-Column {data-width=700 .tabset .tabset-fade}
+Column {data-width=70 .tabset .tabset-fade}
 -------------------------------------
 ```
 
-After having specified the `.tabset` and `.tabset-fade` options, we can create each tab in the same way we would create columns. 
+After having specified the `.tabset` and `.tabset-fade` options, we can create new tabs in the same way we would add elements to our dashboard with the `###` syntax. Just like in this example:
+
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics(here::here("img" , "tab.png"))
+```
+
+Let's make a tab for yearly shooting events and deaths, a tab for cumulative shooting events and deaths, and a tab about the number of deaths per shooting. In each tab we will include the code for the plots that we have previously created. 
 
 ```
 ### Yearly Deaths
@@ -2150,6 +2166,126 @@ valueBox(
   color = "white")
 '''
 ```
+
+### Leaflet
+
+`Leaflet` widgets can be included within dashboards created with `flexdashboard`.
+
+`Leaflet` works by provided by adding base data (such as a map) and then adding markers if desired in layers. This is very similar to how `ggplot` functions (pun intended).
+
+The layers displayed can be controlled using a sort of legend. Depending on the type of layers, some information may be displayed mutually exclusive of the other layers; other layers (such as circles/general markers) can be toggled on and off. 
+
+A minimap can be added.
+
+The layers displayed when the widget is first opened can also be controlled. We did that in this case study. 
+
+`groups` in leaflet can be thought of as layer-specific IDs that create labels for legends and allow specific layers to be referred to in separate functions. 
+
+If we called a group "Layer 1" and then in a subsequent layer referred to "Layer 1", `Leaflet` will correctly identify which layer is being referenced.
+
+`Leaflet` can require a lot of computational power; this can have an impact on the types of maps produced.
+
+Clustering options can be applied to circles/markers. Some examples of this can be found on the bottom of [this page](https://rstudio.github.io/leaflet/markers.html).
+
+```
+### Specified Title
+```
+
+If the title is unspecified...
+
+```
+###
+```
+
+the graphics will be recognized but no title will be shown for that particular graphic.
+
+`fig-width` and `fig.height` operate in the code chunk options. 
+
+
+## RA NOTES
+
+
+Consult this document for a general overview:
+
++ case-study-structure-MO-notes
+
+There are several datasets involved in this case study
+
++ Raw dataset (raw_data/K-12 SSDB (Public) - K-12 SSDB (Public) Linked.csv)
++ Geocoded dataset  (processed_data/shooting_data.csv)
++ Wrangled dataset (processed_data/shooting_data_wrangled)
+
+This document uses the geocoded dataset to produce the wrangled dataset.
+
+The wrangled dataset is then used to produce the dashboard in the other document.
+
+
+The goecoding required to produce this case study took approximately 1.5-2 hours on a Macbook Air (2015). 
+
+
+
+## RA Code
+
+We will employ the following layout for the dashboard.
+
+RMarkdown Dashboard Structure
+
++ Icon (48 x 48)
++ The Data
++ Column 1: Interactive Table
++ Column 2: Photo
++ US Statistics
++ Column 1 
++ Yearly Deaths
++ Yearly Cumulative Deaths
++ Deaths per Shooting
++ Column 2
++ Wounded
++ Deaths
++ Shooting Completed/Attempted Suicide
++ Median Shots Fired
++ Deaths, Shooter was Only Victim
++ Use of a Single Handgun
++ State Statistics
++ Sidebar
++ Column 1
++ Yearly Deaths
++ Yearly Cumulative Deaths
++ Deaths per Shooting
++ Map
++ Zoom (+)
++ Zoom (-)
++ Layer Controls
++ Provider Tiles
++ Circle Markers
++ Mini-map
++ About
++ Column 1
++ Disclaimer
++ How do I use this dashboard?
++ Does Open Case Studies have more resources I can access to learn about creating this dashboard?
++ Column 2: Photo
++ Tutorial
++ Step 1: Load the `flexdashboard` package
++ Step 2: Create and `RMD` document
++ Step 3: Create an appropriate `YAML`.
++ Step 4: Design the layout of the dashboard.
++ Step 5: Add content to the dashboard.
++ Hotline
++ Warning Signs
++ Response to Warning Signs
++ Source Code
+
+
+
+
+###
+
+
+
+
+
+
 
 We then create the next page, **State Statistics** 
 
