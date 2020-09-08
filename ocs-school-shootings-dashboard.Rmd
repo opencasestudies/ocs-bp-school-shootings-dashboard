@@ -202,6 +202,8 @@ library(tidyr)
 library(magrittr)
 library(ggmap)
 library(sf)
+library(ggplot2)
+library(forcats)
 library(waffle)
 library(flexdashboard)
 library(shiny)
@@ -1058,7 +1060,7 @@ shootings_per_year_p
 
 ### Yearly Deaths
 
-Notice how when using summarize we dont use mutate here.
+Notice that when using summarize we dont use mutate here.
 ```{r}
 
 deaths_per_year<-shooting_data %>% 
@@ -1079,14 +1081,21 @@ deaths_per_year_p <-deaths_per_year %>%
 deaths_per_year_p
 
 
+
+
 per_year<-full_join(shootings_per_year, deaths_per_year)
 per_year %<>%pivot_longer( cols = (-Date_year), 
                            values_to = "events", 
                            names_to = "id")
+
+per_year%<>% 
+  mutate(id = forcats::fct_inorder(id))
+
 per_year %>%
     ggplot(aes(x = Date_year, y = events, fill =id)) +
     #geom_col(aes(fill = id), position = "dodge") +
-  geom_area()+
+  geom_col()+
+ # geom_smooth(method = "lm")+
   facet_grid(~id)+
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
@@ -1094,12 +1103,14 @@ per_year %>%
     theme_minimal() +
    labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
          subtitle = "United States",
-         y = "",
-         x = "")+
+         y = "Number of events",
+         x = "Year")+
   scale_fill_manual(values = c("black", "black"))+
   theme(legend.position = "none", 
         legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90))
+        axis.text.x = element_text(angle = 90),
+        strip.background =element_rect(fill="cornflowerblue"),
+        strip.text = element_text(colour = 'white', face = "bold", size = 14))
  
 
 
@@ -1116,12 +1127,12 @@ avocado explain pivot longer
 shootings_per_year
 
 shootings_per_year_cum <- shootings_per_year%>%
-    mutate("Shootings_cumsum" = cumsum(Shootings))
+    mutate(Shootings = cumsum(Shootings))
 
 shootings_per_year_cum 
 
 deaths_per_year_cum <- deaths_per_year%>%
-    mutate(Deaths_cumsum = cumsum(Deaths))
+    mutate(Deaths = cumsum(Deaths))
 
 shootings_per_year_cum 
 
@@ -1130,8 +1141,8 @@ shootings_per_year_cum
 per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
 
 
-per_year_cum %<>%pivot_longer( cols = c(Shootings_cumsum,
-                                        Deaths_cumsum ), 
+per_year_cum %<>%pivot_longer( cols = c(Shootings,
+                                        Deaths ), 
                            values_to = "events", 
                            names_to = "id")
 
@@ -1143,6 +1154,9 @@ Good, this looks like we would expect.
 Now let's make a plot like we did before:
 
 ```{r}
+per_year_cum %<>% 
+  mutate(id = forcats::fct_inorder(id))
+
 per_year_cum %>%
     ggplot(aes(x = Date_year, y = events, fill =id)) +
     #geom_col(aes(fill = id), position = "dodge") +
@@ -1152,14 +1166,16 @@ per_year_cum %>%
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
     theme_minimal() +
-   labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
+   labs(title = "Cumulative Yearly Shootings and Deaths\nAttributable to School Shootings",
          subtitle = "United States",
-         y = "",
-         x = "")+
-   scale_fill_viridis_d()+
+         y = "Cumulative number of events",
+         x = "Year") +
+  scale_fill_manual(values = c("black", "black"))+
   theme(legend.position = "none", 
         legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90))
+        axis.text.x = element_text(angle = 90),
+        strip.background =element_rect(fill="cornflowerblue"),
+        strip.text = element_text(colour = 'white', face = "bold", size = 14))
  
 
 ```
@@ -1167,7 +1183,7 @@ per_year_cum %>%
 ```{r}
 
 shootings_per_year_cum %>%
-    ggplot(aes(x = Date_year, y = Shootings_cumsum)) +
+    ggplot(aes(x = Date_year, y = Shootings)) +
     geom_col(fill = "black") +
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
@@ -1632,7 +1648,9 @@ Since we are creating our dashboard in a new Rmd file, we need to load the neces
 library(here)
 library(flexdashboard)
 library(shiny)
+library(magrittr)
 library(tidyverse)
+library(forcats)
 library(leaflet)
 library(sf)
 library(rmapshaper)

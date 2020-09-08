@@ -16,13 +16,16 @@ runtime: shiny
 library(here)
 library(flexdashboard)
 library(shiny)
+library(magrittr)
 library(tidyverse)
+library(forcats)
 library(leaflet)
 library(sf)
 library(rmapshaper)
 library(htmltools)
 library(lubridate)
 library(DT)
+
 ```
 
 ```{r}
@@ -171,50 +174,93 @@ US Statistics {data-icon="fa-flag"}
 Column {data-width=700 .tabset .tabset-fade}
 -------------------------------------
 
-### Yearly Deaths
+### Yearly Deaths and Shootings
 
 ```{r}
-shooting_per_year <- shooting_data_geocoded %>%
+
+start <- 1970
+end <- 2020
+
+shootings_per_year<- shooting_data %>%
     group_by(Date_year) %>%
     count() %>%
+  rename("Shootings" = n) %>%
     ungroup()
-start <- 1970
-end <- 2020
-shooting_per_year %>%
-    ggplot(aes(x = Date_year, y = n)) +
-    geom_bar(stat = "identity", fill = "black") +
+
+deaths_per_year<-shooting_data %>% 
+  group_by(Date_year) %>%
+  summarize(Deaths =sum(`Killed (includes shooter)`))
+
+
+per_year<-full_join(shootings_per_year, deaths_per_year)
+per_year %<>%pivot_longer( cols = (-Date_year), 
+                           values_to = "events", 
+                           names_to = "id")
+
+per_year%<>% 
+  mutate(id = forcats::fct_inorder(id))
+
+per_year %>%
+    ggplot(aes(x = Date_year, y = events, fill =id)) +
+    geom_col()+
+    facet_grid(~id)+
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
     theme_minimal() +
-    labs(title = "Yearly Deaths Attributable to School Shootings",
+   labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
          subtitle = "United States",
-         x = "School Shootings",
-         y = "")
+         y = "Number of events",
+         x = "Year")+
+  scale_fill_manual(values = c("black", "black"))+
+  theme(legend.position = "none", 
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90),
+        strip.background =element_rect(fill="cornflowerblue"),
+      strip.text = element_text(colour = 'white', face = "bold", size = 14))
 ```
+ 
+ 
 
-### Yearly Cumulative Deaths
+### Yearly Cumulative Deaths and Shootings
 
 ```{r}
-start <- 1970
-end <- 2020
-shooting_data_geocoded_us2 <- shooting_data_geocoded %>%
-    group_by(Date_year) %>%
-    summarize(N = n()) %>%
-    ungroup() %>%
-    complete(Date_year = seq(start,end,by=1)) %>%
-    mutate(n_cumsum = cumsum(N))
-shooting_data_geocoded_us2 %>%
-    ggplot(aes(x = Date_year, y = n_cumsum)) +
-    geom_bar(stat = "identity", fill = "black") +
+
+shootings_per_year_cum <- shootings_per_year %>%
+    mutate(Shootings = cumsum(Shootings))
+
+deaths_per_year_cum <- deaths_per_year %>%
+    mutate(Deaths= cumsum(Deaths))
+
+
+per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
+
+
+per_year_cum %<>%pivot_longer( cols = c(Shootings,
+                                        Deaths ), 
+                           values_to = "events", 
+                           names_to = "id")
+per_year_cum%<>% 
+  mutate(id = forcats::fct_inorder(id))
+
+per_year_cum %>%
+ggplot(aes(x = Date_year, y = events, fill =id)) +
+    geom_col()+
+    facet_grid(~id)+
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
+    scale_fill_manual(values = c("black", "black"))+
     theme_minimal() +
-    labs(title = "Yearly Cumulative Deaths Attributable to School Shootings",
+    labs(title = "Cumulative Yearly Shootings and Deaths\nAttributable to School Shootings",
          subtitle = "United States",
-         x = "School Shootings",
-         y = "")
+         y = "Cumulative number of events",
+         x = "Year") +
+    theme(legend.position = "none", 
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90),
+        strip.background = element_rect(fill="cornflowerblue"),
+        strip.text = element_text(colour = 'white', face = "bold", size = 14))
 ```
 
 ### Deaths per Shooting
