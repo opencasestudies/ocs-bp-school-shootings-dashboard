@@ -300,78 +300,78 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
 Column {data-width=300}
 ------------------------------------- 
 
-### **Wounded**
+### **Total Wounded**
     
 ```{r}
-valueBox(sum(shooting_data_geocoded$Wounded, na.rm = TRUE),
+valueBox(sum(pull(shooting_data, Wounded), na.rm = TRUE),
          color = "white")
 ```
     
-### **Deaths**
+### **Total Deaths**
 
 ```{r}
-valueBox(sum(shooting_data_geocoded$`Killed (includes shooter)`, na.rm = TRUE),
+valueBox(sum(pull(shooting_data_geocoded,`Killed (includes shooter)`), na.rm = TRUE),
          color = "white")
 ```
 
-### **Shooter Completed/Attempted Suicide**
-
-```{r}
-suicide <- sum(shooting_data_geocoded$`Suicide (or attempted suicide) by Shooter (Y/N)`,
-               na.rm = TRUE) / length(shooting_data_geocoded$`Suicide (or attempted suicide) by Shooter (Y/N)`)
-
-valueBox(
-  paste(
-    round(suicide * 100,
-          2),
-  "%"),
-  color = "white")
-```
 
 ### **Median Shots Fired**
 
 ```{r}
 valueBox(
   round(
-  median(shooting_data_geocoded$`Number of Shots Fired`,
+  median(pull(shooting_data_geocoded,`Number of Shots Fired`),
       na.rm = TRUE),
   2),
   color = "white")
 ```
 
-### **Deaths, Shooter was Only Victim**
+### **Shooter Was Only Victim**
 
 ```{r}
-valueBox(
-  paste(
-    as.character(
-    round(
-      100 * (sum(
-    ifelse(shooting_data_geocoded$`Suicide (Shooter was only victim) Y/N/ N/A` == "Y",
-                TRUE,
-                FALSE), na.rm = TRUE)
-    /
-      sum(shooting_data_geocoded$`Killed (includes shooter)`, na.rm = TRUE)),
-    2)), "%"),
-  color = "white")
+
+suicide <- sum(pull(shooting_data,`Suicide (Shooter was only victim) Y/N/ N/A`),
+               na.rm = TRUE)/ sum(pull(shooting_data,`Killed (includes shooter)`), na.rm = TRUE)
+suicide <- format(round(suicide*100, 1), nsmall = 1)
+valueBox(paste0(suicide,"%"), color = "white")
 ```
 
 ### **Use of a Single Handgun**
 
 ```{r}
+
 valueBox(
   paste(
     as.character(
     round(
       100 * (sum(
-    ifelse(shooting_data_geocoded$`Firearm Type` == "Handgun",
+    ifelse(pull(shooting_data,`Firearm Type`) == "Handgun",
                 TRUE,
                 FALSE), na.rm = TRUE)
     /
       length(shooting_data_geocoded$`Firearm Type`)),
-    2)), "%"),
+    1)), "%"),
   color = "white")
 ```
+
+
+### **Shooter Was Male**
+
+```{r}
+valueBox(
+  paste(
+    as.character(
+    round(
+      100 * (sum(
+    ifelse(pull(shooting_data,`Shooter Gender`) == "Male",
+                TRUE,
+                FALSE), na.rm = TRUE)
+    /
+      length(shooting_data_geocoded$`Firearm Type`)),
+    1)), "%"),
+  color = "white")
+```
+
 
 State Statistics {data-icon=fa-flag-checkered}
 ===================================== 
