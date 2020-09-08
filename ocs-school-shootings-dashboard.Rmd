@@ -401,9 +401,27 @@ state_df <- tibble(State_abb = state.abb, State = state.name)
 slice_head(state_df, n= 4)
 ```
 
-Now we will combine this with our data using the `left_join()` function of the `dplyr` package. avocado add explanation and join images
-https://dplyr.tidyverse.org/reference/join.html
+Now we will combine this with our data using the `left_join()` function of the `dplyr` package.
+There are several ways to join data using the `dplyr` package.
 
+
+```{r, echo = FALSE, outwidth = "50%"}
+knitr::include_graphics(here::here("img", "join.png"))
+```
+
+##### [[source]](https://dplyr.tidyverse.org/reference/join.html)
+
+Here is  a visualization of these options:
+
+```{r, echo = FALSE, outwidth = "50%"}
+knitr::include_graphics(here::here("img", "join_image.png"))
+```
+
+##### [[source]](https://rstudio.com/resources/cheatsheets/)
+
+See [here](https://dplyr.tidyverse.org/reference/join.html) for more detials about joining data.
+
+We probably have data for all fifty states, but there may not have been shootings in all 50 states in this dataset, therefore we dont want to use the `full_join()` function. We also don't want the `inner_join()` function because `DC` does not have a state name. Thus we will use the `left_join()` function where x in this case will be the `shooting_data` (as it is introduced to this code first through the `%<>` pipe opperator) and y is the `state_df`. Thus we add the `state_df` values where they match to the `shooting_data`.
 
 ```{r}
 shooting_data %<>%
@@ -447,18 +465,31 @@ str(shooting_data)
 
 We see that many of the varaibles have either `Yes` or `No` values or `Y` and `N` values.  These are the variables that have `Y/N` in the name or the `Targeted Specific Victim(s)`, `Random Victims`, `Pre-planned school attack` variables. We can make these consistently `TRUE` and `FALSE` by using the `case_when()` function of the `dplyr` package. This function allows us to specify new values for existing values, simlarly to the `recode()` function also of `dplyr`. The benefit of the `case_when()` function, is that changing the values to `TRUE` or `FALSE` also results in the class type of the variable changing to type logical (which is interpreted as a binary variable with `TRUE` and `FALSE` values) otherwise, with `recode()` the variables would remain as class type character. 
 
-<details><summary> click here for more details about the differences between `recode()` and case_when()`</summary>
+<details> <summary> Click here for an explanation about data types in R. </summary>
 
-avocado check on these statements  - this does not seem to be true for case_when despite what the documentation says "If no cases match, NA is returned."
+There are several classes of data in R programming. 
+Character is one of these classes. 
+A character string is an individual data value made up of characters. 
+This can be a paragraph, like the legend for the table, or it can be a single letter or number like the letter `"a"` or the number `"3"`. 
+If data are of class character, than the numeric values will not be processed like a numeric value in a mathematical sense. 
+If you want your numeric values to be interpreted that way, they need to be converted to a numeric class. 
+The options typically used are integer (which has no decimal place) and double precision (which has a decimal place). 
+Similarly if your data is of class charcter and are values of `TRUE` and `FALSE` they will be interpreted as two different strings. 
+However, **logical data** is interpreted slighlty differenlty where a `FALSE` value indicates the absence of something, while a `TRUE` indicates the presence of something.
 
-Note, that with `recode()` there is the option that other values be recoded to `NA` althought this is not the default, however with `case_when()` other values not explicitly assigned in the case_when() statement will be `NA`. Further more only values can be used on the left side when using `recode()` whereas `case_when()` accepts expressions that need to be evaluated, unless using the `:=` opperator.???
+***
+</details>
+
+
+<details><summary> Click here for more details about the differences between the `recode()` and `case_when()` functions. </summary>
+
+
+Note, that with `recode()` there is the option that other values be recoded to `NA` althought this is not the default, however with `case_when()` other values not explicitly assigned in the case_when() statement will be assinged to `NA`. Further more only values can be used on the left side when using `recode()` whereas `case_when()` accepts expressions.
 
 
 ***
 
 </details>
-
-avocado add links about this/ maybe add /check if we already added the class type stuff from the other case studies - indeed casewhen in other cases seems to automatically make all other cases NA but was that the case here?
 
 To implement the `case_when()` recoding of values, the exisiting values are written on the left of the `~` sign (quotation marks necessary) and new values are written on the right (quotations marks are not necessary as these are `TRUE` and `FALSE` statments). We will also use the `across()` function of the `dplyr` package and the `matches()` function of the `tidyselect` packge to allow us to apply this to all of the variables that have a pattern that that matches any of those of the variables we want to change. The `|` symbol is interpreted as an or, thus any variables that has a name that matches any of these patterns will be changed. fThe `across()` function then applies the `case_when()` function to all of these variables. Notice that the `~` symbol is necessary before the funtion that is applied using `across()`.
 ```{r}
@@ -1081,10 +1112,36 @@ deaths_per_year_p <-deaths_per_year %>%
 deaths_per_year_p
 
 
+```
 
+Ok, we want to make a plot that shows both the number of shootings per year and the number of deaths.
+
+We can do so by combining our `shootings_per_year` and  `deaths_per_year` tibbles together and making what is called a faceted plot.
+
+To combine our data we will use the `full_join()` function of the `dplyr` package. This maintains all values from both tibbles.
+
+
+
+
+To do so we will be making our table "longer", meaning that it will have fewer columns and more rows. 
+See [here](https://en.wikipedia.org/wiki/Wide_and_narrow_data) for more information about different table formats, typically referred to as wide and long or sometimes narrow.
+
+We will use the `pivot_longer()` function of the `tidyr` package to change the shape of our table. 
+
+There are 3 main arguments in this function:   
+
+1. `cols` - which specifies what columns to collapse  
+2. `names_to` - which specifies the name of the new column that will be created that will contain the column names of the columns you are collapsing  
+3. `values_to` - which specifies the name of the new column that will be created that will contain the values from the columns you are collapsing 
+
+To specify that we want to collapse all the columns that have year values, we can chose  all those except the `Date_year` variable by  using the `-` minus sign. 
+
+We will also use the `fct_inorder()` function of the `forcats` package to reorder our `id` varible` to the order in which they appear first rather than by alphabetical order (which is default). Thus the number of shootings will appear on the left side (first) rather then on the right.
+
+```{r}
 
 per_year<-full_join(shootings_per_year, deaths_per_year)
-per_year %<>%pivot_longer( cols = (-Date_year), 
+per_year %<>%pivot_longer( cols = -Date_year, 
                            values_to = "events", 
                            names_to = "id")
 
@@ -1092,16 +1149,14 @@ per_year%<>%
   mutate(id = forcats::fct_inorder(id))
 
 per_year %>%
-    ggplot(aes(x = Date_year, y = events, fill =id)) +
-    #geom_col(aes(fill = id), position = "dodge") +
+ggplot(aes(x = Date_year, y = events, fill =id)) +
   geom_col()+
- # geom_smooth(method = "lm")+
   facet_grid(~id)+
-    scale_x_continuous(breaks = seq(start, end, by = 5),
+  scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
-    theme_minimal() +
-   labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
+  theme_minimal() +
+  labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
          subtitle = "United States",
          y = "Number of events",
          x = "Year")+
@@ -1120,7 +1175,7 @@ per_year %>%
 
 Now let's make another plot of the cumulative deaths each year including those of the previous years. In this case we can use the `shooting_per_year` object that we previously made. We want to add a new variable using the `mutate` function called `n_cum_sum` by using the `cumsum()` function to calculate a cumulative sum based on the yearly count. 
 
-avocado explain pivot longer
+
 
 ```{r}
 
@@ -1141,7 +1196,7 @@ shootings_per_year_cum
 per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
 
 
-per_year_cum %<>%pivot_longer( cols = c(Shootings,
+per_year_cum %<>%pivot_longer(cols = c(Shootings,
                                         Deaths ), 
                            values_to = "events", 
                            names_to = "id")
@@ -1180,21 +1235,6 @@ per_year_cum %>%
 
 ```
 
-```{r}
-
-shootings_per_year_cum %>%
-    ggplot(aes(x = Date_year, y = Shootings)) +
-    geom_col(fill = "black") +
-    scale_x_continuous(breaks = seq(start, end, by = 5),
-                 labels = seq(start, end, by = 5),
-                 limits = c(start-1, end+1)) +
-    theme_minimal() +
-  labs(title = "Yearly Cumulative Number of School Shootings",
-#    labs(title = "Yearly Cumulative Deaths Attributable to School Shootings",
-         subtitle = "United States",
-         x = "School Shootings",
-         y = "")
-```
 
 ### Deaths per Shooting
 
@@ -1260,13 +1300,14 @@ shooting_data %>%
     geom_freqpoly()
 ```
 
-This really shows that most shooting events luckily result in no deaths, but what are the actual proportions. One way to look at this is to calucate the percentage of events that resulted in each number of deaths. 
+This really shows that most shooting events luckily result in no deaths, but what are the actual proportions. One way to look at this is to calucate the percentage of events that resulted in each number of deaths. We can do so by dividing the number of events by the overal sum of events and multiplying by 100. The base `round()` function can round this value to the nearest 1 decimal place by specifying that we want 1 digit after the decimal with `digits = 1`.
+
 
 ```{r}
 deaths_perc_event <-shooting_data %>%
    count(`Killed (includes shooter)`) %>%
-  rename("num_events"= n) %>%
-   mutate(percent = (num_events/sum(num_events)*100))
+   rename("num_events"= n) %>%
+   mutate(percent = round(num_events/sum(num_events)*100, digits =1))
 
 deaths_perc_event
 
@@ -1282,7 +1323,7 @@ So now, we will also collapse the events that resulted in 4 or more deaths toget
 
 First to collapse the percentage for the events that had 4 or more deaths, we need to do a bit of wrangling.
 
-We will start with filtering the data to only these events and then we will sum  each of the columns using the base `colSums()` function with the goal of creating a new row in the `deaths_perc_event` object that will contain information about all events with 4 or more deaths.
+We will start with filtering the data to only these events and then we will sum  each of the columns using the base `colSums()` function with the goal of creating a new row in the `deaths_perc_event` object that will contain information about all events with 4 or more deaths. We will use the `>=` greater than or equal to opperator.
 
 ```{r}
 greater_than4<-deaths_perc_event %>% 
@@ -1294,7 +1335,16 @@ greater_than4
 ```
 Good, now we know the overall percentage for the events that unforuntately resulted in a larger number of deaths. 
 
-Now we can combine this with the rest of our data using the `bind_rows()` function of the `dplyr` package.
+Now we can combine this with the rest of our data using the `bind_rows()` function of the `dplyr` package which appends a tibble to another.
+
+
+
+```{r, echo = FALSE, outwidth = "40%"}
+knitr::include_graphics(here::here("img", "bindrows.png"))
+```
+
+##### [[source]](https://rstudio.com/resources/cheatsheets/)
+
 
 ```{r}
 deaths_perc_event %<>%  bind_rows(greater_than4)
@@ -1302,10 +1352,10 @@ deaths_perc_event %<>%  bind_rows(greater_than4)
 deaths_perc_event 
 ```
 
-Now we want to add a new variable so that it is easy to plot and interpet the number of deaths for each percentage. We will simply add the word "deaths" to each value in the `Killed (includes shooter)` variable using the base `paste()` function. Note that this function automatically will result in a space between pasted elements. If you didnt want a space you could specify for example an underscore using the `sep` argument. 
+Now we want to add a new variable so that it is easy to plot and interpet the number of deaths for each percentage. We will simply add the word "deaths" to each value in the `Killed (includes shooter)` variable using the base `paste0()` function. Note that this function automatically will result in no space or any other character between pasted elements. The `paste()` function can alternatively be used for those cases. 
 
 ```{r}
-deaths_perc_event %<>% mutate(category = paste(`Killed (includes shooter)`, "deaths")) 
+deaths_perc_event %<>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "(", percent, "%)")) 
 
 deaths_perc_event
 ```
@@ -1320,19 +1370,21 @@ last(pull(deaths_perc_event, category))
 ```
 
 
-Now we can use the `case_when()` function yet again to change this value. Note that we could have used a stringr function to replace the specific value of "85 deaths", but this would not be reproducible. Say we used this code again after the data got updated. Then there may be more deaths in this category and therefore this value would no longer be "85 deaths". Instead, by using `case_when()`, we can use an expression for the last value of the `deaths_perc_event` tibble and replace that, regardless of what the value is, with "4+deaths". Recall that `case_when()` replaces all other values that are not specified with `NA`. We do not want to lose the other values for the `category` variable. So to avoid this, we  assign each of the values that are not the last value to what they currently are for the `category` variable, using `TRUE ~ category`.
+Now we can use the `case_when()` function yet again to change this value. Note that we could have used a stringr function to replace the specific value of "85 deaths", but this would not be reproducible. Say we used this code again after the data got updated. Then there may be more deaths in this category and therefore this value would no longer be "85 deaths". Instead, by using `case_when()`, we can use an expression for the last value of the `deaths_perc_event` tibble and replace that, regardless of what the value is, with "4+deaths". Recall that `case_when()` replaces all other values that are not specified with `NA`. We do not want to lose the other values for the `category` variable. So to avoid this, we assign each of the values that are not the last value or the `"1 deaths"` value to what they currently are for the `category` variable, using `TRUE ~ category` (Note that all remaining unassigned values are indicated as `TRUE`).
+
+Note that we could actually type out the percentage of 4+death cases, but it is always more reproducible to instead use an expression that will evaluate to the value we want. This way if we were to update our data with additional shooting events, this evaluation would also update.
 
 ```{r}
 deaths_perc_event %<>% 
   mutate(category = case_when(
-    category ==  last(pull(deaths_perc_event, category)) ~ "4+ deaths",
+    category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "(", percent, "%)"),
     category == "1 deaths" ~ "1 death",
     TRUE ~ category))
 
 deaths_perc_event
 ```
 
-Looks as we hoped. Ok, now we are ready to make more plots. 
+Looks as we hoped. OK, now we are ready to make more plots. 
 
 First we will start with the pie chart. This is a bit of a controversial type of plot. However, it can be very useful when you are actually looking at percentages and the goal is to see major trends in the data, such as all the groups are roughly equal or one group is particularly larger than the rest. When this is the case and you are presenting the data to an audiance that is less familiar with data science, they may expect to see a pie chart. Thus it is useful to know how to make one. However, in most other cases pie charts do a poor job at allowing us to see more subtle differences, and they are particularly confusing when we are not looking at proportions but raw counts. In those cases it is better to use a bar chart as we have already done. 
 
@@ -1356,23 +1408,21 @@ deaths_perc_event %>%
 This is actually a fairly easy plot to interpret. We can see that most events resulted in zero deaths and that the next largest proportion resulted in one death, while a sizable but small proportion resulted in two deaths. A very small proportion resulted in three or four or more deaths.
 
 Now we will also create a waffle plot. This plot offers one advantage over the pie chart, in that it also allows for easier interpretation of more subtle proportion differences while also showing big picture differences in efficent manner. 
+First we need to filter for only the data that we want to plot. We only want the 0,1,2,3, or 4+ categories. We can do so by using the `str_detect()` function of the `stringr` package. This allows us to find the values that match multiple patterns. The patterns are separted by the `|` or opperator. Thus any value matching any of the patterns should be kept. 
 
-This requires that the data be in wide format. Thus we need to use `pivot_wider()` of the `tidyr` package to do so.
+The `waffle()` function requires that the data be in wide format. Thus we need to use `pivot_wider()` of the `tidyr` package to do so. This is very similar to the `pivot_longer()` function, however in this case we need to specify what existing column contains the names for the new columns using `names_from` and what existing column contains the values for the new columns using `values_from`. 
 
 ```{r}
 library(waffle)
 
 deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
-  filter(category %in% c("0 deaths", "1 death", "2 deaths", "3 deaths", "4+ deaths")) %>%
+  filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4+")) %>%
   mutate(percent = round(percent)) %>%
   select(-num_events) %>%
   tidyr::pivot_wider(names_from = category, 
                     values_from = percent) %>%
-  waffle::waffle(legend_pos = "bottom") +  scale_fill_viridis_d()
-  
-
-#colors = c("grey54", "black", "red","grey77", "#009bda" ),
-
+  waffle::waffle(legend_pos = "bottom", title="Deaths Per School Shooting", 
+       xlab="1 square ~ 1%") +  scale_fill_viridis_d()
 
 ```
 
@@ -1510,9 +1560,9 @@ knitr::include_graphics(here::here("img", "code_chunk.png"))
 
 ##### [[source]](https://ourcodingclub.github.io/tutorials/rmarkdown/)
 
-4) To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modifed to specify to create rows, than this same sytnax will be used to create rows. The number of dashes does not matter.
+4) To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modifed to specify to create rows, than this same sytnax will be used to create rows. The number of dashes does not matter. (This is a level 2 header in markdown, just like `##`)
 
-5) To add a page to a navigation bar (also called a navbar) the following syntax is used `=======`. The number of dashes does not matter.
+5) To add a page to a navigation bar (also called a navbar) the following syntax is used `=======`. The number of dashes does not matter. (This is a level 1 header in markdown, just like `#`)
 
 ### Layout
 
@@ -1556,6 +1606,8 @@ Here is an example, where two columns are created and then two tabs are added to
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "tab.png"))
 ```
+
+##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)
 
 ### Shiny
 
@@ -1651,6 +1703,7 @@ library(shiny)
 library(magrittr)
 library(tidyverse)
 library(forcats)
+library(stringr)
 library(leaflet)
 library(sf)
 library(rmapshaper)
@@ -1747,6 +1800,8 @@ Recall that `###` is used to add elements to columns and rows. Note that there i
 knitr::include_graphics(here::here("img", "tab.png"))
 ```
 
+##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)
+
 We don't actually want a header now, so we can simply use `###` without any text following it. Note that you can get away with not using the `###` but some elements will not render properly. 
 
 Now we will add a block of text describing the dashboard to the first column and we will add an image to the second column like the following. Notice that two astrix `**` around text makes them appear as bold and one `*` makes it appear as italic. See [this RStudio cheatsheet](https://rmarkdown.rstudio.com/lesson-15.html) for some basic markdown syntax for stylizing text:
@@ -1755,8 +1810,10 @@ Now we will add a block of text describing the dashboard to the first column and
 knitr::include_graphics(here::here("img", "markdownsyntax.png"))
 ```
 
+##### [[source]](https://rmarkdown.rstudio.com/lesson-15.html)
 
-Thus this is what the code for this page looks like:
+
+Thus this is what the code for this page looks like (notice that there is an internal link to the `Tutrial` page:
 
 ```
 About {data-icon="fa-question-circle"}
@@ -1804,7 +1861,7 @@ According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset
 
 **Want to learn how to create a dashboard just like this?**
 
-Visit the *Tutorial* page of this dashboard to first learn the basics about building a dashboard with the `flexdashboard` package.
+Visit the [*Tutorial*](#tutorial) page of this dashboard to first learn the basics about building a dashboard with the `flexdashboard` package.
 
 At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE), which provides more detailed information about how ***this dashboard*** was created.
 
@@ -1998,6 +2055,9 @@ After having specified the `.tabset` and `.tabset-fade` options, we can create n
 ```{r, echo=FALSE, out.width="60%"}
 knitr::include_graphics(here::here("img" , "tab.png"))
 ```
+
+##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)
+
 
 Let's make a tab for yearly shooting events and deaths, a tab for cumulative shooting events and deaths, and a tab about the number of deaths per shooting. In each tab we will include the code for the plots that we have previously created. 
 

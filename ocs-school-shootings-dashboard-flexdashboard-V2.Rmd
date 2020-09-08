@@ -19,6 +19,8 @@ library(shiny)
 library(magrittr)
 library(tidyverse)
 library(forcats)
+library(stringr)
+library(waffle)
 library(leaflet)
 library(sf)
 library(rmapshaper)
@@ -80,7 +82,7 @@ According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset
 
 **Want to learn how to create a dashboard just like this?**
 
-Visit the *Tutorial* page of this dashboard to first learn the basics about building a dashboard with the `flexdashboard` package.
+Visit the [*Tutorial*](#tutorial) page of this dashboard to first learn the basics about building a dashboard with the `flexdashboard` package.
 
 At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE), which provides more detailed information about how ***this dashboard*** was created.
 
@@ -263,24 +265,36 @@ ggplot(aes(x = Date_year, y = events, fill =id)) +
         strip.text = element_text(colour = 'white', face = "bold", size = 14))
 ```
 
-### Deaths per Shooting
+### Deaths Per Shooting
 
 ```{r}
-shooting_data_geocoded_us3 <- shooting_data_geocoded %>%
-    group_by(`Killed (includes shooter)`) %>%
-    summarize(N = n())
-shooting_data_geocoded_us3 %>%
-    ggplot(aes(x = `Killed (includes shooter)`, y = N)) +
-    geom_bar(stat = "identity", fill = "black") +
-  scale_x_continuous(breaks = seq(0,10, by = 1),
-                     labels = seq(0,10, by = 1),
-                     limits = c(-1,10)) +
-  scale_y_continuous() +
-    theme_minimal() +
-    labs(title = "Deaths per School Shooting",
-         subtitle = "United States",
-         x = "School Shootings",
-         y = "")
+deaths_perc_event <-shooting_data %>%
+   count(`Killed (includes shooter)`) %>%
+   rename("num_events"= n) %>%
+   mutate(percent = round(num_events/sum(num_events)*100, digits =1))
+
+greater_than4<-deaths_perc_event %>% 
+  filter(`Killed (includes shooter)` >= 4) %>% 
+  colSums()
+
+deaths_perc_event %<>%  bind_rows(greater_than4)
+
+deaths_perc_event %<>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
+deaths_perc_event %<>% 
+  mutate(category = case_when(
+    category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "\n(", percent, "%)"),
+    category == "1 deaths" ~ "1 death",
+    TRUE ~ category))
+
+deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
+  filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4+")) %>%
+  mutate(percent = round(percent)) %>%
+  select(-num_events) %>%
+  tidyr::pivot_wider(names_from = category, 
+                    values_from = percent) %>%
+  waffle::waffle(legend_pos = "bottom", title = "Deaths Per School Shooting", 
+       xlab="1 square ~ 1%")+  scale_fill_viridis_d()
+
 ```
 
 Column {data-width=300}
