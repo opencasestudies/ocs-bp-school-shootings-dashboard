@@ -117,7 +117,6 @@ knitr::include_graphics(here::here("img", "nathan-dumlao-xPHmmVKS8lM-unsplash.jp
 The Data {data-icon="fa-database"}
 ===================================== 
 
-
 Column {data-width=70}
 -------------------------------------
 
@@ -132,7 +131,6 @@ According to their website:
 >*"This database was developed from open-source information and may include reporting errors."*
 
 ***
-
 
 ```{r, echo=FALSE}
 # Create the DT table first
@@ -222,8 +220,6 @@ per_year %>%
         strip.background =element_rect(fill="cornflowerblue"),
       strip.text = element_text(colour = 'white', face = "bold", size = 14))
 ```
- 
- 
 
 ### Yearly Cumulative Deaths and Shootings
 
@@ -304,14 +300,15 @@ Column {data-width=300}
 ### **Total Wounded**
     
 ```{r}
-valueBox(sum(pull(shooting_data, Wounded), na.rm = TRUE),
+valueBox(value = sum(pull(shooting_data, Wounded), na.rm = TRUE),
          color = "white")
 ```
     
 ### **Total Deaths**
 
 ```{r}
-valueBox(sum(pull(shooting_data_geocoded,`Killed (includes shooter)`), na.rm = TRUE),
+valueBox(value = sum(pull(
+  shooting_data,`Killed (includes shooter)`), na.rm = TRUE),
          color = "white")
 ```
 
@@ -319,11 +316,9 @@ valueBox(sum(pull(shooting_data_geocoded,`Killed (includes shooter)`), na.rm = T
 ### **Median Shots Fired**
 
 ```{r}
-valueBox(
-  round(
-  median(pull(shooting_data_geocoded,`Number of Shots Fired`),
-      na.rm = TRUE),
-  2),
+valueBox(value = round(median(
+  pull(shooting_data,
+      `Number of Shots Fired`), na.rm = TRUE), 2),
   color = "white")
 ```
 
@@ -332,43 +327,37 @@ valueBox(
 ```{r}
 
 suicide <- sum(pull(shooting_data,`Suicide (Shooter was only victim) Y/N/ N/A`),
-               na.rm = TRUE)/ sum(pull(shooting_data,`Killed (includes shooter)`), na.rm = TRUE)
-suicide <- format(round(suicide*100, 1), nsmall = 1)
-valueBox(paste0(suicide,"%"), color = "white")
+               na.rm = TRUE)/ sum(pull(shooting_data,`Killed (includes shooter)`)>0, na.rm = TRUE)
+suicide <- round(suicide*100, 1)
+
+valueBox(value = paste0(suicide,"%"), 
+         color = "white")
 ```
 
 ### **Use of a Single Handgun**
 
 ```{r}
 
-valueBox(
-  paste(
-    as.character(
-    round(
-      100 * (sum(
-    ifelse(pull(shooting_data,`Firearm Type`) == "Handgun",
-                TRUE,
-                FALSE), na.rm = TRUE)
+valueBox(value = 
+  paste(as.character(round(100 *(sum(case_when(
+      pull(shooting_data,`Firearm Type`) == "Handgun" ~ TRUE,
+                                                 TRUE ~ FALSE), na.rm = TRUE)
     /
-      length(shooting_data_geocoded$`Firearm Type`)),
+      length(pull(shooting_data,`Firearm Type`))),
     1)), "%"),
   color = "white")
 ```
 
-
 ### **Shooter Was Male**
 
 ```{r}
-valueBox(
-  paste(
-    as.character(
-    round(
-      100 * (sum(
-    ifelse(pull(shooting_data,`Shooter Gender`) == "Male",
-                TRUE,
-                FALSE), na.rm = TRUE)
+valueBox(value =
+  paste(as.character(round(100 * (sum(
+    case_when(pull(shooting_data,`Shooter Gender`) == "Male" ~ TRUE,
+                                                        TRUE ~ FALSE),
+                                      na.rm = TRUE)
     /
-      length(shooting_data_geocoded$`Firearm Type`)),
+      length(shooting_data$`Shooter Gender`)),
     1)), "%"),
   color = "white")
 ```
@@ -443,8 +432,6 @@ per_year %<>%
 
 })
 ```
- 
- 
 
 ### Yearly Cumulative Deaths and Shootings
 
@@ -551,7 +538,7 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
 ```
 
 Column {data-width=100}
-------------------------------------- 
+-----------------------------------------------------------------------
 
 ### **Total Deaths**
 
@@ -624,7 +611,6 @@ valueBox(pull(shooting_data_state, poprank),
          color = "white")
 })
 ```
-
 
 ### **State Death Rank vs. Expectation Based Only on Population Rank **
 ```{r}
