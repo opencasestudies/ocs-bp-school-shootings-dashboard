@@ -2422,7 +2422,284 @@ RMarkdown Dashboard Structure
 
 
 
-We then create the next page, **State Statistics** 
+### Sate Statistics Page.
+
+Now we will create the next page, the **State Statistics**  page. On this page we want to be able to select data for a specific state and render plots and get statistics just for the selected state. To do this we will utalize the `renderPlot()` and `renderValueBox()` functions of the `flexdashboard` package, as well as the `selectInput()` function of the `shiny` package.
+
+The `selectInput()` function allows us to provide the user with a pull down menu of options for states. The main arguments for this function are:
+1) inputId - this is what the selection will be called in subsequent code
+2) label - this is what the user sees above the pull down menu
+3) choices - this is a list of options for the menu
+4) selected - this causes a particular option to be the default choice
+
+This is placed in a column on the far left side that is more narrow than the others. 
+
+```
+State Statistics {data-icon=fa-flag-checkered}
+===================================== 
+
+Column {.sidebar data-width=250}
+-----------------------------------------------------------------------
+
+'''{r}
+selectInput(inputId = "state_selected", 
+              label = "Select a state to explore:",
+            choices = unique(shooting_data%>%
+                             filter(!is.na(State)) %>%
+                             pull(State)), selected = "Maryland")
+
+#  Washington, D.C. gets excluded by this
+'''
+
+Column {data-width=750 .tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Yearly Deaths and Shootings
+
+'''{r}
+
+renderPlot({
+
+shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
+
+shootings_per_year<- shooting_data_state  %>%
+    group_by(Date_year) %>%
+    count() %>%
+  rename("Shootings" = n) %>%
+    ungroup()
+
+deaths_per_year<-shooting_data_state  %>% 
+  group_by(Date_year) %>%
+  summarize(Deaths =sum(`Killed (includes shooter)`))
+
+
+per_year<-full_join(shootings_per_year, deaths_per_year)
+per_year %<>%pivot_longer( cols = (-Date_year), 
+                           values_to = "events", 
+                           names_to = "id")
+
+per_year%<>% 
+  mutate(id = forcats::fct_inorder(id))
+
+per_year %<>%
+    ggplot(aes(x = Date_year, y = events, fill =id)) +
+    geom_col()+
+    facet_grid(~id)+
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start-1, end+1)) +
+    theme_minimal() +
+   labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
+         subtitle = input$state_selected,
+         y = "Number of events",
+         x = "Year")+
+  scale_fill_manual(values = c("black", "black"))+
+  theme(legend.position = "none", 
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90),
+        strip.background =element_rect(fill="cornflowerblue"),
+      strip.text = element_text(colour = 'white', face = "bold", size = 14))
+
+})
+'''
+ 
+ 
+
+### Yearly Cumulative Deaths and Shootings
+
+'''{r}
+
+renderPlot({
+
+shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
+
+shootings_per_year<- shooting_data_state  %>%
+    group_by(Date_year) %>%
+    count() %>%
+  rename("Shootings" = n) %>%
+    ungroup()
+
+shootings_per_year_cum <- shootings_per_year %>%
+    mutate(Shootings = cumsum(Shootings))
+
+deaths_per_year<-shooting_data_state  %>% 
+  group_by(Date_year) %>%
+  summarize(Deaths =sum(`Killed (includes shooter)`))
+
+
+deaths_per_year_cum <- deaths_per_year %>%
+    mutate(Deaths= cumsum(Deaths))
+
+
+per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
+
+
+per_year_cum %<>%pivot_longer( cols = c(Shootings,
+                                        Deaths ), 
+                           values_to = "events", 
+                           names_to = "id")
+per_year_cum%<>% 
+  mutate(id = forcats::fct_inorder(id))
+
+per_year_cum %>%
+ggplot(aes(x = Date_year, y = events, fill =id)) +
+    geom_col()+
+    facet_grid(~id)+
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start-1, end+1)) +
+    scale_fill_manual(values = c("black", "black"))+
+    theme_minimal() +
+    labs(title = "Cumulative Yearly Shootings and Deaths\nAttributable to School Shootings",
+         subtitle = input$state_selected,
+         y = "Cumulative number of events",
+         x = "Year") +
+    theme(legend.position = "none", 
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90),
+        strip.background = element_rect(fill="cornflowerblue"),
+        strip.text = element_text(colour = 'white', face = "bold", size = 14))
+
+})
+
+'''
+
+### Deaths Per Shooting
+
+'''{r}
+
+renderPlot({
+
+shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
+library(tidyr)
+deaths_perc_event <-shooting_data_state %>%
+   count(`Killed (includes shooter)`) %>%
+   rename("num_events"= n) %>%
+     tidyr::drop_na() %>%
+   mutate(percent = round(num_events/sum(num_events)*100, digits =1))
+
+
+greater_than4<-deaths_perc_event %>% 
+  filter(`Killed (includes shooter)` >= 4) %>% 
+  colSums()
+
+deaths_perc_event %<>%  bind_rows(greater_than4)
+
+deaths_perc_event %<>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
+deaths_perc_event %<>% 
+  mutate(category = case_when(
+    category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "\n(", percent, "%)"),
+    category == "1 deaths" ~ "1 death",
+    TRUE ~ category))
+
+deaths_perc_event %<>%filter (!duplicated(category))
+
+deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
+  filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4+")) %>%
+  mutate(percent = round(percent)) %>%
+  select(-num_events) %>%
+  tidyr::pivot_wider(names_from = category, 
+                    values_from = percent) %>%
+  waffle::waffle(legend_pos = "bottom", title = "Deaths Per School Shooting", 
+       xlab="1 square ~ 1%")+  scale_fill_viridis_d()
+
+})
+
+'''
+
+Column {data-width=300}
+------------------------------------- 
+
+### **Total Deaths**
+
+'''{r}
+renderValueBox({
+shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
+
+valueBox(sum(pull(shooting_data_state,`Killed (includes shooter)`), na.rm = TRUE),
+         color = "white")
+})
+'''
+
+### **US State Average Death Count**
+'''{r}
+
+shooting_data_state <-shooting_data %>% 
+  group_by(State_abb, State) %>%
+    count(na.rm = TRUE) %>%
+  rename(shootings = n) %>%
+  ungroup() %>%
+mutate(state_sum = sum(shootings)) %>%
+  mutate(state_avg = state_sum/50) %>%
+  mutate(shooting_rank = rank(-shootings))
+
+state_data <- poliscidata::states
+state_data %<>%
+  select(stateid, pop2010) %>%
+  mutate(poprank = rank(-pop2010)) %>%
+  mutate(stateid = as.character(stateid))%>%
+  mutate(stateid = str_remove_all(stateid, pattern = " "))
+
+shooting_data_state<-full_join(shooting_data_state, state_data, by = c("State_abb" = "stateid"))
+
+deaths_State <-shooting_data %>% 
+  group_by(State) %>%
+ summarise(wounded = sum(Wounded, na.rm = TRUE),
+            deaths = sum(`Killed (includes shooter)`, na.rm = TRUE))%>%
+  mutate(wounded_rank = rank(-wounded),
+         death_rank = rank(-deaths)) %>%
+  drop_na()
+
+state_data <-left_join(shooting_data_state, deaths_State)
+
+USavg<- mean(pull(state_data, deaths), na.rm = TRUE)
+valueBox(USavg,
+         color = "white")
+
+'''
+
+### **State Death Rank (1 is highest)**
+
+'''{r}
+renderValueBox({
+shooting_data_state<- state_data[state_data$State == input$state_selected, ]
+shooting_data_state %<>%drop_na()
+
+valueBox(pull(shooting_data_state, death_rank),
+         color = "white")
+})
+'''
+
+### **State Population Rank (1 is highest)**
+
+'''{r}
+renderValueBox({
+shooting_data_state <- state_data[state_data$State == input$state_selected, ]
+shooting_data_state %<>%drop_na()
+
+valueBox(pull(shooting_data_state, poprank),
+         color = "white")
+})
+'''
+
+
+### **State Death Rank vs. Expectation Based Only on Population Rank **
+'''{r}
+renderValueBox({
+shooting_data_state <- state_data[state_data$State == input$state_selected, ]
+shooting_data_state %<>%drop_na()
+
+difference <-pull(shooting_data_state, death_rank) - pull(shooting_data_state, poprank)
+valueBox(case_when(difference > 0 ~ "Lower than expected",
+                   difference < 0 ~ "Higher than expected",
+                   TRUE ~ "As expected"), 
+color = ifelse(difference< 0,  "coral", "lightgreen"))
+})
+'''
+
+
+```
+
 
 ```
 State Statistics {data-icon=fa-flag-checkered}
@@ -2553,7 +2830,6 @@ Column {data-width=1000}
     
 '''{r}
 # would be a great idea to add a slider here if possible
-# good site for icons https://iconarchive.com/
 
 shooting_information0 <- paste('<div style="height:auto;line-height:1em;overflow:visible;padding:5px;">',
                               shooting_data_geocoded$Date,
