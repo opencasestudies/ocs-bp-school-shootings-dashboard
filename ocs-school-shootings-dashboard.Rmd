@@ -341,8 +341,7 @@ According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset
 
 # **Data Import**
 *** 
-
-To import the raw data file we will use the `read_csv()` function of the `readr` package. 
+Since we downlaoded the csv file from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) website we can import this raw data file using  the `read_csv()` function of the `readr` package. 
 
 We will use the `here()` function of the `here` package to easily locate the data within the `raw_data` directory within the directory that contains the .Rproj file.
 
@@ -375,6 +374,43 @@ We can also use the utils `str()` function to see more detials about the values.
 # Scroll through the output!
 str(shooting_data)
 ```
+
+
+Alternatively, if we wanted to make a dashboard that continuely updated we could do the following to import the data directly from the googlesheets document.
+
+To do so we will use the `read_sheet()` function of the `googlesheets4` package. Typically authentication is required, which is genearlly simple, but since this is a public sheet we don't need to worry about authentication. To avoid this we need to use the `gs4_deauth()` function which puts the package into a de-authorized state. 
+
+
+
+```{r}
+googlesheets4::gs4_deauth()
+```
+
+Great, now we need to get the shared link from the document. We can do so by clicking on the link to the actually google sheets document like so:
+```{r, echo = FALSE, outwidth = "50%"}
+knitr::include_graphics(here::here("img", "gettodoc.png"))
+```
+
+Then we will click on the shared button to get access to the link:
+
+```{r, echo = FALSE, outwidth = "50%"}
+knitr::include_graphics(here::here("img", "gettoshare.png"))
+```
+
+Finally we will click on the shared button to get access to the link:
+
+```{r, echo = FALSE, outwidth = "50%"}
+knitr::include_graphics(here::here("img", "getlink.png"))
+```
+
+
+```{r eval = FALSE}
+
+googlesheet_data <- read_sheet("https://docs.google.com/spreadsheets/d/1HqbfMxnk9X3_mQvLyW_LEUe3Yyr7cXMPfwqUVfdq7sY/edit?usp=sharing")
+
+```
+
+We chose not to do this for this case study to allow this tutorial to be more easily maintianed over time.
 
 ####
 
@@ -1426,8 +1462,6 @@ avocado- how do you feel about including this tutorial - it is very good - and n
 
 ## Flexdashboard
 
-avocado add description of valueboxes
-
 There are several important features about the R markdown that the `flexdashboard` package utilizes. 
 
 These are used to specify the layout and elements of the dashboard.
@@ -1457,12 +1491,18 @@ knitr::include_graphics(here::here("img", "yaml_dashboard.png"))
 
 We will describe this in more detail soon.
 
-2) Components within the dashboard are delinated by using `###` - if you are familiar with markdown notation, this is a level 3 markdown header.
+2) To add a page to a navigation bar (also called a navbar) the following syntax is used `=======`. The number of dashes does not matter. (This is a level 1 header in markdown, just like `#`)
+
+
+3) To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modifed to specify to create rows, than this same sytnax will be used to create rows. The number of dashes does not matter. (This is a level 2 header in markdown, just like `##`) avocado - you can also set a page to be rowwise
+
+
+4) Components within the dashboard are delinated by using `###` - if you are familiar with markdown notation, this is a level 3 markdown header.
 
 If this includes text like so: `### text`, this adds header text to the component, however this is not required. 
 
 
-3) To  include a plot or any output from R, use the following syntax:
+5) To  include a plot or any output from R, use the following syntax:
 `"```{r}"` on it's own line followed by your code, followed by `"```"`. This creates what is called a code chunk.
 
 ```{r, echo = FALSE}
@@ -1471,9 +1511,56 @@ knitr::include_graphics(here::here("img", "code_chunk.png"))
 
 ##### [[source]](https://ourcodingclub.github.io/tutorials/rmarkdown/)
 
-4) To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modifed to specify to create rows, than this same sytnax will be used to create rows. The number of dashes does not matter. (This is a level 2 header in markdown, just like `##`)
 
-5) To add a page to a navigation bar (also called a navbar) the following syntax is used `=======`. The number of dashes does not matter. (This is a level 1 header in markdown, just like `#`)
+6)  Another component of flexdashboards is value boxes. These are essentially text boxes for statistics  or text that you  might like feature or emphasize. To do this again the `###` syntax is used to put a text label describing what the value box contains followed by a code chunk that uses the `valueBox()` function of the `flexdasboard` package. The value to display is specified using the `value` argument, as well as optional other aspects using additional arguments, such as the color of the value box using the `color` argument like the example below:
+
+```
+### ValueBoxText
+
+'''{r}
+valueBox(value = 10
+  color = "white")
+
+'''
+```
+
+Note that in our examples of code we will use `"'''"` instead of `"```"`. This is only to allow for easy viewing of examples. All code chunks require `"```"`.
+
+Here you can see a more thurough example which includes icons:
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "valuebox.png"))
+```
+
+##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/using.html#value_boxes)
+
+6) Instead of value boxes you can also include a slight variation called a guage. These are created with the `guage()` function of the `flexdashboard` package. This requires numeric values for a `value`, a `min`, and a `max` argument. Optionally, a symbol can also be added with the `symbol` argument. The value argument does not have to be explicitly called though, which is also true of the `valueBox()` function.
+
+Here is a simple example:
+
+```
+### GuageText
+
+'''{r}
+flexdashboard::gauge(value = 10, 
+                       min = 0, 
+                       max = 100, 
+                    symbol = "%")
+
+'''
+```
+
+This creates the following output:
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "guage_output.png"))
+```
+
+Here is a more complicated example:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "guage.png"))
+```
+
+##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/using.html#value_boxes)
 
 ## Layout
 
@@ -1602,6 +1689,7 @@ Also see the cran [documentation](https://cran.r-project.org/web/packages/flexda
 Since we are creating our dashboard in a new Rmd file, we need to load the necessary packages and the wrangled data that we created in this Rmd file. In that Rmd file, it looks something like this. Note that all the rest of the code shown would be added to the Rmd file for the dashboard and are simply shown here for illustrative purposes.
 
 ```{r,eval = FALSE}
+library(googlesheets4)
 library(here)
 library(flexdashboard)
 library(shiny)
@@ -1682,7 +1770,7 @@ OK, now we will start with the About page.
 
 This is what the page will look like:
 
-```{r, echo=FALSE, out.width="60%"}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "aboutpagelook.png"))
 ```
 
@@ -1842,7 +1930,7 @@ Now Let's create a page about the data that we are using.
 
 This is what the page will look like:
 
-```{r, echo=FALSE, out.width="60%"}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "The_Data_Page.png"))
 ```
 
@@ -1991,7 +2079,7 @@ Now Let's create a page for **US Statistics** we would like to share.
 ### Look
 This is what the page will look like:
 
-```{r, echo=FALSE, out.width="60%"}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "US_Statistics_page.png"))
 ```
 
@@ -2279,7 +2367,7 @@ Now Let's create a page for **State Statistics** we would like to share.
 
 This is what the page will look like:
 
-```{r, echo=FALSE, out.width="60%"}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "State_Statistics_page.png"))
 ```
 
@@ -2735,7 +2823,7 @@ Note that `leaflet` can require a lot of computational power depending on the ty
 
 This is what the page will look like:
 
-```{r, echo=FALSE, out.width="60%"}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "The_Map_Page.png"))
 ```
 
@@ -2850,10 +2938,21 @@ Now we will create a **Tutorial** page that links to this case study. This will 
 
 ### Look
 
+This is what the page will look like:
+
+```{r, echo=FALSE}
+knitr::include_graphics(here::here("img" , "the_Tutorial_Page.png"))
+```
+
+
 ### Overall Structure
 
 To create this page we will use a sepecial layout called a [storyboard](https://en.wikipedia.org/wiki/Storyboard). Story boards are used in many other fields but the idea is that there are multiple images in a sequence. To create our storyboard page with `flexdashboard` we will use `{.stroyboard}` next to the page name. Then each page name will be specified using this syntax: `###`. 
 
+Here you can see the top part of the overall structure:
+```{r, echo=FALSE}
+knitr::include_graphics(here::here("img" , "tutorialStructure.png"))
+```
 
 ### Details
  The code for this page is fairly straightforward. 

@@ -316,11 +316,52 @@ valueBox(value = sum(pull(
 ### **Median Shots Fired**
 
 ```{r}
+
 valueBox(value = round(median(
   pull(shooting_data,
       `Number of Shots Fired`), na.rm = TRUE), 2),
   color = "white")
+
 ```
+
+### **Shooter was bullied**
+
+```{r}
+valueBox(value =
+  paste(as.character(round(100 * (sum(pull(shooting_data,`Bullied (Y/N/ N/A)`), na.rm = TRUE)
+    /
+      shooting_data %>% filter(! is.na(`Bullied (Y/N/ N/A)` )) %>% pull(`Bullied (Y/N/ N/A)`) %>% length()),
+    1)), "%"),
+  color = "white",
+  caption = paste0(as.character(round(shooting_data %>% filter(! is.na(`Bullied (Y/N/ N/A)` )) %>% pull(`Bullied (Y/N/ N/A)`) %>% length()/ shooting_data %>%pull(`Bullied (Y/N/ N/A)`) %>% length() *100), 1), "% reporting"))
+```
+
+### **Shooter experienced domestic violence**
+
+```{r}
+valueBox(value =
+  paste(as.character(round(100 * (sum(pull(shooting_data,`Domestic Violence (Y/N)`),
+                                      na.rm = TRUE)
+    /
+     shooting_data %>% filter(! is.na(`Domestic Violence (Y/N)` )) %>% pull(`Domestic Violence (Y/N)`) %>% length()),
+    1)), "%"),
+  color = "white")
+
+```
+
+### **Shooter planned attack**
+
+```{r}
+valueBox(value =
+  paste(as.character(round(100 * (sum(pull(shooting_data,`Pre-planned school attack`),
+                                      na.rm = TRUE)
+    /
+      shooting_data %>% filter(! is.na(`Pre-planned school attack` )) %>% pull(`Pre-planned school attack`) %>% length()),
+    1)), "%"),
+  color = "white")
+
+```
+
 
 ### **Shooter Was Only Victim**
 
@@ -357,10 +398,11 @@ valueBox(value =
                                                         TRUE ~ FALSE),
                                       na.rm = TRUE)
     /
-      length(shooting_data$`Shooter Gender`)),
+      length(pull(shooting_data, `Shooter Gender`))),
     1)), "%"),
   color = "white")
 ```
+
 
 
 State Statistics {data-icon=fa-flag-checkered}
@@ -613,6 +655,7 @@ valueBox(pull(shooting_data_state, poprank),
          color = "white")
 })
 ```
+
 
 ### **State Death Rank vs. Expectation Based Only on Population Rank **
 ```{r}
@@ -874,3 +917,6 @@ Column {data-width=400}
 Call 911 if you feel there is an immediate threat. 
 
 Call [+1-844-5-SAYNOW](tel:18445729669) if you would to submit an anonymous safety concern.
+
+
+
