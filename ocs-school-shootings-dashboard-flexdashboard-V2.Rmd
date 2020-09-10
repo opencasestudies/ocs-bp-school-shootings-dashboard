@@ -369,6 +369,8 @@ State Statistics {data-icon=fa-flag-checkered}
 Column {.sidebar data-width=200}
 -----------------------------------------------------------------------
 
+Note that the statistics shown do not account for other possibly influential state specific features like population density or gun laws among others.
+
 ```{r}
 selectInput(inputId = "state_selected", 
               label = "Select a state to explore:",
@@ -631,64 +633,49 @@ color = ifelse(difference< 0,  "coral", "lightgreen"))
 Map {data-icon="fa-map"}
 ===================================== 
 
-Column {data-width=1000}
+Column
 ------------------------------------- 
     
 ### 
-    
-```{r}
-# would be a great idea to add a slider here if possible
 
-shooting_information0 <- paste('<div style="height:auto;line-height:1em;overflow:visible;padding:5px;">',
+This map shows where school shootings took place in the United States between January 1970 to June 2020 according to the the open-source [Center for Homeland Defense and Security](https://www.chds.us/c/) (CHDS) [K-12 School Shooting Database](https://www.chds.us/ssdb/dataset/). 
+   
+```{r}
+# Specify the popups
+
+shooting_information0 <- paste('<div style="height:auto;line-height:1em;overflow:scroll;padding:1em">',
                               shooting_data$Date,
                               "<b>",
                               shooting_data$School,
                               "</b>",
                               shooting_data$`Narrative (Detailed Summary/ Background)`,
                               "</div>",
-                              sep = "<br/>"
-)
+                              sep = "<br>")
+```
 
-# icon_set <- icons(
-#   iconUrl = case_when(shooting_data_geocoded$`Firearm Type`=="Handgun" ~ "https://icons.iconarchive.com/icons/icons8/windows-8/48/Military-Gun-icon.png",
-#                       shooting_data_geocoded$`Firearm Type`=="Rifle" ~ "https://icons.iconarchive.com/icons/icons8/windows-8/48/Military-Rifle-icon.png",
-#                       TRUE ~ "https://icons.iconarchive.com/icons/dryicons/aesthetica-2/48/page-search-icon.png"),
-#   iconWidth = 20,
-#   iconHeight = 20
-# )
+```{r}
+#Create the map!
 
 leaflet(shooting_data_geocoded) %>%
   addProviderTiles(provider = providers$OpenStreetMap, group = "OpenStreetMap") %>%
   addProviderTiles(provider = providers$Esri.WorldImagery, group = "ESRI World Imagery") %>%
-  addProviderTiles(provider = providers$Stamen.TonerLite, group = "Toner Lite") %>%
+  addProviderTiles(provider = providers$Stamen.TonerLite, group = "Toner")%>%
   addCircleMarkers(popup = ~shooting_information0,
-                   lng = ~longitude,
-                   lat = ~latitude,
-    radius = 5,
-    color = "red",
-    fillOpacity = 0.2,
-    stroke = TRUE,
-    clusterOptions = markerClusterOptions(),
-    group = "Circles") %>%
-  # addMarkers(lng = ~longitude,
-  #                  lat = ~latitude,
-  #            popup = ~shooting_information0,
-  #                  icon = icon_set,
-  #                  group = "TESTER") %>%
+                     lng = ~longitude,
+                     lat = ~latitude,
+     radius = 5,
+     color = "red",
+     fillOpacity = 0.2,
+     clusterOptions = markerClusterOptions(),
+     group = "Circles") %>%
   addMiniMap(tiles = providers$Stamen.Toner,
-             toggleDisplay = TRUE,
-             minimized = FALSE) %>%
+              toggleDisplay = TRUE) %>%
   addLayersControl(
-    baseGroups = c("Toner Lite",
-                   "OpenStreetMap",
-                   "ESRI World Imagery"),
-    overlayGroups = c("Circles"),
-    # overlayGroups = c("Circles", "TESTER"),
-    options = layersControlOptions(collapsed = TRUE)
-  ) %>%
-  setView(lng = -98.35, lat = 39.5, zoom = 4)
-# hideGroup(c("Circles", "TESTER"))
-# need to jitter coordinates by a few meters for repeats
+     baseGroups = c("Toner Lite",
+                    "OpenStreetMap",
+                    "ESRI World Imagery"),
+     overlayGroups = c("Circles")) %>%
+   setView(lng = -98.35, lat = 39.5, zoom = 4)
 ```
 
 
@@ -698,19 +685,22 @@ Tutorial {.storyboard data-icon="fa-list-ol"}
 
 ### **1)** Load the `flexdashboard` package.
 
-Install the package if you don't have the package installed already
+Install the package (and other supporting optional packages) if you don't have them installed already.
 
 ```{r, echo=TRUE, eval=FALSE}
 install.packages("flexdashboard")
 install.packages("shiny")
+install.packages("leaflet")
+install.packages("ggplot2")
 ```
 
-Once installed, the package is ready to be loaded into the `R` environment.
+Once installed, load the package(s) into the `R` environment.
 
 ```{r, echo=TRUE}
 library(flexdashboard)
 library(shiny)
-
+library(leaflet)
+library(ggplot2)
 ```
 
 This all needs to be done separately in the `R` console.
@@ -719,26 +709,29 @@ This all needs to be done separately in the `R` console.
 
 Dashboards can be created with `flexdashboard` in the `HTML` format. 
 
-`flexdashboard` uses `RMarkdown` to produce dashboards that can contain `R` output.
+The`flexdashboard` package uses `RMarkdown` to produce dashboards that can contain `R` output.
 
-This makes it possible to include several mediums in our dashboard such as plots created with `ggplot` or maps created with `leaflet`.
+This makes it possible to include several mediums in dashboards such as plots created with `ggplot2` or maps created with `leaflet`.
     
 ### **3)** Create an appropriate `YAML`.
 
-The use of `flexdashboard` alters the way `RMarkdown` documents function. These altered functions are largely dependent on the metadata we use to produce the dashboard. Metadata for the dashboard can be configured in the `YAML` of the `RMD`. 
+The use of `flexdashboard` alters the way R Markdown documents function. 
 
-An `HTML` document created with `RMarkdown` includes a `YAML` that is some variation of this:
+R Markdown documents can be rendered into many different outputs, one of which is a dashboard. 
+The `YAML` header sets up how the document output should be created.
+
+Here is an example of a `YAML` header that creates an `HTML` document from an R Markdown document:
 
 ```
 ---
 title: "Untitled"
-author: "Michael Ontiveros"
+author: "John Smith"
 date: "8/12/2020"
 output: html_document
 ---
 ```
 
-We used the following `YAML` for this dashboard:
+We used the following `YAML` for this dashboard, which impotantly includes `flexdahsboard::flex_dashboard`which specifies that a dashboard should be created and `runtime:shiny` which allows for the dashboard to be interactive:
 
 ```
 output: 
@@ -751,48 +744,45 @@ output:
 runtime: shiny
 ```
 
-We introduce an icon, provide a theme with a color scheme, define the orientation (and thus order) of coded output, include the code used, limit scrolling, and allow `shiny` widgets to be used.
+We also introduced an icon as a logo, provided a theme with a color scheme, defined the orientation (and thus order) of coded output, added a navigation bar item to give users easy access to the code used, and  limited scrolling with the `verticle_layout: fill` option.
 
 ### **4)** Design the layout of the dashboard.
 
-Dashboards are inherently visual, making this step the most time intensive after content creation. We need to present the data in a way that is both meaning and visually appealing.
+Dashboards are inherently visual, making this step the most time intensive after content creation. To goal is to present the data in a way that is both meaningingful and visually appealing.
 
-On this dashboard, we wanted to present static plots of the United States and of individual states. We also wanted to display the locations of school shootings and provide some information about school shootings. Aside from being a dashboard, we wanted to create an educational resource that was reproducible for others. Lastly, as a sensitive topic, we wanted to raise awareness and provide information that could help others act.
+On this dashboard, we wanted to present static plots of the United States and of individual states. We also wanted to display the locations of school shootings and provide some information about school shootings. Aside from being a dashboard, we wanted to create an educational resource that was reproducible for others. Lastly, as this is a sensitive topic, we wanted to raise awareness and provide information that could help others act.
 
 Given these goals, we decided on the following page layout:
 
++ About
 + The Data
 + US Statistics
 + State Statistics
 + Map
-+ About
 + Tutorial
 + Hotline
-+ Source Code
 
-This layout ensured that we did to not include too many components.
-
-The first page gives users to the opportunity to look at the data themselves. More complicated components such as the map of each incident were left alone on a single page. US and state-level statistics were separated from one another. This short tutorial on how to create the dashboard and source code were included in the dashboard with programmers at all levels in mind. The goals of the dashboard and actionable information were each given separate pages from the output. 
-
-For your dashboard, this may take as long as the output you would like to share took you to produce. 
+The first page gives users to the opportunity to look at the data themselves. More complicated components such as the map of each incident were left alone on a single page. US and state-level statistics were separated from one another. This short tutorial on how to create the dashboard and source code were included in the dashboard with programmers at all levels in mind.
 
 ### **5)** Add content to the dashboard.
 
 You can begin adding content to the dashboard once you have an initial layout in mind. Keep in mind that this will likely be an iterative process. 
 
-The `RMarkdown` file used to create a dashboard with `flexdashboard` works similarly to any other `RMarkdown`. There are some exceptions.
+The R Markdown file used to create a dashboard with `flexdashboard` works similarly as it does in other cases, with a few exceptions.
 
-```{r, echo = TRUE}
-# This output was created with chunk options: {r, echo = TRUE}
-paste("Code chunks can be explicitly included")
+R code chunks can be defined like so:
+
 ```
+'''{r, echo = TRUE}
+# Code chunks can be explicitly included
+'''
 
-```{r}
-# This output was created with chunk options: {r}
-paste("Code chunks are hidden by default")
+'''{r, echo = FALSE}
+
+# Code chunks are hidden by default 
+'''
 ```
-
-Pages and columns within pages can be defined.
+Pages and columns within pages can be defined like so:
 
 ```
 Page
@@ -805,7 +795,30 @@ Column {data-width=500}
 -------------------------------------
 ```
 
-As mentioned before, the `flexdashboard` metadata included in the `YAML` does also alter how `RMarkdown` functions. For more on how you can leverage both `RMarkdown` and `flexdashboard` to produce a dashboard, click [here](https://rmarkdown.rstudio.com/flexdashboard/index.html).
+### **6)** Add content to the pages and columns.
+
+Plots and other elements can be added within columns like so:
+```
+### Plot name
+
+'''{r}
+# include plot code here
+'''
+```
+Value Boxes, which are essentially text boxes can be defined like so:
+
+```
+### ValueBoxText
+
+'''{r}
+valueBox(value = 10
+  color = "white")
+
+'''
+```
+
+### Additional Info
+As mentioned before, the `flexdashboard` metadata included in the `YAML` also alters how R Markdown documents are rendered. For more on how you can leverage both the `RMarkdown` package and the `flexdashboard` package to produce a dashboard, click [here](https://rmarkdown.rstudio.com/flexdashboard/index.html).
 
 This [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE) provides a case study on how to create this very dashboard in more detail.
 

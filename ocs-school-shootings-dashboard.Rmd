@@ -527,50 +527,6 @@ Looks good!
 
 
 
-from Michael:
-```{r, eval = FALSE}
-shooting_data_geocoded <- read_csv(here("processed_data",
-              "shooting_data.csv"))
-shooting_data_geocoded <- shooting_data_geocoded %>%
-  filter(!is.na(longitude),
-         !is.na(latitude)) %>%
-  sf::st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
-  
-  st_transform(crs = 102008) %>%
-  st_jitter(amount = 50) %>%
-  st_transform(crs = 4326) %>%
-  mutate(longitude = st_coordinates(.)[,1],
-         latitude = st_coordinates(.)[,2]) %>%
-  as_tibble() %>%
-  dplyr::select(-geometry)
-
-state_df <- as_tibble(cbind(state.abb, state.name))
-
-shooting_data_geocoded <- shooting_data_geocoded %>%
-  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
-  mutate(Date_year = year(Date)) %>%
-  rename("State_abb" = State) %>%
-  left_join(state_df, by = c("State_abb" = "state.abb")) %>%
-  rename("State" = state.name) %>%
-  mutate(State = str_to_title(tolower(State))) %>%
-  mutate(`Suicide (or attempted suicide) by Shooter (Y/N)` = case_when(`Suicide (or attempted suicide) by Shooter (Y/N)` == "Yes" ~ TRUE,
-                                                                       TRUE ~ FALSE))
-
-start <- 1970
-end <- 2020
-
-write_csv(shooting_data_geocoded, path = here("processed_data",
-                                              "shooting_data_wrangled.csv"))
-
-rm(shooting_data_geocoded)
-
-shooting_data_geocoded <- read_csv(here("processed_data",
-                                        "shooting_data_wrangled.csv"))
-```
-
-
-
-
 We are also interested in creating a map on our dashboard. 
 
 To do so we need to perform a process called [geocoding](https://en.wikipedia.org/wiki/Geocoding). Geocoding is the process of converting addresses into latitude and longtitude coordinates.
@@ -720,8 +676,7 @@ From this section on, we are now going to use a special pipe operator from the [
 This allows us to use the an input and reassign it at the end after all the subsequent steps have been performed. We can therefore use `data_input %<>%` instead of `data_input <- data_input %>%`. We will deomonstrate this in the code below.
 
 We will use the `sf` (which stands for simple features) package to 
-create what is called a geometry list of our latitude and longitude  information for the schools where shootings occured. This will allow us to create a map of these events.
-
+create what is called a geometry list of our latitude and longitude information for the schools where shootings occured. This will allow us to deal with the fact that some school shootings occured in the same location, as this will allow us to alter all of the locations a bit so that when we plot the data on a map,  the spots indicating where shootings occured will not overlap for the same location.
 
 The first thing we need to do is create an sf object (meaning an object that the `sf` package recognizes) using the `st_as_sf()` function.
 
@@ -892,54 +847,6 @@ write_csv(shooting_data_geocoded, path = here("processed_data",
 ```
 
 
-
-from Michael:
-```{r, eval = FALSE}
-shooting_data_geocoded <- read_csv(here("processed_data",
-              "shooting_data.csv"))
-shooting_data_geocoded <- shooting_data_geocoded %>%
-  filter(!is.na(longitude),
-         !is.na(latitude)) %>%
-  sf::st_as_sf(coords = c("longitude", "latitude"), crs = 4326) %>%
-  
-  st_transform(crs = 102008) %>%
-  st_jitter(amount = 50) %>%
-  st_transform(crs = 4326) %>%
-  mutate(longitude = st_coordinates(.)[,1],
-         latitude = st_coordinates(.)[,2]) %>%
-  as_tibble() %>%
-  dplyr::select(-geometry)
-
-state_df <- as_tibble(cbind(state.abb, state.name))
-
-shooting_data_geocoded <- shooting_data_geocoded %>%
-  mutate(Date = as.Date(Date, format = "%m/%d/%Y")) %>%
-  mutate(Date_year = year(Date)) %>%
-  rename("State_abb" = State) %>%
-  left_join(state_df, by = c("State_abb" = "state.abb")) %>%
-  rename("State" = state.name) %>%
-  mutate(State = str_to_title(tolower(State))) %>%
-  mutate(`Suicide (or attempted suicide) by Shooter (Y/N)` = case_when(`Suicide (or attempted suicide) by Shooter (Y/N)` == "Yes" ~ TRUE,
-                                                                       TRUE ~ FALSE))
-
-start <- 1970
-end <- 2020
-
-write_csv(shooting_data_geocoded, path = here("processed_data",
-                                              "shooting_data_wrangled.csv"))
-
-rm(shooting_data_geocoded)
-
-shooting_data_geocoded <- read_csv(here("processed_data",
-                                        "shooting_data_wrangled.csv"))
-```
-
-
-
-INTRODUCE THE CONCEPT OF DASHBOARDS
-
-INTRODUCE `flexdashboard`
-
 # **Data Analysis and Visualization**
 *** 
 
@@ -957,6 +864,8 @@ shooting_data_geocoded <- read_csv(here("processed_data",
 There are several elements we would like to include in our dashboard. 
 
 One thing we would like is an interactive table.
+
+### Interactive Table
 
 We can done so using the `datatable()` function of the `DT` package.
 
@@ -1517,6 +1426,7 @@ avocado- how do you feel about including this tutorial - it is very good - and n
 
 ## Flexdashboard
 
+avocado add description of valueboxes
 
 There are several important features about the R markdown that the `flexdashboard` package utilizes. 
 
@@ -1641,12 +1551,6 @@ The first thing we need to do to create our dashboard is to create a new .Rmd do
 knitr::include_graphics(here::here("img", "newrmd.png"))
 ```
 
-Then we need to specify what kind of R Markdown document to create:
-
-```{r}
-knitr::include_graphics(here::here("img", "rmdtype.png"))
-
-```
 
 ## YAML header
 
@@ -1929,7 +1833,7 @@ knitr::include_graphics(here::here("img" , "newdir.png"))
 ```
 
 
-## The Data Page ((Interactive))
+## The Data Page (Interactive)
 
 Now Let's create a page about the data that we are using.
 
@@ -2417,6 +2321,9 @@ State Statistics {data-icon=fa-flag-checkered}
 Column {.sidebar data-width=250}
 -----------------------------------------------------------------------
 
+Note that the statistics shown do not account for other possibly influential state specific features like population density or gun laws among others.
+
+
 '''{r}
 selectInput(inputId = "state_selected", 
               label = "Select a state to explore:",
@@ -2804,109 +2711,154 @@ renderPlot({
 
 ##  The Map page (Interactive)
 
+Ok now we are ready to create our map page. Previously, in the  [**Data Exploration and Wrangling**] section, we geocoded our data and modified the `latitude` and `longitude` variables so that events that occured in the same location would have slightly different values so that they will not cover one another in our map.
 
-## Leaflet
+To create our map we will use the `leaflet` package which uses the [Leaflet](https://leafletjs.com/)  JavaScript library. 
 
-`Leaflet` widgets can be included within dashboards created with `flexdashboard`.
+### Leaflet
 
-`Leaflet` works by provided by adding base data (such as a map) and then adding markers if desired in layers. This is very similar to how `ggplot` functions (pun intended).
+`Leaflet` works by provided by adding base data (such as a map) and then adding markers if desired in layers. This is very similar to how `ggplot2` functions (pun intended).
 
 The layers displayed can be controlled using a sort of legend. Depending on the type of layers, some information may be displayed mutually exclusive of the other layers; other layers (such as circles/general markers) can be toggled on and off. 
 
-A minimap can be added.
+Clustering options can also be applied to circles/markers. Some examples of this can be found on the bottom of [this website](https://rstudio.github.io/leaflet/markers.html).
 
-The layers displayed when the widget is first opened can also be controlled. We did that in this case study. 
+The `groups` in leaflet can be thought of as layer-specific IDs that create labels for legends and allow specific layers to be referred to in separate functions. 
 
-`groups` in leaflet can be thought of as layer-specific IDs that create labels for legends and allow specific layers to be referred to in separate functions. 
+Thus, if we called a group "Layer 1" and then in a subsequent layer refer to "Layer 1", `Leaflet` will correctly identify which layer is being referenced.
 
-If we called a group "Layer 1" and then in a subsequent layer referred to "Layer 1", `Leaflet` will correctly identify which layer is being referenced.
+Note that `leaflet` can require a lot of computational power depending on the types of maps produced.
 
-`Leaflet` can require a lot of computational power; this can have an impact on the types of maps produced.
 
-Clustering options can be applied to circles/markers. Some examples of this can be found on the bottom of [this page](https://rstudio.github.io/leaflet/markers.html).
+### Look
 
-```
-### Specified Title
-```
 
-If the title is unspecified...
+This is what the page will look like:
 
-```
-###
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics(here::here("img" , "The_Map_Page.png"))
 ```
 
-the graphics will be recognized but no title will be shown for that particular graphic.
-
-`fig-width` and `fig.height` operate in the code chunk options. 
+### Overall Structure
 
 
+The overall structure for this page is simple. There is just one column which will contain the map.
 
+```{r, echo=FALSE, out.width="60%"}
+knitr::include_graphics(here::here("img" , "map_page_structure.png"))
+```
+
+### Details
+
+First we create a smaller dataset that just includes the data that we want to use in the map. We will include the date, the name of the school and the narrative for each point as a [popup](https://rstudio.github.io/leaflet/popups.html) that will be shown when the user hovers over a point. 
+
+We need to do this using [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML) code as the `leaflet` package will ultimately render the map using this language.
+
+First we will use the paste function to combine these elements as well as HTML code to create line breaks and bold the name of the school.
+
+To create line breaks in HTML, the `<br>` syntax is used. Thus this is used to separate each part of the elements that are getting pasted together with the base `paste()` function by being specified as the separator with the `sep` argument.
+
+To create bold font in HTML, the text is surrounded by `<b>` and `</b>` like so: `<b> Bold text </b>`. Thus only the school name is in bold.
+
+Finally the `<div>` and `</div>` are content dividers in html. Thus they separate the individual shooting event information sections that will be plotted on the map. The first divider can also take information about the style of the output. This uses [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) code, which is what is used to stylize HTML.  The code here states that the height of the text box for each event should have a height that is proportional to the text, that the [height of each line](https://developer.mozilla.org/en-US/docs/Web/CSS/line-height) should be of 1 [em units](https://www.w3.org/Style/Examples/007/units.en.html) (which stands for element - thus 1 unit relative to the size of the element - therefore gaps between lines are the same height as the lines of text), the `overflow:visible` code specifies what to do in case the text box text is too large - in this case users can scroll (see [here](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow) for more options), and the [padding](https://developer.mozilla.org/en-US/docs/Web/CSS/padding) specification sets the size of the margins of the text box around the text.  
+
+See this [website](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div) to learn more about HTML code.
 
 ```
-Column {data-width=1000}
+Map {data-icon="fa-map"}
+===================================== 
+Column
 ------------------------------------- 
     
 ### 
+
+This map shows where school shootings took place in the United States between January 1970 to June 2020 according to the the open-source [Center for Homeland Defense and Security](https://www.chds.us/c/) (CHDS) [K-12 School Shooting Database](https://www.chds.us/ssdb/dataset/). 
     
 '''{r}
-# would be a great idea to add a slider here if possible
-
-shooting_information0 <- paste('<div style="height:auto;line-height:1em;overflow:visible;padding:5px;">',
+shooting_information0 <- paste('<div style="height:auto;line-height:1em;overflow:scroll;padding:1em">',
                               shooting_data_geocoded$Date,
                               "<b>",
                               shooting_data_geocoded$School,
                               "</b>",
                               shooting_data_geocoded$`Narrative (Detailed Summary/ Background)`,
                               "</div>",
-                              sep = "<br/>"
-)
+                              sep = "<br>")
 
-# icon_set <- icons(
-#   iconUrl = case_when(shooting_data_geocoded$`Firearm Type`=="Handgun" ~ "https://icons.iconarchive.com/icons/icons8/windows-8/48/Military-Gun-icon.png",
-#                       shooting_data_geocoded$`Firearm Type`=="Rifle" ~ "https://icons.iconarchive.com/icons/icons8/windows-8/48/Military-Rifle-icon.png",
-#                       TRUE ~ "https://icons.iconarchive.com/icons/dryicons/aesthetica-2/48/page-search-icon.png"),
-#   iconWidth = 20,
-#   iconHeight = 20
-# )
 
-leaflet(shooting_data_geocoded) %>%
-  addProviderTiles(provider = providers$OpenStreetMap, group = "OpenStreetMap") %>%
-  addProviderTiles(provider = providers$Esri.WorldImagery, group = "ESRI World Imagery") %>%
-  addProviderTiles(provider = providers$Stamen.TonerLite, group = "Toner Lite") %>%
-  addCircleMarkers(popup = ~shooting_information0,
-                   lng = ~longitude,
-                   lat = ~latitude,
-    radius = 5,
-    color = "red",
-    fillOpacity = 0.2,
-    stroke = TRUE,
-    clusterOptions = markerClusterOptions(),
-    group = "Circles") %>%
-  # addMarkers(lng = ~longitude,
-  #                  lat = ~latitude,
-  #            popup = ~shooting_information0,
-  #                  icon = icon_set,
-  #                  group = "TESTER") %>%
-  addMiniMap(tiles = providers$Stamen.Toner,
-             toggleDisplay = TRUE,
-             minimized = FALSE) %>%
-  addLayersControl(
-    baseGroups = c("Toner Lite",
-                   "OpenStreetMap",
-                   "ESRI World Imagery"),
-    overlayGroups = c("Circles"),
-    # overlayGroups = c("Circles", "TESTER"),
-    options = layersControlOptions(collapsed = TRUE)
-  ) %>%
-  setView(lng = -98.35, lat = 39.5, zoom = 4)
-# hideGroup(c("Circles", "TESTER"))
-# need to jitter coordinates by a few meters for repeats
 '''
 ```
 
+The next bit of code then uses this data and the `shooting_data_geocded` to actually create the map!
+
+The `leaflet()` function of the `leaflet` package creates a Leaflet map [widget](https://en.wikipedia.org/wiki/Web_widget) using the  [`htmlwidgets`](https://cran.r-project.org/web/packages/htmlwidgets/index.html) package, which allows the map to be rendered as an application within HTML websites.
+
+This first line of code starts the process of making the widget, but just like the `ggplot()` function of `ggplot2` it creates an empty map and layers need to be added.
+
+The `addProviderTiles()` function of the `leaflet()` package does just that, by adding the map background. We will add three different kinds of map backgrounds. See [here](http://leaflet-extras.github.io/leaflet-providers/preview/index.html) for all the options of providers which create a variety of distinct backgrounds and then the `group` argument names each of these layers to be refered to later. The last layer added will be the one shown by default.
+
+OK, at this point we still only have a map in general. Now we need to add the data about shooting events. 
+
+To do this we will add markers to the plot using the `addCircleMarkers()` function. This function takes many different arguments. See details about them [here](https://cran.r-project.org/web/packages/leaflet/leaflet.pdf). 
+
+Importantly, we need to specify what variables in our provided data `shooting_data_geocoded` contains the longitude values (`lng`) and the latitude values (`lat`). 
+
+We will also use the following arguments:  
++ The`radius` argument specifies how large the circles for the points will be  
++ The `color` argument specifies the color of the individual points  
++ The `fillOpacity` argument allows for the filling of the points to a bit translucent if set below 1  
++ Importantly the `clusterOptions` argument can be used to cluster points together into larger cirlces  
++ The `group` argument specifies what the points should be called in the legend and what this layer should be refered to as for later use  
+
+
+We will also add a minimap using the `addMiniMap()` function which can be useful to see where you are on the map. The type of plot style to use for the minimap is specfied with the `tiles` argument and the `toggleDisplay` argument allows for the user to remove this feature.
+
+Importantly, the `addLayersControl()` function  allows users to toggle between different backgrounds and markers. In our case we have three different background layers which are referred to as `baseGroups` and we have one `overlayGroups` which is our circle markers for shooting events. The group names for these need to be identified to allow users to toggle between them. 
+
+
+The `set_view()` function allows for the starting position and zoom to be modified. This allows us to center the map around the continental US.
+
+```
+'''{r}
+leaflet(shooting_data_geocoded) %>%
+  addProviderTiles(provider = providers$OpenStreetMap, group = "OpenStreetMap") %>%
+  addProviderTiles(provider = providers$Esri.WorldImagery, group = "ESRI World Imagery") %>%
+  addProviderTiles(provider = providers$Stamen.TonerLite, group = "Toner")%>%
+  addCircleMarkers(popup = ~shooting_information0,
+                     lng = ~longitude,
+                     lat = ~latitude,
+     radius = 5,
+     color = "red",
+     fillOpacity = 0.2,
+     clusterOptions = markerClusterOptions(),
+     group = "Circles") %>%
+  addMiniMap(tiles = providers$Stamen.Toner,
+              toggleDisplay = TRUE) %>%
+  addLayersControl(
+     baseGroups = c("Toner Lite",
+                    "OpenStreetMap",
+                    "ESRI World Imagery"),
+     overlayGroups = c("Circles")) %>%
+   setView(lng = -98.35, lat = 39.5, zoom = 4)
+'''
+```
+
+Now we only have one finaly page. 
+
 ## The Tutorial Page
 
-We create a **Tutorial** page that links to this resource. 
+Now we will create a **Tutorial** page that links to this case study. This will provide a simple overview of how we created the dashboard. 
+
+### Look
+
+### Overall Structure
+
+To create this page we will use a sepecial layout called a [storyboard](https://en.wikipedia.org/wiki/Storyboard). Story boards are used in many other fields but the idea is that there are multiple images in a sequence. To create our storyboard page with `flexdashboard` we will use `{.stroyboard}` next to the page name. Then each page name will be specified using this syntax: `###`. 
+
+
+### Details
+ The code for this page is fairly straightforward. 
+ 
+ <details> <summary> Click here if you would like to see it. </summary>
 
 ```
 Tutorial {.storyboard data-icon="fa-list-ol"}
@@ -3025,9 +2977,12 @@ As mentioned before, the `flexdashboard` metadata included in the `YAML` does al
 This [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE) provides a case study on how to create this very dashboard in more detail.
 ```
 
+</details>
+
+
 ## The Hotline page
 
-Lastly, we create a **Hotline** page to spread awareness.
+Lastly, we will create a **Hotline** page to spread awareness.
 
 ```
 Hotline {data-icon="fa-exclamation-triangle"}
