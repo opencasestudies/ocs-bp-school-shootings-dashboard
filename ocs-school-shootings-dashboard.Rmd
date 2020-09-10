@@ -312,7 +312,7 @@ Avocado... this source from 2013 says that schools are not required to report.. 
 # **What are the data?**
 *** 
 
-We will use data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School) in Monterey, California. This data is updated daily. The data  used in this case study was downloaded in June of 2020. 
+We will use data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School) in Monterey, California. This data is updated daily. The data used in this case study was downloaded in June of 2020. 
 
 #### {.reference_block}
 
@@ -375,10 +375,11 @@ We can also use the utils `str()` function to see more detials about the values.
 str(shooting_data)
 ```
 
+####
 
-Alternatively, if we wanted to make a dashboard that continuely updated we could do the following to import the data directly from the googlesheets document.
+Alternatively, if we wanted to make a dashboard that continuely updated as the data got updated, we could do the following to import the data directly from the googlesheets document.
 
-To do so we will use the `read_sheet()` function of the `googlesheets4` package. Typically authentication is required, which is genearlly simple, but since this is a public sheet we don't need to worry about authentication. To avoid this we need to use the `gs4_deauth()` function which puts the package into a de-authorized state. 
+To do so we would use the `read_sheet()` function of the `googlesheets4` package. Typically authentication is required, which is genearlly simple, but since this is a public sheet we don't need to worry about authentication. To avoid this we would need to use the `gs4_deauth()` function which puts the package into a de-authorized state. 
 
 
 
@@ -386,23 +387,24 @@ To do so we will use the `read_sheet()` function of the `googlesheets4` package.
 googlesheets4::gs4_deauth()
 ```
 
-Great, now we need to get the shared link from the document. We can do so by clicking on the link to the actually google sheets document like so:
+Great, now we would need to get the shared link from the document. We can do so by clicking on the link to the actually google sheets document like so:
 ```{r, echo = FALSE, outwidth = "50%"}
 knitr::include_graphics(here::here("img", "gettodoc.png"))
 ```
 
-Then we will click on the shared button to get access to the link:
+Then we can click on the "share" button to get access to the link:
 
 ```{r, echo = FALSE, outwidth = "50%"}
 knitr::include_graphics(here::here("img", "gettoshare.png"))
 ```
 
-Finally we will click on the shared button to get access to the link:
+Finally we can click on "copy link" button to copy the link:
 
 ```{r, echo = FALSE, outwidth = "50%"}
 knitr::include_graphics(here::here("img", "getlink.png"))
 ```
 
+Once you have copied the link, you can use the `read_sheet()` function to import the data by simply pasting the link within the parantheses of the function in quotes, like so:
 
 ```{r eval = FALSE}
 
@@ -410,7 +412,7 @@ googlesheet_data <- read_sheet("https://docs.google.com/spreadsheets/d/1HqbfMxnk
 
 ```
 
-We chose not to do this for this case study to allow this tutorial to be more easily maintianed over time.
+This is a great option, however, we chose not to do this for this case study to allow this tutorial to be more easily maintained over time.
 
 ####
 
@@ -3096,11 +3098,6 @@ Column {data-width=600}
 
 From [Sandy Hook Promise](https://www.sandyhookpromise.org/gun-violence/know-the-signs-of-gun-violence/)...
 
-avocado... there were some really interesting things here... but dont know where/if to include
-https://www.sandyhookpromise.org/gun-violence/16-facts-about-gun-violence-and-school-shootings/
-
-The most important seems to be that shooters usually warn someone
-
 <style>
 div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
 </style>
@@ -3125,7 +3122,27 @@ Here is a list of potential warning signs that can signal an individual may be i
 
 **NOTE**
 
-This list is not a comprehensive list of warning signs nor does exhibiting one of these signs indicate imminent violence.
+**This list is not a comprehensive list of warning signs nor does exhibiting one of these signs indicate imminent violence.**
+
+According to the following article:
+
+Flannery, D. J., Modzeleski, W. & Kretschmar, J. M. Violence and School Shootings. Curr Psychiatry Rep 15, 331 (2013). DOI: [10.1007/s11920-012-0331-6](https://doi.org/10.1007/s11920-012-0331-6)
+
+>"To date, studies of school shootings have concluded that no
+consistent and reliable profile of school shooters exist, and
+most researchers and clinicians would agree that predicting
+violent behavior is a slippery slope that will usually result in
+more false positives than false negatives."
+
+However, the article states thatprevious studies note some commonalites such as:
+
+> "...most shooters were depressed, had experienced some significant
+loss, felt persecuted or bullied by others, and had prior
+difficulty coping or had previously tried suicide. Most of
+the shooters did not, however, have a history of drug abuse
+or violence or cruelty to animals, common psychiatric indicators of risk, nor did they report excessive exposure to
+violence in the media (though many produced their own
+violent themes in writings or drawings)."
 
 When concerned about seeing troubling behaviors, tell a trusted adult or call 911, if there is an immediate threat.
 

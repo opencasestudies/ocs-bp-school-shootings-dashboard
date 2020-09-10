@@ -51,7 +51,7 @@ Column {data-width=70}
 
 This dashboard has two purposes:
 
-1. To Illustrate trends in school shooting events in the United States
+1. To illustrate trends in school shooting events in the United States
 2. To demonstrate how to create a dashboard using `R`
 
 
@@ -61,7 +61,7 @@ This dashboard uses data from the open-source [K-12 Shool Shooting Database](htt
 Riedman, David, and Desmond O’Neill. “CHDS – K-12 School Shooting Database.” Center for Homeland Defense and Security, June 2020, [www.chds.us/ssdb](www.chds.us/ssdb).
 
 
-This database includes information about school shooting events for students in grades K-12 in the United States dating back to 1970. The database has additional information not shown on our dashboard including but not limited to: 
+This database includes information about school shooting events for students in grades K-12 in the United States dating back to 1970. The database has additional information not shown on our dashboard including, but not limited to: 
 
 * Location of the event at the school  
 * If the event occured during a sporting event  
@@ -75,11 +75,7 @@ This database includes information about school shooting events for students in 
 
 According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) website:
 
-> The School Shooting Database Project is conducted as part of the [Advanced Thinking in Homeland Security (HSx)](https://www.chds.us/c/academic-programs/hsx/) program at the Naval Postgraduate School’s [Center for Homeland Defense and Security (CHDS)](Center for Homeland Defense and Security (CHDS).
-
 > The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. All of the information is based on open-source information and 3rd party reporting.
-
-> "This database was developed from open-source information and may include reporting errors."
 
 **Want to learn how to create a dashboard just like this?**
 
@@ -89,21 +85,21 @@ At the end of the tutorial we provide a link to this [supplementary resource by 
 
 We have also included the source code (see upper right-hand corner) in this dashboard for more experienced `R` users looking to mimic some of what we did in this dashboard in their own.
 
-**Disclaimer**
 
-The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**.
-
-A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
-
-We are simply using data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/), we did not create this database. We acknowlege (like their website) that there may be reporting errors in this database. 
-
-**License**
-
-This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"} United States License.
 
 
 Column {data-width=30}
 -------------------------------------
+
+##### **Disclaimer**
+
+We are simply using data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/), we did not create this database. We acknowlege (like their website) that there may be reporting errors in this database. 
+
+##### **License**
+
+This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"} United States License.
+
+
 
 ###
 
@@ -411,7 +407,7 @@ State Statistics {data-icon=fa-flag-checkered}
 Column {.sidebar data-width=200}
 -----------------------------------------------------------------------
 
-Note that the statistics shown do not account for other possibly influential state specific features like population density or gun laws among others.
+Note that the statistics shown do not account for other possibly influential state specific features like population density or gun laws, among others.
 
 ```{r}
 selectInput(inputId = "state_selected", 
@@ -848,7 +844,7 @@ Plots and other elements can be added within columns like so:
 # include plot code here
 '''
 ```
-Value Boxes, which are essentially text boxes can be defined like so:
+Value Boxes, which are essentially text boxes, can be defined like so:
 
 ```
 ### ValueBoxText
@@ -860,6 +856,25 @@ valueBox(value = 10
 '''
 ```
 
+Gauges, can be defined like so:
+
+```
+### GuageText
+
+'''{r}
+flexdashboard::gauge(value = 10, 
+                       min = 0, 
+                       max = 100, 
+                    symbol = "%")
+
+'''
+```
+####
+Which will produce output like this:
+```{r, out.width= "40%", echo = FALSE}
+knitr::include_graphics(here::here("img", "guage_output.png"))
+```
+
 ### Additional Info
 As mentioned before, the `flexdashboard` metadata included in the `YAML` also alters how R Markdown documents are rendered. For more on how you can leverage both the `RMarkdown` package and the `flexdashboard` package to produce a dashboard, click [here](https://rmarkdown.rstudio.com/flexdashboard/index.html).
 
@@ -868,7 +883,7 @@ This [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE
 Hotline {data-icon="fa-exclamation-triangle"}
 =========================================   
 
-Column {data-width=600}
+Column {data-width=800}
 -------------------------------------
 
 ###
@@ -899,24 +914,42 @@ Here is a list of potential warning signs that can signal an individual may be i
 + Expressing or showing feelings of isolation
 + Bragging about access to guns
 
-**NOTE**
+**This list is not a comprehensive list of warning signs nor does exhibiting one of these signs indicate imminent violence.**
 
-This list is not a comprehensive list of warning signs nor does exhibiting one of these signs indicate imminent violence.
+According to the following article:
 
-When concerned about seeing troubling behaviors, tell a trusted adult or call 911, if there is an immediate threat.
+Flannery, D. J., Modzeleski, W. & Kretschmar, J. M. Violence and School Shootings. Curr Psychiatry Rep 15, 331 (2013). DOI: [10.1007/s11920-012-0331-6](https://doi.org/10.1007/s11920-012-0331-6)
+
+>"To date, studies of school shootings have concluded that no
+consistent and reliable profile of school shooters exist, and
+most researchers and clinicians would agree that predicting
+violent behavior is a slippery slope that will usually result in
+more false positives than false negatives."
+
+> "...most shooters were depressed, had experienced some significant
+loss, felt persecuted or bullied by others, and had prior
+difficulty coping or had previously tried suicide. Most of
+the shooters did not, however, have a history of drug abuse
+or violence or cruelty to animals, common psychiatric indicators of risk, nor did they report excessive exposure to
+violence in the media (though many produced their own
+violent themes in writings or drawings)."
+
 
 </div>
 
-Column {data-width=400}
+Column {data-width=200}
 -------------------------------------
 
 ### 
 
 **Respond to Warning Signs**
 
-Call 911 if you feel there is an immediate threat. 
+When concerned about seeing troubling behaviors, tell a trusted adult.
 
-Call [+1-844-5-SAYNOW](tel:18445729669) if you would to submit an anonymous safety concern.
+
+Call **911** if you feel there is an immediate threat. 
+
+Call [+1-844-5-SAYNOW](tel:18445729669) if you would like to submit an anonymous safety concern.
 
 
 
