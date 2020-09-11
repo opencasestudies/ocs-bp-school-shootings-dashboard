@@ -131,12 +131,9 @@ They also point out that:
 
 Given this need for more research to better understand why these events occur and how they could be averted, in this case study we will demonstrate how to create a resource for others to more easily and interactively access data about school shootings. To do so we will create what is called a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report for a database. Dashboards summarize the data in a database and typically allow for users to interact with the data in some way.
 
-[Here](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/) you can see an example of a dashboard created in R.
+[Here](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/htmlwidgets-highcharter.html) you can see an example of a dashboard created in R.
 
 
-```{r}
-knitr::include_url("https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/")
-```
 On the website the tabs and and plots are interactive. The dashboard allows for users to get to know the data in a simple and quick way.
 
 The data about food sales  is succinctly summarized in an impactful manner.
@@ -176,18 +173,24 @@ The skills, methods, and concepts that students will be familiar with by the end
 Avocado update here and in readme!
 
 Data science skills:  
+  
+1. Importing text from a google sheets document (`googlesheets4`)  
+2. Converting date formats (`lubridate`)  
+3. Geocoding data (`ggmap`)  
+4. How to reshape data by pivoting between "long" and "wide" formats and separating columns into additional columns (`tidyr`)  
+5. How to create data visualizations with `ggplot2` 
+6. An introctory understand of R Markdown  
+7. How to create an interactive table (`DT`)  
+8. How to create a map (`leaflet`)  
+9. How to create an interactive dashboard with `flexdashboard` and `shiny`  
 
-1. Importing text from a google sheets document???
-2. Apply action verbs in `dplyr` for data wrangling  
-3. How to reshape data by pivoting between "long" and "wide" formats and separating columns into additional columns (`tidyr`)  
-4. How to fill in data based on previous values (`tidyr`)
-5. How to create data visualizations with `ggplot2` that are in a similar style to an existing image    
-6. How to add images to plots using `cowplot`
-7. How to create effective bar plots to for multiple comparisons, including adding gaps between bars in bar plots, adding figure legends to the plot area, and adding comparison lines (`ggplot2`)
 
 Statistical concepts and methods:  
+  
+1. Calculating percentages with missing values  
 
-
+https://www.reddit.com/r/rstats/comments/9gipi1/html_within_span_created_by_flexdashboardfunction/e64l2up/
+avocado add shinydashboard info
 *** 
 
 
@@ -540,12 +543,15 @@ DT::datatable(shooting_data)
 
 shooting_data%>% select(matches("Y/N|Specific|Random|Pre-planned"))
 
+shooting_data %>% count( `Suicide (or attempted suicide) by Shooter (Y/N)`)
+
 shooting_data %<>%
        mutate(dplyr::across(.cols = matches("Y/N|Specific|Random|Pre-planned"),
                     ~ dplyr::case_when(. == "Yes" ~ TRUE,
                                          .== "No" ~ FALSE,
                                           .== "Y" ~ TRUE,
-                                          .== "N" ~ TRUE)))
+                                          .== "N" ~ FALSE,
+                          . == "Officer Involved" ~ TRUE)))
 
 shooting_data %>% select(matches("Y/N|Specific|Random|Pre-planned"))
 
@@ -1373,6 +1379,44 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
        xlab="1 square ~ 1%") +  scale_fill_viridis_d()
 
 ```
+
+We are also interested in including some statistics in our dashboard. For example we are interested in how many shooters committed or attempted suicide.
+
+### Percentages
+
+Since we converted variables with `yes` or `no` answers because they were inconsistently coded as `yes`/ `y` and `no`/`n`.  Futhermore, logical variables are easier to work with in terms of performing calculations because `TRUE` values are treated like a `1` while `FALSE` values are treated like a `0`. 
+
+We would like to calculate the percentage of shooters that committed or attempted suicide out of all entries that have data for this information, thus we don't want to include `NA` values in the calculation. 
+
+Let's take a look at the data for this variable:
+
+```{r}
+shooting_data %>% count(`Suicide (or attempted suicide) by Shooter (Y/N)`)
+```
+
+We can see that there are 45 `NA` values. 
+
+
+If we calculate a sum of the `TRUE` values, (which are those that are equivalent to `1`), we can do so by just summing this variable, which is equivalent to summing values that are greater than `0`. 
+
+```{r}
+sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`), na.rm = TRUE)
+sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`) > 0, na.rm = TRUE)
+```
+
+In contrast, `FALSE` values are those that are equvialent to `0`. Thus if we want to divide by the sum of all values that are `FALSE` are `TRUE`, then we can sum all values greater than or equal to `0`.
+
+```{r}
+sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`) >= 0, na.rm = TRUE)
+```
+
+Thus we can calculate the percentage of all reporting values like so, where the `TRUE` values are divided by the sum of all `TRUE` and `FALSE` values: (We also multiply by 100 using `*100` to get the percentage value.) 
+
+```{r}
+suicide <-(sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`), na.rm = TRUE) /
+           sum(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, na.rm = TRUE))*100
+```
+
 
 # **Dashboard Basics**
 ***

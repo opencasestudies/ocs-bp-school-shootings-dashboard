@@ -54,52 +54,50 @@ This dashboard has two purposes:
 1. To illustrate trends in school shooting events in the United States
 2. To demonstrate how to create a dashboard using `R`
 
+**The data**
 
-This dashboard uses data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School). This data was downloaded in June of 2020.
+This dashboard uses data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School). This data was downloaded June of 2020.
 
-
+<style>
+div.black { background-color:#8FBC8F; border-radius: 5px; padding: 20px; font-size: 1em;color: white;}
+</style>
+<div class = "black">
 Riedman, David, and Desmond O’Neill. “CHDS – K-12 School Shooting Database.” Center for Homeland Defense and Security, June 2020, [www.chds.us/ssdb](www.chds.us/ssdb).
+</div>
+
+  
+This database includes information about school shooting events for students in grades K-12 in the United States dating back to 1970. The database has additional information not shown on our dashboard including, but not limited to: location of the event at the school, source for the shooting information, shooter characteristics, and victom characteristics. 
+
+### 
 
 
-This database includes information about school shooting events for students in grades K-12 in the United States dating back to 1970. The database has additional information not shown on our dashboard including, but not limited to: 
-
-* Location of the event at the school  
-* If the event occured during a sporting event  
-* Time of day of the event  
-* Day of the week of the event  
-* Source for the shooting information  
-* If the event was pre-planned or not  
-* Shooter's actions immediately following the shooting  
-* Shooter characteristics (affiliation with the school, if they had accomplices, if they took hostages, and their age and race)  
-* Victom characteristics (afficliation with the school, if they were targeted, their age and race)  
-
-According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) website:
-
-> The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. All of the information is based on open-source information and 3rd party reporting.
-
-**Want to learn how to create a dashboard just like this?**
+<u>**Want to learn how to create a dashboard just like this?**</u>
 
 Visit the [*Tutorial*](#tutorial) page of this dashboard to first learn the basics about building a dashboard with the `flexdashboard` package.
 
 At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE), which provides more detailed information about how ***this dashboard*** was created.
 
-We have also included the source code (see upper right-hand corner) in this dashboard for more experienced `R` users looking to mimic some of what we did in this dashboard in their own.
+<style>
+div.blue { background-color:"black"; border-radius: 5px; padding: 20px; font-size: .8em;}
+</style>
+<div class = "blue">
+
+ **Acknowlegements**
+
+This was created as part of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project. We would like to acknowledge the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/) for funding this work. 
+
+ **Disclaimer**
+
+This dashboard uses data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/). We acknowlege (like their website) that there may be reporting errors. The trends and statistics shown do not account for the many other factors that may infleunce the occurance of shooting events. The dashboard should not be used in the context of making policy decisions without external consultation from scientific experts. 
 
 
+ **License**
 
+This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"} United States License.
+</div>
 
 Column {data-width=30}
 -------------------------------------
-
-##### **Disclaimer**
-
-We are simply using data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/), we did not create this database. We acknowlege (like their website) that there may be reporting errors in this database. 
-
-##### **License**
-
-This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"} United States License.
-
-
 
 ###
 
@@ -124,7 +122,7 @@ Their methods for identifying and authenticating incidents are outlined [here](h
 
 According to their website: 
 
->*"This database was developed from open-source information and may include reporting errors."*
+*"The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. **All of the information is based on open-source information and 3rd party reporting... and may include reporting errors.**"*
 
 ***
 
@@ -200,21 +198,41 @@ per_year%<>%
 per_year %>%
     ggplot(aes(x = Date_year, y = events, fill =id)) +
     geom_col()+
-    facet_grid(~id)+
+    facet_wrap(~id, scales = "free", 
+               labeller = as_labeller(c(Shootings = "Shootings (# of events)", 
+                                        Deaths = "Deaths (# of people)")), 
+               strip.position = "left")+
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
+    scale_y_continuous(breaks = seq(0, 120, by = 30),
+                 labels = seq(0, 120, by = 30),
+                 limits = c(0, 121))+
     theme_minimal() +
    labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
          subtitle = "United States",
-         y = "Number of events",
+         y = NULL,
          x = "Year")+
   scale_fill_manual(values = c("black", "black"))+
   theme(legend.position = "none", 
         legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90),
-        strip.background =element_rect(fill="cornflowerblue"),
-      strip.text = element_text(colour = 'white', face = "bold", size = 14))
+        axis.text.x = element_text(angle = 90, face = "bold"),
+        axis.title.x = element_text(face = "bold", size = 14),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        strip.text = element_text(face = "bold", size = 14))
+
+
+theme_dashboard <- function(){ 
+  theme(legend.position = "none", 
+        legend.title = element_blank(),
+        #title = element_text(face = "bold", size = 16),
+        axis.text.x = element_text(angle = 90, face = "bold"),
+        axis.title.x = element_text(face = "bold", size = 14),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        strip.text = element_text(face = "bold", size = 14))
+}
 ```
 
 ### Yearly Cumulative Deaths and Shootings
@@ -241,21 +259,20 @@ per_year_cum%<>%
 per_year_cum %>%
 ggplot(aes(x = Date_year, y = events, fill =id)) +
     geom_col()+
-    facet_grid(~id)+
+    facet_wrap(~id, scales = "free", 
+               labeller = as_labeller(c(Shootings = "Shootings (cumulative # of events)", 
+                                        Deaths = "Deaths(cumulative # of people)")), 
+               strip.position = "left")+
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
     scale_fill_manual(values = c("black", "black"))+
     theme_minimal() +
-    labs(title = "Cumulative Yearly Shootings and Deaths\nAttributable to School Shootings",
+    labs(title = "Cumulative Yearly Shootings and Deaths Attributable to\nSchool Shootings",
          subtitle = "United States",
-         y = "Cumulative number of events",
+         y = NULL,
          x = "Year") +
-    theme(legend.position = "none", 
-        legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90),
-        strip.background = element_rect(fill="cornflowerblue"),
-        strip.text = element_text(colour = 'white', face = "bold", size = 14))
+    theme_dashboard() 
 ```
 
 ### Deaths Per Shooting
@@ -290,8 +307,11 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
 
 ```
 
-Column {data-width=300}
+Column {data-width=100}
 ------------------------------------- 
+
+
+
 
 ### **Total Wounded**
     
@@ -300,6 +320,9 @@ valueBox(value = sum(pull(shooting_data, Wounded), na.rm = TRUE),
          color = "white")
 ```
     
+    
+
+
 ### **Total Deaths**
 
 ```{r}
@@ -318,103 +341,99 @@ valueBox(value = round(median(
       `Number of Shots Fired`), na.rm = TRUE), 2),
   color = "white")
 
-```
-
-### **Shooter was bullied**
-
-```{r}
-valueBox(value =
-  paste(as.character(round(100 * (sum(pull(shooting_data,`Bullied (Y/N/ N/A)`), na.rm = TRUE)
-    /
-      shooting_data %>% filter(! is.na(`Bullied (Y/N/ N/A)` )) %>% pull(`Bullied (Y/N/ N/A)`) %>% length()),
-    1)), "%"),
-  color = "white",
-  caption = paste0(as.character(round(shooting_data %>% filter(! is.na(`Bullied (Y/N/ N/A)` )) %>% pull(`Bullied (Y/N/ N/A)`) %>% length()/ shooting_data %>%pull(`Bullied (Y/N/ N/A)`) %>% length() *100), 1), "% reporting"))
-```
-
-### **Shooter experienced domestic violence**
-
-```{r}
-valueBox(value =
-  paste(as.character(round(100 * (sum(pull(shooting_data,`Domestic Violence (Y/N)`),
-                                      na.rm = TRUE)
-    /
-     shooting_data %>% filter(! is.na(`Domestic Violence (Y/N)` )) %>% pull(`Domestic Violence (Y/N)`) %>% length()),
-    1)), "%"),
-  color = "white")
-
-```
-
-### **Shooter planned attack**
-
-```{r}
-valueBox(value =
-  paste(as.character(round(100 * (sum(pull(shooting_data,`Pre-planned school attack`),
-                                      na.rm = TRUE)
-    /
-      shooting_data %>% filter(! is.na(`Pre-planned school attack` )) %>% pull(`Pre-planned school attack`) %>% length()),
-    1)), "%"),
-  color = "white")
-
+reporting_shots <- (sum(pull(shooting_data, `Number of Shots Fired`)>=0, na.rm = TRUE)/
+              length(pull(shooting_data, `Number of Shots Fired`)))*100
+reporting_shots <- round(reporting_shots, 1)
 ```
 
 
-### **Shooter Was Only Victim**
+### **Shooter committed or attempted suicide**
 
 ```{r}
 
-suicide <- sum(pull(shooting_data,`Suicide (Shooter was only victim) Y/N/ N/A`),
-               na.rm = TRUE)/ sum(pull(shooting_data,`Killed (includes shooter)`)>0, na.rm = TRUE)
-suicide <- round(suicide*100, 1)
+suicide <- (sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`), na.rm = TRUE) /
+            sum(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, na.rm = TRUE))*100
+suicide <- round(suicide, 1)
+
+reporting_suic <- (sum(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, na.rm = TRUE)/
+              length(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)))*100
+reporting_suic <- round(reporting_suic, 1)
 
 valueBox(value = paste0(suicide,"%"), 
          color = "white")
 ```
 
+    
+
 ### **Use of a Single Handgun**
 
 ```{r}
 
-valueBox(value = 
-  paste(as.character(round(100 *(sum(case_when(
+
+handgun <-paste(as.character(round(100 *(sum(case_when(
       pull(shooting_data,`Firearm Type`) == "Handgun" ~ TRUE,
                                                  TRUE ~ FALSE), na.rm = TRUE)
     /
-      length(pull(shooting_data,`Firearm Type`))),
-    1)), "%"),
+      sum(pull(shooting_data, `Firearm Type`)>=0, na.rm = TRUE)),
+    1)), "%")
+
+reporting_gun <- (sum(pull(shooting_data, `Firearm Type`)>=0, na.rm = TRUE)/
+              length(pull(shooting_data, `Firearm Type`)))*100
+reporting_gun <- round(reporting_gun, 1)
+
+
+valueBox(value = handgun,
   color = "white")
+
 ```
 
-### **Shooter Was Male**
 
+### **Shooter Was Male**
 ```{r}
-valueBox(value =
-  paste(as.character(round(100 * (sum(
+
+
+gender <- paste(as.character(round(100 * (sum(
     case_when(pull(shooting_data,`Shooter Gender`) == "Male" ~ TRUE,
                                                         TRUE ~ FALSE),
                                       na.rm = TRUE)
     /
-      length(pull(shooting_data, `Shooter Gender`))),
-    1)), "%"),
+      sum(pull(shooting_data, `Shooter Gender`)>=0, na.rm = TRUE)),
+    1)), "%")
+
+reporting_male <- (sum(pull(shooting_data, `Shooter Gender`)>=0, na.rm = TRUE)/
+              length(pull(shooting_data, `Shooter Gender`)))*100
+reporting_male <- round(reporting_male, 1)
+
+
+valueBox(value = paste(gender),
   color = "white")
+
+
 ```
 
+###
+
+reporting rate of shots fired = `r reporting_shots`%,
+reporting rate of shooter suicide = `r reporting_suic`%,
+reporting rate of gun type = `r reporting_gun`%,
+reporting rate of shooter gender = `r reporting_male`%
 
 
 State Statistics {data-icon=fa-flag-checkered}
 ===================================== 
 
-Column {.sidebar data-width=200}
+Column {.sidebar data-width=300}
 -----------------------------------------------------------------------
 
-Note that the statistics shown do not account for other possibly influential state specific features like population density or gun laws, among others.
+Note that the statistics shown do not account for other possibly influential state specific features like population density, gun polcies, etc.
 
 ```{r}
 selectInput(inputId = "state_selected", 
               label = "Select a state to explore:",
-            choices = unique(shooting_data%>%
-                             filter(!is.na(State)) %>%
-                             pull(State)), selected = "Maryland")
+            choices = shooting_data %>% 
+              pull(State) %>% 
+              unique() %>%
+              sort(), selected = "Alabama")
 
 # Washington, D.C. gets excluded by this
 ```
@@ -452,23 +471,23 @@ per_year%<>%
 per_year %<>%
     ggplot(aes(x = Date_year, y = events, fill =id)) +
     geom_col()+
-    facet_grid(~id)+
+    facet_wrap(~id, scales = "free", 
+               labeller = as_labeller(c(Shootings = "Shootings (# of events)", 
+                                        Deaths = "Deaths (# of people)")), 
+               strip.position = "left")+
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
     theme_minimal() +
-   labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
-         subtitle = input$state_selected,
-         y = "Number of events",
-         x = "Year")+
   scale_fill_manual(values = c("black", "black"))+
-  theme(legend.position = "none", 
-        axis.title = element_text(size = 14),
-        legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90, size = 12),
-        axis.text.y = element_text(size = 14),
-        strip.background =element_rect(fill="cornflowerblue"),
-      strip.text = element_text(colour = 'white', face = "bold", size = 14))
+    labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
+         subtitle = "United States",
+         y = NULL,
+         x = "Year") +
+    theme_dashboard()+
+    theme(title = element_text(size = 16, face = "bold"),
+          axis.text = element_text(size = 14))
+
 
 })
 ```
@@ -512,23 +531,22 @@ per_year_cum%<>%
 per_year_cum %>%
 ggplot(aes(x = Date_year, y = events, fill =id)) +
     geom_col()+
-    facet_grid(~id)+
+    facet_wrap(~id, scales = "free", 
+               labeller = as_labeller(c(Shootings = "Shootings (cumulative # of events)", 
+                                        Deaths = "Deaths (cumulative # of people)")), 
+               strip.position = "left")+
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
     scale_fill_manual(values = c("black", "black"))+
     theme_minimal() +
-    labs(title = "Cumulative Yearly Shootings and Deaths\nAttributable to School Shootings",
-         subtitle = input$state_selected,
-         y = "Cumulative number of events",
+    labs(title = "Cumulative Yearly Shootings and Deaths Attributable to School Shootings",
+         subtitle = "United States",
+         y = NULL,
          x = "Year") +
-    theme(legend.position = "none", 
-        legend.title = element_blank(),
-        axis.title = element_text(size = 14),
-        axis.text.x = element_text(angle = 90, size = 12),
-        axis.text.y = element_text(size = 14),
-        strip.background = element_rect(fill="cornflowerblue"),
-        strip.text = element_text(colour = 'white', face = "bold", size = 14))
+    theme_dashboard() +
+    theme(title = element_text(size = 16, face = "bold"),
+           axis.text   = element_text(size = 14))
 
 })
 
@@ -580,11 +598,13 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
 Column {data-width=100}
 -----------------------------------------------------------------------
 
-### **Total Deaths**
+### **Total State Deaths**
 
 ```{r}
 renderValueBox({
 shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
+shooting_data_state <- shooting_data %>% filter(State == input$state_selected)
+
 
 valueBox(sum(pull(shooting_data_state,`Killed (includes shooter)`), na.rm = TRUE),
          color = "white")
@@ -600,74 +620,95 @@ shooting_data_state <-shooting_data %>%
   rename(shootings = n) %>%
   ungroup() %>%
 mutate(state_sum = sum(shootings)) %>%
-  mutate(state_avg = state_sum/50) %>%
-  mutate(shooting_rank = rank(-shootings))
+  mutate(state_avg = state_sum/50)
 
 state_data <- poliscidata::states
 state_data %<>%
-  select(stateid, pop2010) %>%
-  mutate(poprank = rank(-pop2010)) %>%
+  select(stateid, pop2010, pop2010_hun_thou) %>%
   mutate(stateid = as.character(stateid))%>%
   mutate(stateid = str_remove_all(stateid, pattern = " "))
 
-shooting_data_state<-full_join(shooting_data_state, state_data, by = c("State_abb" = "stateid"))
+shooting_data_state<-left_join(shooting_data_state, state_data, by = c("State_abb" = "stateid"))
+
+
 
 deaths_State <-shooting_data %>% 
   group_by(State) %>%
- summarise(wounded = sum(Wounded, na.rm = TRUE),
-            deaths = sum(`Killed (includes shooter)`, na.rm = TRUE))%>%
-  mutate(wounded_rank = rank(-wounded),
-         death_rank = rank(-deaths)) %>%
-  drop_na()
+ summarise( deaths = sum(`Killed (includes shooter)`, na.rm = TRUE))
+
+ 
 
 state_data <-left_join(shooting_data_state, deaths_State)
 
-USavg<- mean(pull(state_data, deaths), na.rm = TRUE)
+USavg<- round(mean(pull(state_data, deaths), na.rm = TRUE), 2)
 valueBox(USavg,
          color = "white")
+```
+
+
+### **Percapita State Deaths**
+
+```{r}
+
+state_data %<>%
+  mutate(percapita_deaths  = deaths/pop2010_hun_thou)
+
+renderValueBox({
+  
+  shooting_data_state <- state_data %>% filter(State == input$state_selected)
+
+valueBox(format(round(pull(shooting_data_state, percapita_deaths), digits = 3), nsmall = 3),
+         color = "white")
+})
+
 
 ```
 
-### **State Death Rank (1 is highest)**
+
+
+### **Percapita US National Deaths rate per 100 thousand**
 
 ```{r}
 renderValueBox({
-shooting_data_state<- state_data[state_data$State == input$state_selected, ]
-shooting_data_state %<>%drop_na()
 
-valueBox(pull(shooting_data_state, death_rank),
+ US_percap <-summarize(state_data, sum(deaths, na.rm = TRUE))/ (summarize(state_data,sum(pop2010, na.rm = TRUE)) /100000)
+ 
+valueBox(value = round(US_percap, digits = 3),
          color = "white")
 })
 ```
 
-### **State Population Rank (1 is highest)**
+
+### **Percapita State Shootings**
+
+```{r}
+
+state_data %<>%
+  mutate(percapita_shootings  = shootings/pop2010_hun_thou)
+
+renderValueBox({
+  
+  shooting_data_state <- state_data %>% filter(State == input$state_selected)
+
+valueBox(format(round(pull(shooting_data_state, percapita_shootings), digits = 3), nsmall = 3),
+         color = "white")
+})
+
+
+```
+
+
+### **Percapita US National shooting rate per 100 thousand**
 
 ```{r}
 renderValueBox({
-shooting_data_state <- state_data[state_data$State == input$state_selected, ]
-shooting_data_state %<>%drop_na()
 
-valueBox(pull(shooting_data_state, poprank),
+ US_percap <-summarize(state_data, sum(shootings, na.rm = TRUE))/ (summarize(state_data,sum(pop2010, na.rm = TRUE)) /100000)
+ 
+valueBox(value = round(US_percap, digits = 3),
          color = "white")
 })
 ```
-
-
-### **State Death Rank vs. Expectation Based Only on Population Rank **
-```{r}
-renderValueBox({
-shooting_data_state <- state_data[state_data$State == input$state_selected, ]
-shooting_data_state %<>%drop_na()
-
-difference <-pull(shooting_data_state, death_rank) - pull(shooting_data_state, poprank)
-valueBox(case_when(difference > 0 ~ "Lower than expected",
-                   difference < 0 ~ "Higher than expected",
-                   TRUE ~ "As expected"), 
-color = ifelse(difference< 0,  "coral", "lightgreen"))
-})
-```
-
-
 
 Map {data-icon="fa-map"}
 ===================================== 
@@ -920,13 +961,13 @@ According to the following article:
 
 Flannery, D. J., Modzeleski, W. & Kretschmar, J. M. Violence and School Shootings. Curr Psychiatry Rep 15, 331 (2013). DOI: [10.1007/s11920-012-0331-6](https://doi.org/10.1007/s11920-012-0331-6)
 
->"To date, studies of school shootings have concluded that no
+"To date, studies of school shootings have concluded that no
 consistent and reliable profile of school shooters exist, and
 most researchers and clinicians would agree that predicting
 violent behavior is a slippery slope that will usually result in
 more false positives than false negatives."
 
-> "...most shooters were depressed, had experienced some significant
+"...most shooters were depressed, had experienced some significant
 loss, felt persecuted or bullied by others, and had prior
 difficulty coping or had previously tried suicide. Most of
 the shooters did not, however, have a history of drug abuse
@@ -934,8 +975,22 @@ or violence or cruelty to animals, common psychiatric indicators of risk, nor di
 violence in the media (though many produced their own
 violent themes in writings or drawings)."
 
+</div>
+
+
+<style>
+div.red { background-color:#BC8F8F; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "red">
+
+For youths who appear to be having touble dealing with the aftermath of a shooting or who may be at risk for suicidal behavior, call this toll-free number for the **National Suicide Prevention Lifeline (NSPL)**, available 24 hours a day, every day: **1-800-273-TALK (8255)**. The service is available to everyone. The deaf and hard of hearing can contact the Lifeline via TTY at 1-800-799-4889. All calls are confidential. You can also visit the Lifeline’s website at [www.suicidepreventionlifeline.org](www.suicidepreventionlifeline.org){target="_blank"}.
+
+Additionally, the **Crisis Text Line** is another free, confidential resource available 24 hours a day, seven days a week. Text “HOME” to **741741** and a trained crisis counselor will respond to you with support and information over text message. Visit [www.crisistextline.org](www.crisistextline.org){target="_blank"}.
+
+Also see [here](https://www.mhanational.org/depression-teens-0){target="_blank"} for more information about how to recognize and help youths experiencing symptoms of depression.
 
 </div>
+
 
 Column {data-width=200}
 -------------------------------------
@@ -944,12 +999,15 @@ Column {data-width=200}
 
 **Respond to Warning Signs**
 
-When concerned about seeing troubling behaviors, tell a trusted adult.
+When concerned about troubling behaviors, tell a trusted adult.
 
 
 Call **911** if you feel there is an immediate threat. 
 
 Call [+1-844-5-SAYNOW](tel:18445729669) if you would like to submit an anonymous safety concern.
 
+Text “HOME” to **741741** to text a crisis counselor.
 
+The **National Suicide Prevention Lifeline (NSPL)** is available 24 hours a day, every day at **[1-800-273-TALK (8255)](tel:18002738255)**. 
 
+The deaf and hard of hearing can contact the **(NSPL)** via TTY at **[1-800-799-4889](tel:18007994889)**. All calls are confidential.
