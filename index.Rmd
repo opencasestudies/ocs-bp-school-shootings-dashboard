@@ -690,7 +690,7 @@ knitr::include_graphics(here::here("img", "double.png"))
 
 Now we will save the geocoded data in the `processed_data` directory using the `write_csv` function of the `readr` package.
 
-This requires listing the R object, followed by the path for where the file should be saved and what it should be called. In this case it will be called "shooting_data.csv".
+This requires listing the R object, followed by the path for where the file should be saved and what it should be called. In this case it will be called "shooting_data_geo.csv".
 
 ```{r, eval = FALSE} 
 readr::write_csv(shooting_data, path = here("processed_data",
@@ -858,7 +858,7 @@ Great! That looks like we expected. We can see that the coordinate values are sl
 
 ```{r}
 original_shooting_data_geocoded <- read_csv(here("processed_data",
-              "shooting_data.csv"))
+              "shooting_data_geo.csv"))
 
 original_shooting_data_geocoded %>%select(longitude, latitude) %>% slice_head(n = 4)
 ```
