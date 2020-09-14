@@ -14,21 +14,19 @@ runtime: shiny
 
 ```{r}
 library(here)
+library(readr)
+library(dplyr)
 library(flexdashboard)
 library(shiny)
 library(magrittr)
-library(tidyverse)
 library(forcats)
 library(stringr)
 library(waffle)
+library(tidyr)
 library(poliscidata)
 library(leaflet)
-library(sf)
-library(rmapshaper)
 library(htmltools)
-library(lubridate)
 library(DT)
-
 ```
 
 ```{r}
@@ -558,7 +556,7 @@ ggplot(aes(x = Date_year, y = events, fill =id)) +
 renderPlot({
 
 shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
-library(tidyr)
+
 deaths_perc_event <-shooting_data_state %>%
    count(`Killed (includes shooter)`) %>%
    rename("num_events"= n) %>%
@@ -590,6 +588,7 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
                     values_from = percent) %>%
   waffle::waffle(legend_pos = "bottom", title = "Deaths Per School Shooting", 
        xlab="1 square ~ 1%")+  scale_fill_viridis_d()
+
 
 })
 # in the case of new mexico... the rounded values add up to 99 which creates an empty extra square only when using scale_fill_viridis_d()
@@ -724,7 +723,7 @@ Column
     
 ### 
 
-This map shows where school shootings took place in the United States between January 1970 to June 2020 according to the the open-source [Center for Homeland Defense and Security](https://www.chds.us/c/) (CHDS) [K-12 School Shooting Database](https://www.chds.us/ssdb/dataset/). 
+This map shows where school shootings took place in the United States between January 1970 to June 2020 according to the the open-source [Center for Homeland Defense and Security](https://www.chds.us/c/) (CHDS) [K-12 School Shooting Database](https://www.chds.us/ssdb/dataset/). Click the circles for more information.
    
 ```{r}
 # Specify the popups
@@ -846,7 +845,7 @@ Given these goals, we decided on the following page layout:
 + State Statistics
 + Map
 + Tutorial
-+ Hotline
++ Get Help
 
 The first page gives users to the opportunity to look at the data themselves. More complicated components such as the map of each incident were left alone on a single page. US and state-level statistics were separated from one another. This short tutorial on how to create the dashboard and source code were included in the dashboard with programmers at all levels in mind.
 
@@ -927,7 +926,10 @@ As mentioned before, the `flexdashboard` metadata included in the `YAML` also al
 
 This [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE) provides a case study on how to create this very dashboard in more detail.
 
-Hotline {data-icon="fa-exclamation-triangle"}
+
+
+
+Get Help {data-icon="fa-exclamation-triangle"}
 =========================================   
 
 Column {data-width=800}

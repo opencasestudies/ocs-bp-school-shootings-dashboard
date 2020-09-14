@@ -40,8 +40,8 @@ library(knitr)
 
 #### {.outline }
 ```{r, echo=FALSE}
-knitr::include_graphics(here("screenshots",
-                             "final_plot.png"))
+knitr::include_graphics(here("img",
+                             "aboutpagelook.png"))
 ```
 ####
 
@@ -201,22 +201,24 @@ We will begin by loading the packages that we will need:
 library(here)
 library(readr)
 library(dplyr)
+library(stringr)
 library(tidyr)
 library(magrittr)
 library(ggmap)
 library(sf)
+library(tibble)
+library(poliscidata)
 library(ggplot2)
 library(forcats)
 library(waffle)
 library(flexdashboard)
 library(shiny)
-library(tidyverse)
 library(leaflet)
-
-library(rmapshaper)
+#library(rmapshaper)
 library(htmltools)
 library(lubridate)
 library(DT)
+
 ```
 
 
@@ -226,29 +228,24 @@ Package   | Use in this case study
 ---------- |-------------
 [here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
 [readr](https://readr.tidyverse.org/) |  to import the data    
-[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data    
-[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data
+[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data  
+[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, and to see the last few columns of a tibble
+[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (collapsing strings together, replace values, and detect values)
 [magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands 
-[ggmap](https://cran.r-project.org/web/packages/ggmap/ggmap.pdf) | to geocode the data (which means get the latitude and longitude values for the schools)
-[waffle](https://github.com/hrbrmstr/waffle) | to make waffle proportion plot
-[flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the elements of the dashboard 
-
-[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, to separate a column into additional columns, and to fill out values based on previous values   
-[shiny](https://shiny.rstudio.com/){target="_blank"}      | to allow our dashboard to be interactive  
-[leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
-[sf](https://r-spatial.github.io/sf/) | to Geocode the data avocado
-[rmapshapper](https://cran.r-project.org/web/packages/rmapshaper/vignettes/rmapshaper.html) | avocado
-[htmltools](https://www.rdocumentation.org/packages/htmltools/versions/0.5.0) | to avocado   
+[ggmap](https://cran.r-project.org/web/packages/ggmap/ggmap.pdf) | to geocode the data (which means get the latitude and longitude values)
+[sf](https://r-spatial.github.io/sf/) | to modify the geocoded data so that overlapping points did not overlap
 [lubridate](https://lubridate.tidyverse.org/) | to work with the data-time data    
 [DT](https://rstudio.github.io/DT/) | to create the interactive table  
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots  
-[directlabels](http://directlabels.r-forge.r-project.org/docs/index.html){target="_blank"}      | to add labels directly to lines in plots  
-[cowplot](https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html){target="_blank"}      | to add images to plots 
+[waffle](https://github.com/hrbrmstr/waffle) | to make waffle proportion plots  
+[flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the dashboard  
+[shiny](https://shiny.rstudio.com/){target="_blank"}      | to allow our dashboard to be interactive   
+[leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
+[rmapshapper](https://cran.r-project.org/web/packages/rmapshaper/vignettes/rmapshaper.html) | avocado
+[htmltools](https://www.rdocumentation.org/packages/htmltools/versions/0.5.0) | to add a caption to our interactive table 
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
-
-[patchwork](https://github.com/thomasp85/patchwork) | to combine plots
-
-
+[tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)
+[poliscidata](https://cran.r-project.org/web/packages/poliscidata/poliscidata.pdf) | to get population values for the states
 
 The first time we use a function, we will use the `::` to indicate which package we are using. Unless we have overlapping function names, this is not necessary, but we will include it here to be informative about where the functions we will use come from.
 
@@ -1825,11 +1822,14 @@ knitr::include_graphics(here::here("img" , "aboutpagelook.png"))
 
 Here is the overall structure for this page:
 
-```{r, echo=FALSE, out.width="60%"}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "about_page_structure.png"))
 ```
 
 ### Details
+
+ 
+ <details> <summary> Click here if you would like to see the code for this page. </summary>
 
 On this page we will have two columns - one which will be wider than the other.  Size specifications on `flexdashboard` are unitless; the width of any column included on a page is a function of the width set for a column against the sum of widths for all columns on that page. If we set columns sizes of 600 and 300 on a page with two columns, one column will be twice as large as the other column. We want the left column to be quite a bit larger than the right, so we will set the left as `70` and the right as `30`.
 
@@ -1966,7 +1966,8 @@ Then if we create a directory or folder called `img` and place our image files i
 knitr::include_graphics(here::here("img" , "newdir.png"))
 ```
 
-
+ </details>
+ 
 ## The Data Page (Interactive)
 
 Now Let's create a page about the data that we are using.
@@ -1983,7 +1984,7 @@ knitr::include_graphics(here::here("img" , "The_Data_Page.png"))
 ### Overall Structure
 Here is the overall structure for this page:
 
-```{r, echo=FALSE, out.width="60%"}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "Data_page_structure.png"))
 ```
 
@@ -3125,12 +3126,32 @@ This [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE
 </details>
 
 
-## The Hotline page
+## The Get Help page
 
-Lastly, we will create a **Hotline** page to spread awareness.
+Lastly, we will create a **Get Help** page to spread awareness.
+
+### Look
+
+This is what the page will look like:
+
+```{r, echo=FALSE}
+knitr::include_graphics(here::here("img" , "The_Get_Help_Page.png"))
+```
+
+
+### Overall Structure
+
+```{r, echo=FALSE}
+knitr::include_graphics(here::here("img" , "The_Get_Help_Page_structure.png"))
+```
+
+
+### Details
+
+
 
 ```
-Hotline {data-icon="fa-exclamation-triangle"}
+Get Help {data-icon="fa-exclamation-triangle"}
 =========================================   
 
 Column {data-width=600}
@@ -3214,93 +3235,16 @@ Column {data-width=1000}
 ```   
 
 
-
-
-
-## RA NOTES
-
-
-Consult this document for a general overview:
-
-+ case-study-structure-MO-notes
-
-There are several datasets involved in this case study
-
-+ Raw dataset (raw_data/K-12 SSDB (Public) - K-12 SSDB (Public) Linked.csv)
-+ Geocoded dataset  (processed_data/shooting_data.csv)
-+ Wrangled dataset (processed_data/shooting_data_wrangled)
-
-This document uses the geocoded dataset to produce the wrangled dataset.
-
-The wrangled dataset is then used to produce the dashboard in the other document.
-
-
-The goecoding required to produce this case study took approximately 1.5-2 hours on a Macbook Air (2015). 
-
-
-
-## RA Code
-
-We will employ the following layout for the dashboard.
-
-RMarkdown Dashboard Structure
-
-+ Icon (48 x 48)
-+ The Data
-+ Column 1: Interactive Table
-+ Column 2: Photo
-+ US Statistics
-+ Column 1 
-+ Yearly Deaths
-+ Yearly Cumulative Deaths
-+ Deaths per Shooting
-+ Column 2
-+ Wounded
-+ Deaths
-+ Shooting Completed/Attempted Suicide
-+ Median Shots Fired
-+ Deaths, Shooter was Only Victim
-+ Use of a Single Handgun
-+ State Statistics
-+ Sidebar
-+ Column 1
-+ Yearly Deaths
-+ Yearly Cumulative Deaths
-+ Deaths per Shooting
-+ Map
-+ Zoom (+)
-+ Zoom (-)
-+ Layer Controls
-+ Provider Tiles
-+ Circle Markers
-+ Mini-map
-+ About
-+ Column 1
-+ Disclaimer
-+ How do I use this dashboard?
-+ Does Open Case Studies have more resources I can access to learn about creating this dashboard?
-+ Column 2: Photo
-+ Tutorial
-+ Step 1: Load the `flexdashboard` package
-+ Step 2: Create and `RMD` document
-+ Step 3: Create an appropriate `YAML`.
-+ Step 4: Design the layout of the dashboard.
-+ Step 5: Add content to the dashboard.
-+ Hotline
-+ Warning Signs
-+ Response to Warning Signs
-+ Source Code
-
-
-
-
-
 # **Summary**
 *** 
 
-## Summary Plot
-
 ## Synopsis
+
+In this case study we have demonstrated the basics of R Markdown and how to create a dashboard with using the `flexdashboard` package. We also demonstrated how to include an interactive table with the `DT` package, how to include interactive plots using functions of the `shiny` package such as `renderPlot()`. We also included interactive value boxes using the `renderValueBox()` function of the `flexdashboard` package wich works with the `shiny` package. Finally we also showed how to include interactive maps using the `leaflet` package. 
+
+This case study also explored how to properly caculate and interpret percentages when the data has missing values. We also discussed the benefits and limiting aspects of pie charts (using `ggplot2`) and waffle plots (using `waffle`).
+
+Overall the dashboard that we created shows that the number of shootings per year has increased overtime. Further investigation is necessary to determine if this is simply due to increases in population alone or if the rate has increased due to other factors and if so, what those factors might be. It is also clear that the number of shootings and the number of deaths percapita varies by state. Thus there appears to be other aspects accounting for state differences. 
 
 # **Suggested Homework**
 *** 
@@ -3316,83 +3260,74 @@ Create another dashboard with graphs and statistics featuring other elements wit
 [RStudio](https://rstudio.com/products/rstudio/features/){target="_blank"}  
 [Cheatsheet on RStuido IDE](https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf){target="_blank"}  
 [Other RStudio cheatsheets](https://rstudio.com/resources/cheatsheets/){target="_blank"}   
+[RStudio projects](https://r4ds.had.co.nz/workflow-projects.html)
+
 [Tidyverse](https://www.tidyverse.org/){target="_blank"}   
 
-[Response bias](https://en.wikipedia.org/wiki/Response_bias)  
-[Cross-Sectional data](https://en.wikipedia.org/wiki/Cross-sectional_data?oldformat=true)
-[Population](https://en.wikipedia.org/wiki/Population?oldformat=true)
-[Sample](https://en.wikipedia.org/wiki/Sampling_(statistics)?oldformat=true)
-[Sampling methods](https://en.wikipedia.org/wiki/Sampling_(statistics)?oldformat=true){target="_blank"} 
-[Inference](https://www.britannica.com/science/inference-statistics) 
-
-[American Community Survey (ASC)](https://www.census.gov/programs-surveys/acs)  
-
-See [here](https://en.wikipedia.org/wiki/American_Community_Survey) for more detailed information about the survey  
-[Measure of America](https://www.ssrc.org/programs/view/moa/)   
-[Social Science Research Council](https://www.ssrc.org/) 
    
 
 [Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
-[Writing functions](https://r4ds.had.co.nz/functions.html)   
-Also see [this case study](https://opencasestudies.github.io/ocs-bloomberg-vaping-case-study/){target="_blank"}  for more information on writing functions.   
+
 [String manipulation cheatsheet](https://rstudio.com/resources/cheatsheets/){target="_blank"}  
 [Table formats](https://en.wikipedia.org/wiki/Wide_and_narrow_data){target="_blank"}
 
-[Regression](https://lindeloev.github.io/tests-as-linear/)    
-[simple linear regression](https://en.wikipedia.org/wiki/Simple_linear_regression)   
-[monotonic association](https://www.statisticshowto.com/monotonic-relationship/)   
-[Kendall rank correlation coefficient](https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient?oldformat=true)   
-[Null hypothesis](https://en.wikipedia.org/wiki/Null_hypothesis)   
-[Alternative hypothesis](https://en.wikipedia.org/wiki/Alternative_hypothesis)   
-[Probability](https://en.wikipedia.org/wiki/Probability)   
-[one-sided and two-sided hypotheses](https://en.wikipedia.org/wiki/One-_and_two-tailed_tests)   
-[Nonparametric](https://en.wikipedia.org/wiki/Nonparametric_statistics)     [Parametric](https://en.wikipedia.org/wiki/Parametric_statistics) 
-[significance threshold](https://en.wikipedia.org/wiki/Statistical_significance)  
-[Z score](https://en.wikipedia.org/wiki/Standard_score)   
-[Z score table](https://socratic.org/questions/5986a3e1b72cff6fd48a5408)  
-[Z score to p-value calculator](https://www.socscistatistics.com/pvalues/normaldistribution.aspx)   
+[Geocoding](https://en.wikipedia.org/wiki/Geocoding)  
+[Coordinate reference system (CRS)](https://www.w3.org/2015/spatial/wiki/Coordinate_Reference_Systems) [ESPG](https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset)
+[World Geodetic System (WGS) version 84 also called ESPG:4326 ](https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84) 
+[Albers equal-area conic projection](https://en.wikipedia.org/wiki/Albers_projection#:~:text=The%20Albers%20equal%2Darea%20conic,that%20uses%20two%20standard%20parallels.&text=The%20Albers%20projection%20is%20used,the%20United%20States%20Census%20Bureau.))  
+[crs 102008](https://spatialreference.org/ref/esri/102008/html/)  
+
+To learn more about geospatial coordinate systems see [here](https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf) and [here](https://guides.library.duke.edu/r-geospatial/CRS).
 
 
 [`ggplot2` package](http://ggplot2.tidyverse.org){target="_blank"}    
 Please see [this case study](https://opencasestudies.github.io/ocs-bp-co2-emissions/)  for more details on using `ggplot2`    
 [grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html){target="_blank"}   
 [`ggplot2` themes](https://ggplot2.tidyverse.org/reference/ggtheme.html){target="_blank"}   
-[`directlabels` package methods](http://directlabels.r-forge.r-project.org/docs/index.html){target="_blank"}    
-[Hmong people](https://en.wikipedia.org/wiki/Hmong_people)   
-[Intersections](https://www.vox.com/the-highlight/2019/5/20/18542843/intersectionality-conservatism-law-race-gender-discrimination)   
 
-[Motivating article for this case study about youth disconnection/opportunity youth](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6243446/)
+[Motivating article for this case study about school shootings](https://link.springer.com/content/pdf/10.1007/s11920-012-0331-6.pdf)
+
+Also see this [article](https://siepr.stanford.edu/sites/default/files/publications/19-036.pdf) to learn more about the impacts of school shootings.
 
 
-To learn more about importing and wrangling PDFs using the `pdftools` package see this [case study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/) and this [case study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/). 
+[Lightweight markup languages(LML)](https://en.wikipedia.org/wiki/Lightweight_markup_language)  
+[Markdown](https://en.wikipedia.org/wiki/Markdown)  
+[R markdown](http://rmarkdown.rstudio.com/)   
+[`knitr`](https://yihui.org/knitr/)  
+[`rmarkdown` (package)](https://cran.r-project.org/web/packages/rmarkdown/rmarkdown.pdf)
 
-To learn more about what you can do with the `magick` package see this [vingette](https://cran.r-project.org/web/packages/magick/vignettes/intro.html).   
+See this [book](https://bookdown.org/yihui/rmarkdown/) for more information on working with R Markdown files. 
 
-To learn more about the **Mann-Kendall trend test** see
-[here](https://www.statisticshowto.com/mann-kendall-trend-test/) and [here](https://www.statisticshowto.com/wp-content/uploads/2016/08/Mann-Kendall-Analysis-1.pdf).  
+The RStudio [cheatsheet for R Markdown](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) and this [tutorial](https://ourcodingclub.github.io/tutorials/rmarkdown/) are great for getting started. 
 
-To learn more about hypothesis testing, see this [case study](https://opencasestudies.github.io/ocs-bp-rural-and-urban-obesity/).    
+[Pandoc](https://en.wikipedia.org/wiki/Pandoc)  
+
+[YAML](https://en.wikipedia.org/wiki/YAML)  
+[Configuration](https://en.wikipedia.org/wiki/Configuration_file)  
+
+[flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)  
+
+See [here](https://rstudio.com/resources/webinars/introducing-flexdashboards/) for a video about flexdashboard and [here](https://rmarkdown.rstudio.com/flexdashboard/) for a more information on how to use this package.   
+See [here](https://rmarkdown.rstudio.com/flexdashboard/using.html#components) for a list of other packages that are useful for adding elements to dashboards created with the `flexdashboard` package.   
+See [here](https://www.datadreaming.org/post/r-markdown-theme-gallery/) for a list of R Markdown themes which can be used with `flexdashbard`.   
+See [Font Awesome](https://fontawesome.com/icons?d=gallery) for icons.  
+
+To learn more about using `shiny` with the `flexdashboard` package to create interactive dashboards, see this [tutorial](https://rmarkdown.rstudio.com/flexdashboard/shiny.html).   
+
+[leaflet (R package)](https://rstudio.github.io/leaflet/)   
+[Leaflet (JavaScript Library)](https://leafletjs.com/)   
+
+[shiny](https://shiny.rstudio.com/)
+See [here](https://shiny.rstudio.com/gallery/) for a gallery of `shiny` examples.
+
+See this [website](https://rstudio.github.io/shinydashboard/) to learn about a more flexible and slightly more challenging option for creating dashboards in R using a package called `shinydashboard`.
 
 
 <u>**Packages used in this case study:** </u>
 
 Package   | Use in this case study                                                                      
 ---------- |-------------
-[here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
-[pdftools](https://readr.tidyverse.org/)      | to import PDF documents  
-[magick](https://cran.r-project.org/web/packages/magick/vignettes/intro.html#Kernel_convolution)      | for importing images and extracting text from images   
-[knitr](https://yihui.org/knitr/) |  for showing images in reports    
-[dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data   
-[stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate strings  
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands 
-[tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, to separate a column into additional columns, and to fill out values based on previous values   
-[tibble](https://tibble.tidyverse.org/){target="_blank"}      | to create tibbles    
-[ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots  
-[directlabels](http://directlabels.r-forge.r-project.org/docs/index.html){target="_blank"}      | to add labels directly to lines in plots  
-[cowplot](https://cran.r-project.org/web/packages/cowplot/vignettes/introduction.html){target="_blank"}      | to add images to plots 
-[forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
-[kendall](https://cran.r-project.org/web/packages/Kendall/Kendall.pdf) | to implement the Mann-Kendall trend test in R   
-[patchwork](https://github.com/thomasp85/patchwork) | to combine plots
+
 
 #### {.emphasis_block}
 
