@@ -57,9 +57,9 @@ This dashboard has two purposes:
 This dashboard uses data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School). This data was downloaded June of 2020.
 
 <style>
-div.black { background-color:#8FBC8F; border-radius: 5px; padding: 20px; font-size: 1em;color: white;}
+div.green { background-color:#8FBC8F; border-radius: 5px; padding: 20px; font-size: 1em;color: white;}
 </style>
-<div class = "black">
+<div class = "green">
 Riedman, David, and Desmond O’Neill. “CHDS – K-12 School Shooting Database.” Center for Homeland Defense and Security, June 2020, [www.chds.us/ssdb](www.chds.us/ssdb).
 </div>
 
@@ -76,7 +76,7 @@ Visit the [*Tutorial*](#tutorial) page of this dashboard to first learn the basi
 At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE), which provides more detailed information about how ***this dashboard*** was created.
 
 <style>
-div.blue { background-color:"black"; border-radius: 5px; padding: 20px; font-size: .8em;}
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px; font-size: .8em;}
 </style>
 <div class = "blue">
 
@@ -295,7 +295,7 @@ deaths_perc_event %<>%
     TRUE ~ category))
 
 deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
-  filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4+")) %>%
+  filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4\\+")) %>%
   mutate(percent = round(percent)) %>%
   select(-num_events) %>%
   tidyr::pivot_wider(names_from = category, 
@@ -318,9 +318,6 @@ valueBox(value = sum(pull(shooting_data, Wounded), na.rm = TRUE),
          color = "white")
 ```
     
-    
-
-
 ### **Total Deaths**
 
 ```{r}
@@ -329,20 +326,6 @@ valueBox(value = sum(pull(
          color = "white")
 ```
 
-
-<!-- ### **Median Shots Fired** -->
-
-<!-- ```{r} -->
-
-<!-- valueBox(value = round(median( -->
-<!--   pull(shooting_data, -->
-<!--       `Number of Shots Fired`), na.rm = TRUE), 2), -->
-<!--   color = "white") -->
-
-<!-- reporting_shots <- (sum(pull(shooting_data, `Number of Shots Fired`)>=0, na.rm = TRUE)/ -->
-<!--               length(pull(shooting_data, `Number of Shots Fired`)))*100 -->
-<!-- reporting_shots <- round(reporting_shots, 1) -->
-<!-- ``` -->
 
 
 ### **Shooter committed or attempted suicide**
@@ -360,6 +343,7 @@ reporting_suic <- round(reporting_suic, 1)
 valueBox(value = paste0(suicide,"%"), 
          color = "white")
 ```
+
 
     
 
@@ -435,6 +419,7 @@ selectInput(inputId = "state_selected",
 # Washington, D.C. gets excluded by this
 ```
 
+
 Column {data-width=900 .tabset .tabset-fade}
 -----------------------------------------------------------------------
 
@@ -442,8 +427,7 @@ Column {data-width=900 .tabset .tabset-fade}
 
 ```{r}
 renderPlot({
-
-shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
+shooting_data_state <- shooting_data %>% filter(State == input$state_selected)
 
 shootings_per_year<- shooting_data_state  %>%
     group_by(Date_year) %>%
@@ -483,8 +467,6 @@ per_year %<>%
     theme_dashboard()+
     theme(title = element_text(size = 16, face = "bold"),
           axis.text = element_text(size = 14))
-
-
 })
 ```
 
@@ -493,7 +475,7 @@ per_year %<>%
 ```{r}
 renderPlot({
 
-shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
+shooting_data_state <- shooting_data %>% filter(State == input$state_selected)
 
 shootings_per_year<- shooting_data_state  %>%
     group_by(Date_year) %>%
@@ -507,7 +489,6 @@ shootings_per_year_cum <- shootings_per_year %>%
 deaths_per_year<-shooting_data_state  %>% 
   group_by(Date_year) %>%
   summarize(Deaths =sum(`Killed (includes shooter)`))
-
 
 deaths_per_year_cum <- deaths_per_year %>%
     mutate(Deaths= cumsum(Deaths))
@@ -551,7 +532,7 @@ ggplot(aes(x = Date_year, y = events, fill =id)) +
 ```{r}
 renderPlot({
 
-shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
+shooting_data_state <- shooting_data %>% filter(State == input$state_selected)
 
 deaths_perc_event <-shooting_data_state %>%
    count(`Killed (includes shooter)`) %>%
@@ -573,18 +554,18 @@ deaths_perc_event %<>%
     category == "1 deaths" ~ "1 death",
     TRUE ~ category))
 
-deaths_perc_event %<>%
-filter (!duplicated(`category`))
+ deaths_perc_event %<>%
+ filter (!duplicated(`category`))
 
 deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
-  filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4+")) %>%
+  filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4\\+")) %>%
+  filter(category != "4 deaths") %>%
   mutate(percent = round(percent)) %>%
   select(-num_events) %>%
   tidyr::pivot_wider(names_from = category, 
                     values_from = percent) %>%
   waffle::waffle(legend_pos = "bottom", title = "Deaths Per School Shooting", 
        xlab="1 square ~ 1%")+  scale_fill_viridis_d()
-
 
 })
 
@@ -597,7 +578,6 @@ Column {data-width=450}
 
 ```{r}
 renderValueBox({
-shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
 shooting_data_state <- shooting_data %>% filter(State == input$state_selected)
 
 
