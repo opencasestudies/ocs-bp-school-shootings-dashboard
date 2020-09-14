@@ -1383,7 +1383,7 @@ We are also interested in including some statistics in our dashboard. For exampl
 
 Since we converted variables with `yes` or `no` answers because they were inconsistently coded as `yes`/ `y` and `no`/`n`.  Futhermore, logical variables are easier to work with in terms of performing calculations because `TRUE` values are treated like a `1` while `FALSE` values are treated like a `0`. 
 
-We would like to calculate the percentage of shooters that committed or attempted suicide out of all entries that have data for this information, thus we don't want to include `NA` values in the calculation. 
+We would like to calculate the percentage of shooters that committed or attempted suicide out of all entries that have data for this information, thus we don't want to include `NA` values in the calculation, otherwise this might give us a distorted picture of the truth.
 
 Let's take a look at the data for this variable:
 
@@ -1411,9 +1411,33 @@ Thus we can calculate the percentage of all reporting values like so, where the 
 
 ```{r}
 suicide <-(sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`), na.rm = TRUE) /
-           sum(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, na.rm = TRUE))*100
+sum(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, na.rm = TRUE))*100
+
+suicide
 ```
 
+We can use the `round()` function to round this value and the `format()` to make sure that the value has the correct number of digits. If the rounded value is a whole number the `format()` function allows the number of zeros to be displayed after the decimal to be specified. So say if we rounded the percentage to 2 decimal places and we got a value of  `13.4` (That is not the case here, so we will instead round to 1 decimal places for this illustration). We could then add a zero after the `4` like so:
+```{r}
+suicide <-round(suicide, 1)
+suicide
+format(suicide, nsmall = 2)
+```
+
+To calculate the percentage of shootings where this infromation was reported we can do the following, by calculating all values that are not `NA` using `>=0` and calculating the number all possible values using the base `length()` function.
+
+```{r}
+reporting_suic <- (sum(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, na.rm = TRUE)/
+                     length(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)))*100
+reporting_suic <- round(reporting_suic, 1)
+reporting_suic
+```
+
+We can see that 97% of the shootings have information about this variable.
+
+It is important to check and report this percentage so that people can better understand if our percentages are reliable. If only 2% of the shootings had this information and in all cases of the 2% the shootings involved a suicide (or attempt), then this would lead people to believe that 100% of school shootings involce a shooter suicide (or attempt). This would clearly be misleading!  In our case the majority of the shootings included this information, so we will indeed report the percentage and we will also let people know how much of the shooting data had this information.
+
+You will see that we performed variations of these calculations to calculate other statistics for our dashboard.
+For the sake of brevity, we will not include explanations here.
 
 # **Dashboard Basics**
 ***
@@ -1732,21 +1756,23 @@ Also see the cran [documentation](https://cran.r-project.org/web/packages/flexda
 Since we are creating our dashboard in a new Rmd file, we need to load the necessary packages and the wrangled data that we created in this Rmd file. In that Rmd file, it looks something like this. Note that all the rest of the code shown would be added to the Rmd file for the dashboard and are simply shown here for illustrative purposes.
 
 ```{r,eval = FALSE}
-library(googlesheets4)
 library(here)
+library(readr)
+library(dplyr)
 library(flexdashboard)
 library(shiny)
 library(magrittr)
-library(tidyverse)
 library(forcats)
 library(stringr)
+library(waffle)
+library(tidyr)
+library(poliscidata)
 library(leaflet)
-library(sf)
-library(rmapshaper)
 library(htmltools)
-library(lubridate)
 library(DT)
 ```
+
+For more information about what these packages were used for, see the beginning of this case study and the [Helpful Links] section.
 
 ```{r,eval = FALSE}
 
@@ -1828,8 +1854,8 @@ knitr::include_graphics(here::here("img" , "about_page_structure.png"))
 
 ### Details
 
- 
- <details> <summary> Click here if you would like to see the code for this page. </summary>
+
+<details> <summary> Click here if you would like to see all of the code for this page. </summary>
 
 On this page we will have two columns - one which will be wider than the other.  Size specifications on `flexdashboard` are unitless; the width of any column included on a page is a function of the width set for a column against the sum of widths for all columns on that page. If we set columns sizes of 600 and 300 on a page with two columns, one column will be twice as large as the other column. We want the left column to be quite a bit larger than the right, so we will set the left as `70` and the right as `30`.
 
@@ -1859,7 +1885,9 @@ Recall that `###` is used to add elements to columns and rows. Note that there i
 knitr::include_graphics(here::here("img", "tab.png"))
 ```
 
-##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)
+[[source](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)]
+
+avocado if we add `###` forthe source like usual, then we will no longer have the subsequent headers following the <details> section
 
 We don't actually want a header now, so we can simply use `###` without any text following it. Note that you can get away with not using the `###` but some elements will not render properly. 
 
@@ -1869,8 +1897,9 @@ Now we will add a block of text describing the dashboard to the first column and
 knitr::include_graphics(here::here("img", "markdownsyntax.png"))
 ```
 
-##### [[source]](https://rmarkdown.rstudio.com/lesson-15.html)
+[[source](https://rmarkdown.rstudio.com/lesson-15.html)] 
 
+avocado if we add `###` forthe source like usual, then we will no longer have the subsequent headers following the <details> section
 
 Thus this is what the code for this page looks like (notice that there is an internal link to the `Tutrial` page:
 
@@ -1878,76 +1907,72 @@ Thus this is what the code for this page looks like (notice that there is an int
 About {data-icon="fa-question-circle"}
 ===================================== 
 
-Column {data-width=700}
+Column {data-width=70}
 -------------------------------------
 
-### About
+### 
 
 **What is the purpose of this dashboard?**
 
 This dashboard has two purposes:
 
-1. To Illustrate trends in school shooting events in the United States
+1. To illustrate trends in school shooting events in the United States
 2. To demonstrate how to create a dashboard using `R`
 
+**The data**
 
-This dashboard uses data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School). This data was downloaded in June of 2020.
+This dashboard uses data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School). This data was downloaded June of 2020.
 
-
+<style>
+div.black { background-color:#8FBC8F; border-radius: 5px; padding: 20px; font-size: 1em;color: white;}
+</style>
+<div class = "black">
 Riedman, David, and Desmond O’Neill. “CHDS – K-12 School Shooting Database.” Center for Homeland Defense and Security, June 2020, [www.chds.us/ssdb](www.chds.us/ssdb).
+</div>
+
+  
+This database includes information about school shooting events for students in grades K-12 in the United States dating back to 1970. The database has additional information not shown on our dashboard including, but not limited to: location of the event at the school, source for the shooting information, shooter characteristics, and victim characteristics. 
+
+### 
 
 
-This database includes information about school shooting events for students in grades K-12 in the United States dating back to 1970. The database has additional information not shown on our dashboard including but not limited to: 
-
-* Location of the event at the school  
-* If the event occured during a sporting event  
-* Time of day of the event  
-* Day of the week of the event  
-* Source for the shooting information  
-* If the event was pre-planned or not  
-* Shooter's actions immediately following the shooting  
-* Shooter characteristics (affiliation with the school, if they had accomplices, if they took hostages, and their age and race)  
-* Victom characteristics (afficliation with the school, if they were targeted, their age and race)  
-
-According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) website:
-
-> The School Shooting Database Project is conducted as part of the [Advanced Thinking in Homeland Security (HSx)](https://www.chds.us/c/academic-programs/hsx/) program at the Naval Postgraduate School’s [Center for Homeland Defense and Security (CHDS)](Center for Homeland Defense and Security (CHDS).
-
-> The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. All of the information is based on open-source information and 3rd party reporting.
-
-> "This database was developed from open-source information and may include reporting errors."
-
-
-**Want to learn how to create a dashboard just like this?**
+<u>**Want to learn how to create a dashboard just like this?**</u>
 
 Visit the [*Tutorial*](#tutorial) page of this dashboard to first learn the basics about building a dashboard with the `flexdashboard` package.
 
 At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE), which provides more detailed information about how ***this dashboard*** was created.
 
-We have also included the source code (see upper right-hand corner) in this dashboard for more experienced `R` users looking to mimic some of what we did in this dashboard in their own.
+<style>
+div.blue { background-color:"black"; border-radius: 5px; padding: 20px; font-size: .8em;}
+</style>
+<div class = "blue">
+
+ **Acknowledgements**
+
+This was created as part of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project. We would like to acknowledge the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/) for funding this work. 
+
+ **Disclaimer**
+
+This dashboard uses data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/). We acknowledge (like their website) that there may be reporting errors. The trends and statistics shown do not account for the many other factors that may influence the occurrence of shooting events. The dashboard should not be used in the context of making policy decisions without external consultation from scientific experts. 
 
 
-**Disclaimer**
-
-The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**.
-
-A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
-
-We are simply using data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/), we did not create this database. We acknowlege (like their website) that there may be reporting errors in this database. 
-
-**License**
+ **License**
 
 This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [(CC BY-NC 3.0)](https://creativecommons.org/licenses/by-nc/3.0/us/){target="_blank"} United States License.
+</div>
 
-Column {data-width=300}
+Column {data-width=30}
 -------------------------------------
 
 ###
+
 
 '''{r, echo=FALSE, fig.cap="[Photograph by Nathan Dumlao](https://unsplash.com/photos/xPHmmVKS8lM)"}
 knitr::include_graphics(here::here("img", "nathan-dumlao-xPHmmVKS8lM-unsplash.jpg"))
 '''
 ```
+
+Note that we will use `"'''"` for to show code chunks of the actual code from the dashboard.
 
 The image used in this second column is from a website called unsplash (https://unsplash.com/) which hosts images for free use but includes information about the photographer if you chose to credit them. A short link for this image was found by clicking on it and then clicking the share button.
 
@@ -1958,6 +1983,7 @@ The image is included using the `include_graphics()` function of the `knitr` pac
 ```{r, echo=FALSE, out.width="60%"}
 knitr::include_graphics(here::here("img" , "project.png"))
 ```
+
 If you are new to using RStudio projects, please see this [link](https://r4ds.had.co.nz/workflow-projects.html) for more information.
 
 Then if we create a directory or folder called `img` and place our image files in this directory, then we can specify the full path to this file on our computer, by just using `here::here("img", "name_of_image.png")`. The `include_graphics()` function works for a variety image file types. 
@@ -1966,8 +1992,9 @@ Then if we create a directory or folder called `img` and place our image files i
 knitr::include_graphics(here::here("img" , "newdir.png"))
 ```
 
- </details>
- 
+</details>
+
+
 ## The Data Page (Interactive)
 
 Now Let's create a page about the data that we are using.
@@ -1990,7 +2017,8 @@ knitr::include_graphics(here::here("img" , "Data_page_structure.png"))
 
 ### Details
 
-
+ <details> <summary> Click here to see the code for this page. </summary>
+ 
 To create the structure for this page that will display the data, we will have two columns, with the first one (on the left) wider than the other. Again we will have a block of text in the column on the left like so:
 
 ```
@@ -2003,11 +2031,15 @@ Column {data-width=70}
 
 ###
 
-The data is from the [Center for Homeland Defense and Security (CHDS)](Center for Homeland Defense and Security (CHDS) [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/). Methods are outlined [here](https://www.chds.us/ssdb/methods/) as to how incidents were identified and authenticated.
+The data used in this dashboard is from the [**Center for Homeland Defense and Security (CHDS)**](Center for Homeland Defense and Security (CHDS)) [**K-12 Shool Shooting Database**](https://www.chds.us/ssdb/dataset/). 
+
+Their methods for identifying and authenticating incidents are outlined [here](https://www.chds.us/ssdb/methods/).
 
 According to their website: 
-> "This database was developed from open-source information and may include reporting errors."
 
+*"The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. **All of the information is based on open-source information and 3rd party reporting... and may include reporting errors.**"*
+
+***
 
 
 Column {data-width=30}
@@ -2022,7 +2054,7 @@ Column {data-width=30}
 Now we will add our `DT_table` to the first column. First we need to include the code that we previously used to create the `DT_table` in our dashboard .Rmd file:
 
 
-```{r}
+```{r, eval = FALSE}
 DT_table <- shooting_data%>%
   dplyr::select(Date,
                 School,
@@ -2061,6 +2093,10 @@ We will also add another image to the column on the right, overall the code look
 
 
 ```
+
+The Data {data-icon="fa-database"}
+===================================== 
+
 Column {data-width=70}
 -------------------------------------
 
@@ -2072,11 +2108,9 @@ Their methods for identifying and authenticating incidents are outlined [here](h
 
 According to their website: 
 
->*"This database was developed from open-source information and may include reporting errors."*
+*"The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. **All of the information is based on open-source information and 3rd party reporting... and may include reporting errors.**"*
 
 ***
-
-
 
 '''{r, echo=FALSE}
 # Create the DT table first
@@ -2089,9 +2123,8 @@ DT_table <- shooting_data %>%
                 `Narrative (Detailed Summary/ Background)`) %>%
   rename("Deaths" = `Killed (includes shooter)`) %>%
   rename("Narrative" = `Narrative (Detailed Summary/ Background)`)
+# Instead of depending on the st_jitter algorithm to generate random placement, a custom function placing the points side by side at a set distance could be used to make points occuring at the same location appear neatly apart.
 '''
-
-
 
 '''{r, echo=FALSE}
 DT::renderDataTable({
@@ -2117,7 +2150,7 @@ knitr::include_graphics(here::here("img", "ruben-rodriguez-IXTvnOOSTyU-unsplash.
 '''
 ```
 
-
+</details>
 
 ## The US Statistics Page
 
@@ -2131,13 +2164,18 @@ knitr::include_graphics(here::here("img" , "US_Statistics_page.png"))
 ```
 
 ### Overall Structure
-Here is the overall structure for this page:
+Here is the overall structure for this page which uses a tab layout:
 
 ```{r, echo=FALSE, out.width="60%"}
 knitr::include_graphics(here::here("img" , "US_stats_page_overview.png"))
 ```
 
+avocado in the case of new mexico... the rounded values add up to 99 which creates an empty extra square only when using scale_fill_viridis_d()
+
 ### Details
+
+ <details> <summary> Click here to see the code for this page. </summary>
+
 
 This time we will use  the `.tabset` and `.tabset-fade` options specified for our first column. 
 
@@ -2156,13 +2194,12 @@ After having specified the `.tabset` and `.tabset-fade` options, we can create n
 knitr::include_graphics(here::here("img" , "tab.png"))
 ```
 
-##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)
+[[source](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)]
 
 
 Let's make a tab for yearly shooting events and deaths, a tab for cumulative shooting events and deaths, and a tab about the number of deaths per shooting. In each tab we will include the code for the plots that we have previously created. 
 
 ```
-
 US Statistics {data-icon="fa-flag"}
 ===================================== 
 
@@ -2198,24 +2235,42 @@ per_year%<>%
 per_year %>%
     ggplot(aes(x = Date_year, y = events, fill =id)) +
     geom_col()+
-    facet_grid(~id)+
+    facet_wrap(~id, scales = "free", 
+               labeller = as_labeller(c(Shootings = "Shootings (# of events)", 
+                                        Deaths = "Deaths (# of people)")), 
+               strip.position = "left")+
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
+    scale_y_continuous(breaks = seq(0, 120, by = 30),
+                 labels = seq(0, 120, by = 30),
+                 limits = c(0, 121))+
     theme_minimal() +
    labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
          subtitle = "United States",
-         y = "Number of events",
+         y = NULL,
          x = "Year")+
   scale_fill_manual(values = c("black", "black"))+
   theme(legend.position = "none", 
         legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90),
-        strip.background =element_rect(fill="cornflowerblue"),
-      strip.text = element_text(colour = 'white', face = "bold", size = 14))
+        axis.text.x = element_text(angle = 90, face = "bold"),
+        axis.title.x = element_text(face = "bold", size = 14),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        strip.text = element_text(face = "bold", size = 14))
+
+
+theme_dashboard <- function(){ 
+  theme(legend.position = "none", 
+        legend.title = element_blank(),
+        #title = element_text(face = "bold", size = 16),
+        axis.text.x = element_text(angle = 90, face = "bold"),
+        axis.title.x = element_text(face = "bold", size = 14),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        strip.text = element_text(face = "bold", size = 14))
+}
 '''
- 
- 
 
 ### Yearly Cumulative Deaths and Shootings
 
@@ -2241,21 +2296,20 @@ per_year_cum%<>%
 per_year_cum %>%
 ggplot(aes(x = Date_year, y = events, fill =id)) +
     geom_col()+
-    facet_grid(~id)+
+    facet_wrap(~id, scales = "free", 
+               labeller = as_labeller(c(Shootings = "Shootings (cumulative # of events)", 
+                                        Deaths = "Deaths(cumulative # of people)")), 
+               strip.position = "left")+
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
     scale_fill_manual(values = c("black", "black"))+
     theme_minimal() +
-    labs(title = "Cumulative Yearly Shootings and Deaths\nAttributable to School Shootings",
+    labs(title = "Cumulative Yearly Shootings and Deaths Attributable to\nSchool Shootings",
          subtitle = "United States",
-         y = "Cumulative number of events",
+         y = NULL,
          x = "Year") +
-    theme(legend.position = "none", 
-        legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90),
-        strip.background = element_rect(fill="cornflowerblue"),
-        strip.text = element_text(colour = 'white', face = "bold", size = 14))
+    theme_dashboard() 
 '''
 
 ### Deaths Per Shooting
@@ -2291,7 +2345,7 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
 '''
 ```
 
-In the second column we will include what are called value boxes to contain statistics that will remain static as the user moves through the tabs of the first column
+In the second column we will include what are called value boxes to contain statistics that will remain static as the user moves through the tabs of the first column.
 
 ```
 Column {data-width=30}
@@ -2319,18 +2373,18 @@ There are a few arguments to be aware of for this function:
 
 Thus we can create a value box for the total number of people wounded as follows, where we use the base `sum()` function to calculate the sum of all the values for the `Wounded` variable which was extracted using the `pull()` function of the `dplyr` package. We need to remove `NA` values to be able to calculate the sum and we can do this using the `na.rm = TRUE` argument. 
 
+
 ```
+Column {data-width=300}
+------------------------------------- 
+
+
 ### **Total Wounded**
     
 '''{r}
 valueBox(value = sum(pull(shooting_data, Wounded), na.rm = TRUE),
          color = "white")
 '''
-```
-
-Then we do the same for the total number of deaths:
-
-```
     
 ### **Total Deaths**
 
@@ -2339,75 +2393,96 @@ valueBox(value = sum(pull(
   shooting_data,`Killed (includes shooter)`), na.rm = TRUE),
          color = "white")
 '''
-```
-
-To calculate the median number of shots fired we can use the  `median()` function of the `stats` package which is loaded automatically like the `base` functions in an instance of R. We will also use the base `round()` function to round the number to have 2 places after the decimal.
 
 ```
-### **Median Shots Fired**
 
-'''{r}
-valueBox(value = round(median(
-  pull(shooting_data,
-      `Number of Shots Fired`), na.rm = TRUE), 2),
-  color = "white")
-'''
-```
-To calculate the percentage of shootings where the shooter was the only victom, we calcluate the sum of shootings where the shooter was the only victom and divide this by the sum of the total number of shootings that involved at least one death. The `paste0` function is used to add the percentage symbol.
+To calculate the percentage of shootings where the shooter committed or attempted suicide, we will use our calculation which was explained in the [Data Analsysis and Visualization] section. The `paste0` function is used to add the percentage symbol.
 
 ```
-### **Shooter Was Only Victim**
+
+### **Shooter committed or attempted suicide**
 
 '''{r}
 
-suicide <- sum(pull(shooting_data,`Suicide (Shooter was only victim) Y/N/ N/A`),
-               na.rm = TRUE)/ sum(pull(shooting_data,`Killed (includes shooter)`)>0, na.rm = TRUE)
-suicide <- round(suicide*100, 1)
+suicide <- (sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`), na.rm = TRUE) /
+            sum(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, na.rm = TRUE))*100
+suicide <- round(suicide, 1)
+
+reporting_suic <- (sum(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, na.rm = TRUE)/
+              length(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)))*100
+reporting_suic <- round(reporting_suic, 1)
 
 valueBox(value = paste0(suicide,"%"), 
          color = "white")
 '''
-```
-
-For this value box the percentage of shootings where a single handgun was used was calcuated by using the `case_when()` function to specify all cases where the `Firearm Type` variable was equal to `"Handgun"` as `TRUE` and all others as `FALSE`. This allows us to use the base `sum()` function as `TRUE` values will be counted as a value of `1` and `FALSE` values will be counted as a value of `0`. This sum was then divided by the total number of shooting events by getting the length of the `Firearm Type` variable using the base `length()` function. The next value box about the gender of the shooter was calculated in a similar manner. 
 
 ```
+
+For the value box of the percentage of shootings where a single handgun was used was calcuated by using the `case_when()` function to specify all cases where the `Firearm Type` variable was equal to `"Handgun"` as `TRUE` and all others as `FALSE`. This allows us to use the base `sum()` function as `TRUE` values will be counted as a value of `1` and `FALSE` values will be counted as a value of `0`. This sum was then divided by the total number of shooting events by getting the length of the `Firearm Type` variable using the base `length()` function. The next value box about the gender of the shooter was calculated in a similar manner. 
+
+```
+    
 ### **Use of a Single Handgun**
 
 '''{r}
 
-valueBox(value = 
-  paste(as.character(round(100 *(sum(case_when(
+handgun <-paste(as.character(round(100 *(sum(case_when(
       pull(shooting_data,`Firearm Type`) == "Handgun" ~ TRUE,
                                                  TRUE ~ FALSE), na.rm = TRUE)
     /
-      length(pull(shooting_data,`Firearm Type`))),
-    1)), "%"),
+      sum(pull(shooting_data, `Firearm Type`)>=0, na.rm = TRUE)),
+    1)), "%")
+
+reporting_gun <- (sum(pull(shooting_data, `Firearm Type`)>=0, na.rm = TRUE)/
+              length(pull(shooting_data, `Firearm Type`)))*100
+reporting_gun <- round(reporting_gun, 1)
+
+
+valueBox(value = handgun,
   color = "white")
-''' 
+
+'''
 
 ### **Shooter Was Male**
-
 '''{r}
-valueBox(value =
-  paste(as.character(round(100 * (sum(
+
+
+gender <- paste(as.character(round(100 * (sum(
     case_when(pull(shooting_data,`Shooter Gender`) == "Male" ~ TRUE,
                                                         TRUE ~ FALSE),
                                       na.rm = TRUE)
     /
-      length(shooting_data$`Shooter Gender`)),
-    1)), "%"),
+      sum(pull(shooting_data, `Shooter Gender`)>=0, na.rm = TRUE)),
+    1)), "%")
+
+reporting_male <- (sum(pull(shooting_data, `Shooter Gender`)>=0, na.rm = TRUE)/
+              length(pull(shooting_data, `Shooter Gender`)))*100
+reporting_male <- round(reporting_male, 1)
+
+
+valueBox(value = paste(gender),
   color = "white")
 '''
 ```
 
+Additional text about the reporting rate for these statisitcs was added using the `###` syntax. Additionally inline code is evaluated using the notation `"`r `"` Again notice that `"'"` was used instead of `"`"` just for illustrative purposes to allow this R Markdown document to render the code from the dashboard file.
 
+```
 
+###
+
+reporting rate of shooter suicide = 'r reporting_suic'%,  
+reporting rate of gun type = 'r reporting_gun'%,  
+reporting rate of shooter gender = 'r reporting_male'%
+
+```
+
+ </details> 
 
 
 ## The State Statistics Page (Interactive)
 
-Now Let's create a page for **State Statistics** we would like to share. 
+Now Let's create a page for **State Statistics** we would like to share. Importantly this page allows for the user to choose what state to look at.
 
 ### Look
 
@@ -2427,10 +2502,14 @@ Here is the overall structure for this page:
 knitr::include_graphics(here::here("img" , "states_stats_page_overview.png"))
 ```
 
+Note that the other value Boxes are not included in this image.  You can see that the `renderPlot()` function is used for plots and the `renderValueBox()` function is used for value boxes. 
+
 ### Details
 
 
 On this page we want the user to be able to select data for a specific state and render plots and get statistics just for the selected state. To do this we will utalize the `renderPlot()` and `renderValueBox()` functions of the `flexdashboard` package, as well as the `selectInput()` function of the `shiny` package. See this [website](https://rmarkdown.rstudio.com/flexdashboard/shiny.html) for more information on using `shiny` to create interactive dashboards with `flexdashboard`.
+
+<details> <summary> Click here to see the code for this page. </summary>
 
 
 The first thing we need to do to allow this page to be interactive is to add `runtime: shiny` to the YAML header at the top of the R Markdown file.
@@ -2460,15 +2539,21 @@ Note that the statistics shown do not account for other possibly influential sta
 
 
 '''{r}
+  
 selectInput(inputId = "state_selected", 
               label = "Select a state to explore:",
-            choices = unique(shooting_data%>%
-                             filter(!is.na(State)) %>%
-                             pull(State)), selected = "Maryland")
+            choices = shooting_data %>% 
+              pull(State) %>% 
+              unique() %>%
+              sort(), selected = "Alabama")
+
 
 #  Washington, D.C. gets excluded by this
 '''
 ```
+
+Note that we used the `unique()` function to select only unique values of the `State` variable of the `shooting_data` tibble. The `sort()` function was used to put the options in alphabetical order.
+
 
 In the next column we will have our plots like we did on the last page, thus again we will use tabset. However, the difference here is that we need to include the `renderPlot()` function around all of our code for each plot and we need to use the data that the user selected. This will automatically be in a data object called `input` and it will be within a variable called `state_selected"` based on what we used for the `inputID` in the `select_Input()` function.
 
@@ -2842,7 +2927,7 @@ renderPlot({
 })
 '''
 ```
-
+</details>
 
 ##  The Map page (Interactive)
 
@@ -2884,6 +2969,9 @@ knitr::include_graphics(here::here("img" , "map_page_structure.png"))
 ```
 
 ### Details
+
+ <details> <summary> Click here to see the code for this pgge. </summary>
+
 
 First we create a smaller dataset that just includes the data that we want to use in the map. We will include the date, the name of the school and the narrative for each point as a [popup](https://rstudio.github.io/leaflet/popups.html) that will be shown when the user hovers over a point. 
 
@@ -2976,7 +3064,8 @@ leaflet(shooting_data_geocoded) %>%
    setView(lng = -98.35, lat = 39.5, zoom = 4)
 '''
 ```
-
+ </details>
+ 
 Now we only have one finaly page. 
 
 ## The Tutorial Page
@@ -3002,9 +3091,8 @@ knitr::include_graphics(here::here("img" , "tutorialStructure.png"))
 ```
 
 ### Details
- The code for this page is fairly straightforward. 
- 
- <details> <summary> Click here if you would like to see it. </summary>
+
+ <details> <summary> Click here to see the code for this page. </summary>
 
 ```
 Tutorial {.storyboard data-icon="fa-list-ol"}
@@ -3149,6 +3237,8 @@ knitr::include_graphics(here::here("img" , "The_Get_Help_Page_structure.png"))
 ### Details
 
 
+ <details> <summary> Click here to see the code for this pgge. </summary>
+
 
 ```
 Get Help {data-icon="fa-exclamation-triangle"}
@@ -3225,14 +3315,7 @@ Call 911 if you feel there is an immediate threat.
 Call [+1-844-5-SAYNOW](tel:18445729669) if you would to submit an anonymous safety concern.
 ```
 
-
-```
-Map {data-icon="fa-map"}
-===================================== 
-
-Column {data-width=1000}
-------------------------------------- 
-```   
+ </details>
 
 
 # **Summary**

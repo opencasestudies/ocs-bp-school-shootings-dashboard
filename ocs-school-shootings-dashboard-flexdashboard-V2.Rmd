@@ -64,7 +64,7 @@ Riedman, David, and Desmond O’Neill. “CHDS – K-12 School Shooting Database
 </div>
 
   
-This database includes information about school shooting events for students in grades K-12 in the United States dating back to 1970. The database has additional information not shown on our dashboard including, but not limited to: location of the event at the school, source for the shooting information, shooter characteristics, and victom characteristics. 
+This database includes information about school shooting events for students in grades K-12 in the United States dating back to 1970. The database has additional information not shown on our dashboard including, but not limited to: location of the event at the school, source for the shooting information, shooter characteristics, and victim characteristics. 
 
 ### 
 
@@ -80,13 +80,13 @@ div.blue { background-color:"black"; border-radius: 5px; padding: 20px; font-siz
 </style>
 <div class = "blue">
 
- **Acknowlegements**
+ **Acknowledgements**
 
 This was created as part of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project. We would like to acknowledge the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/) for funding this work. 
 
  **Disclaimer**
 
-This dashboard uses data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/). We acknowlege (like their website) that there may be reporting errors. The trends and statistics shown do not account for the many other factors that may infleunce the occurance of shooting events. The dashboard should not be used in the context of making policy decisions without external consultation from scientific experts. 
+This dashboard uses data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/). We acknowledge (like their website) that there may be reporting errors. The trends and statistics shown do not account for the many other factors that may influence the occurrence of shooting events. The dashboard should not be used in the context of making policy decisions without external consultation from scientific experts. 
 
 
  **License**
@@ -422,7 +422,7 @@ State Statistics {data-icon=fa-flag-checkered}
 Column {.sidebar data-width=300}
 -----------------------------------------------------------------------
 
-Note that the statistics shown do not account for other possibly influential state specific features like population density, gun polcies, etc.
+Note that the statistics shown do not account for other possibly influential state specific features like population density, gun policies, etc.
 
 ```{r}
 selectInput(inputId = "state_selected", 
@@ -441,7 +441,6 @@ Column {data-width=900 .tabset .tabset-fade}
 ### Yearly Deaths and Shootings
 
 ```{r}
-
 renderPlot({
 
 shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
@@ -492,7 +491,6 @@ per_year %<>%
 ### Yearly Cumulative Deaths and Shootings
 
 ```{r}
-
 renderPlot({
 
 shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
@@ -546,13 +544,11 @@ ggplot(aes(x = Date_year, y = events, fill =id)) +
            axis.text   = element_text(size = 14))
 
 })
-
 ```
 
 ### Deaths Per Shooting
 
 ```{r}
-
 renderPlot({
 
 shooting_data_state <- shooting_data[shooting_data$State == input$state_selected, ]
@@ -591,7 +587,6 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
 
 
 })
-# in the case of new mexico... the rounded values add up to 99 which creates an empty extra square only when using scale_fill_viridis_d()
 
 ```
 
@@ -664,8 +659,6 @@ valueBox(format(round(pull(shooting_data_state, percapita_deaths), digits = 3), 
 
 ```
 
-
-
 ### **US National Death Rate (per 100,000 people)**
 
 ```{r}
@@ -677,7 +670,6 @@ valueBox(value = round(US_percap, digits = 3),
          color = "white")
 })
 ```
-
 
 ### **State Shooting Rate (per 100,000 people)**
 
@@ -697,7 +689,6 @@ valueBox(format(round(pull(shooting_data_state, percapita_shootings), digits = 3
 
 ```
 
-
 ### **US National Shooting Rate (per 100,000 people)**
 
 ```{r}
@@ -712,8 +703,7 @@ valueBox(value = round(US_percap, digits = 3),
 
 ###
 
-Percapita calcuations are based on 2010 population values.
-
+Per capita calculations are based on 2010 population values.
 
 Map {data-icon="fa-map"}
 ===================================== 
@@ -816,7 +806,7 @@ output: html_document
 ---
 ```
 
-We used the following `YAML` for this dashboard, which impotantly includes `flexdahsboard::flex_dashboard`which specifies that a dashboard should be created and `runtime:shiny` which allows for the dashboard to be interactive:
+We used the following `YAML` for this dashboard, which importantly includes `flexdahsboard::flex_dashboard`which specifies that a dashboard should be created and `runtime:shiny` which allows for the dashboard to be interactive:
 
 ```
 output: 
@@ -833,7 +823,7 @@ We also introduced an icon as a logo, provided a theme with a color scheme, defi
 
 ### **4)** Design the layout of the dashboard.
 
-Dashboards are inherently visual, making this step the most time intensive after content creation. To goal is to present the data in a way that is both meaningingful and visually appealing.
+Dashboards are inherently visual, making this step the most time intensive after content creation. To goal is to present the data in a way that is both meaningful and visually appealing.
 
 On this dashboard, we wanted to present static plots of the United States and of individual states. We also wanted to display the locations of school shootings and provide some information about school shootings. Aside from being a dashboard, we wanted to create an educational resource that was reproducible for others. Lastly, as this is a sensitive topic, we wanted to raise awareness and provide information that could help others act.
 
