@@ -307,7 +307,7 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
 
 ```
 
-Column {data-width=100}
+Column {data-width=300}
 ------------------------------------- 
 
 
@@ -332,19 +332,19 @@ valueBox(value = sum(pull(
 ```
 
 
-### **Median Shots Fired**
+<!-- ### **Median Shots Fired** -->
 
-```{r}
+<!-- ```{r} -->
 
-valueBox(value = round(median(
-  pull(shooting_data,
-      `Number of Shots Fired`), na.rm = TRUE), 2),
-  color = "white")
+<!-- valueBox(value = round(median( -->
+<!--   pull(shooting_data, -->
+<!--       `Number of Shots Fired`), na.rm = TRUE), 2), -->
+<!--   color = "white") -->
 
-reporting_shots <- (sum(pull(shooting_data, `Number of Shots Fired`)>=0, na.rm = TRUE)/
-              length(pull(shooting_data, `Number of Shots Fired`)))*100
-reporting_shots <- round(reporting_shots, 1)
-```
+<!-- reporting_shots <- (sum(pull(shooting_data, `Number of Shots Fired`)>=0, na.rm = TRUE)/ -->
+<!--               length(pull(shooting_data, `Number of Shots Fired`)))*100 -->
+<!-- reporting_shots <- round(reporting_shots, 1) -->
+<!-- ``` -->
 
 
 ### **Shooter committed or attempted suicide**
@@ -413,9 +413,8 @@ valueBox(value = paste(gender),
 
 ###
 
-reporting rate of shots fired = `r reporting_shots`%,
-reporting rate of shooter suicide = `r reporting_suic`%,
-reporting rate of gun type = `r reporting_gun`%,
+reporting rate of shooter suicide = `r reporting_suic`%,  
+reporting rate of gun type = `r reporting_gun`%,  
 reporting rate of shooter gender = `r reporting_male`%
 
 
@@ -580,7 +579,8 @@ deaths_perc_event %<>%
     category == "1 deaths" ~ "1 death",
     TRUE ~ category))
 
-deaths_perc_event %<>%filter (!duplicated(category))
+deaths_perc_event %<>%
+filter (!duplicated(`category`))
 
 deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
   filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4+")) %>%
@@ -592,10 +592,11 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
        xlab="1 square ~ 1%")+  scale_fill_viridis_d()
 
 })
+# in the case of new mexico... the rounded values add up to 99 which creates an empty extra square only when using scale_fill_viridis_d()
 
 ```
 
-Column {data-width=100}
+Column {data-width=450}
 -----------------------------------------------------------------------
 
 ### **Total State Deaths**
@@ -646,7 +647,7 @@ valueBox(USavg,
 ```
 
 
-### **Percapita State Deaths**
+### **State Death Rate (per 100,000 people)**
 
 ```{r}
 
@@ -666,7 +667,7 @@ valueBox(format(round(pull(shooting_data_state, percapita_deaths), digits = 3), 
 
 
 
-### **Percapita US National Deaths rate per 100 thousand**
+### **US National Death Rate (per 100,000 people)**
 
 ```{r}
 renderValueBox({
@@ -679,7 +680,7 @@ valueBox(value = round(US_percap, digits = 3),
 ```
 
 
-### **Percapita State Shootings**
+### **State Shooting Rate (per 100,000 people)**
 
 ```{r}
 
@@ -698,7 +699,7 @@ valueBox(format(round(pull(shooting_data_state, percapita_shootings), digits = 3
 ```
 
 
-### **Percapita US National shooting rate per 100 thousand**
+### **US National Shooting Rate (per 100,000 people)**
 
 ```{r}
 renderValueBox({
@@ -709,6 +710,11 @@ valueBox(value = round(US_percap, digits = 3),
          color = "white")
 })
 ```
+
+###
+
+Percapita calcuations are based on 2010 population values.
+
 
 Map {data-icon="fa-map"}
 ===================================== 
@@ -983,11 +989,13 @@ div.red { background-color:#BC8F8F; border-radius: 5px; padding: 20px;}
 </style>
 <div class = "red">
 
-For youths who appear to be having touble dealing with the aftermath of a shooting or who may be at risk for suicidal behavior, call this toll-free number for the **National Suicide Prevention Lifeline (NSPL)**, available 24 hours a day, every day: **1-800-273-TALK (8255)**. The service is available to everyone. The deaf and hard of hearing can contact the Lifeline via TTY at 1-800-799-4889. All calls are confidential. You can also visit the Lifeline’s website at [www.suicidepreventionlifeline.org](www.suicidepreventionlifeline.org){target="_blank"}.
+According to the [National Institute of Mental Health (NIMH)](https://www.nimh.nih.gov/health/publications/teen-depression/index.shtml){target="_blank"}:
 
-Additionally, the **Crisis Text Line** is another free, confidential resource available 24 hours a day, seven days a week. Text “HOME” to **741741** and a trained crisis counselor will respond to you with support and information over text message. Visit [www.crisistextline.org](www.crisistextline.org){target="_blank"}.
+For youths who may be at risk for suicidal behavior, visit the **National Suicide Prevention Lifeline (NSPL)** website at [www.suicidepreventionlifeline.org](www.suicidepreventionlifeline.org){target="_blank"}.
 
-Also see [here](https://www.mhanational.org/depression-teens-0){target="_blank"} for more information about how to recognize and help youths experiencing symptoms of depression.
+Additionally, the **Crisis Text Line** is another free, confidential resource available 24 hours a day, seven days a week. Visit [www.crisistextline.org](www.crisistextline.org){target="_blank"} for more information.
+
+Also see [here](https://www.mhanational.org/depression-teens-0){target="_blank"} for more information about how to recognize and help youths experiencing symptoms of depression and warning signs of suicide.
 
 </div>
 
@@ -1006,7 +1014,7 @@ Call **911** if you feel there is an immediate threat.
 
 Call [+1-844-5-SAYNOW](tel:18445729669) if you would like to submit an anonymous safety concern.
 
-Text “HOME” to **741741** to text a crisis counselor.
+Text “HOME” to **741741** to text a trained crisis counselor 24 hours a day.
 
 The **National Suicide Prevention Lifeline (NSPL)** is available 24 hours a day, every day at **[1-800-273-TALK (8255)](tel:18002738255)**. 
 
