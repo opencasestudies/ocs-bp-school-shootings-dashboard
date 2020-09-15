@@ -75,7 +75,7 @@ The skills, methods, and concepts that students will be familiar with by the end
 
 Data science skills:  
   
-1. Importing text from a google sheets document (`googlesheets4`)  
+1. Importing text from a Google Sheets document (`googlesheets4`)  
 2. Converting date formats (`lubridate`)  
 3. Geocoding data (`ggmap`)  and creating a jitter for geocoded data on a map (`SF`)
 4. How to reshape data by pivoting between "long" and "wide" formats and drop rows with `NA` values (`tidyr`)  
@@ -91,7 +91,7 @@ Statistical concepts and methods:
 
 #### Data import 
 
-In this case study we demonstrate how to import data from googlesheets, however we have also downloaded the data as a CSV file and we demonstate how to import the data in this format as well. 
+In this case study we demonstrate how to import data from Google Sheets, however we have also downloaded the data as a CSV file and we demonstate how to import the data in this format as well. 
 
 #### Data wrangling 
 
@@ -186,7 +186,7 @@ Package   | Use in this case study
 ---------- |-------------
 [here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
 [readr](https://readr.tidyverse.org/) |  to import the data  as a csv file  
-[googlesheets4](https://googlesheets4.tidyverse.org/) | to import directly from googlesheets
+[googlesheets4](https://googlesheets4.tidyverse.org/) | to import directly from Google Sheets
 [tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data  
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (collapsing strings together, replace values, and detect values)
@@ -210,7 +210,7 @@ Package   | Use in this case study
 
 There is a [`Makefile`](Makefile) in this folder that allows you to type `make` to knit the case study contained in the `index.Rmd` to `index.html` and it will also knit the [`README.Rmd`](README.Rmd) to a markdown file (`README.md`). 
 
-Users can skip the Data Import and Data Wrangling sections to start with the Data Analysis section if they wish. 
+Users can skip the Data Import and Data Wrangling sections to start with the Data Analysis and Visualization section if they wish. 
 
 #### For instructors
 

@@ -94,7 +94,7 @@ the end of this case study are:
 
 Data science skills:
 
-1.  Importing text from a google sheets document (`googlesheets4`)  
+1.  Importing text from a Google Sheets document (`googlesheets4`)  
 2.  Converting date formats (`lubridate`)  
 3.  Geocoding data (`ggmap`) and creating a jitter for geocoded data on
     a map (`SF`)
@@ -113,7 +113,7 @@ Statistical concepts and methods:
 
 #### Data import
 
-In this case study we demonstrate how to import data from googlesheets,
+In this case study we demonstrate how to import data from Google Sheets,
 however we have also downloaded the data as a CSV file and we demonstate
 how to import the data in this format as well.
 
@@ -275,7 +275,7 @@ dashboards in R using a package called `shinydashboard`.
 </tr>
 <tr class="odd">
 <td><a href="https://googlesheets4.tidyverse.org/">googlesheets4</a></td>
-<td>to import directly from googlesheets</td>
+<td>to import directly from Google Sheets</td>
 </tr>
 <tr class="even">
 <td><a href="https://tibble.tidyverse.org/">tibble</a></td>
@@ -356,7 +356,7 @@ There is a [`Makefile`](Makefile) in this folder that allows you to type
 markdown file (`README.md`).
 
 Users can skip the Data Import and Data Wrangling sections to start with
-the Data Analysis section if they wish.
+the Data Analysis and Visualization section if they wish.
 
 #### For instructors
 

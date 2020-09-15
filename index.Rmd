@@ -175,7 +175,7 @@ The skills, methods, and concepts that students will be familiar with by the end
 
 Data science skills:  
   
-1. Importing text from a google sheets document (`googlesheets4`)  
+1. Importing text from a Google Sheets document (`googlesheets4`)  
 2. Converting date formats (`lubridate`)  
 3. Geocoding data (`ggmap`)  and creating a jitter for geocoded data on a map (`SF`)
 4. How to reshape data by pivoting between "long" and "wide" formats and drop rows with `NA` values (`tidyr`)  
@@ -211,6 +211,7 @@ library(DT)
 library(htmltools)
 library(ggplot2)
 library(forcats)
+library(ggforce)
 library(waffle)
 library(poliscidata)
 library(flexdashboard)
@@ -226,7 +227,7 @@ Package   | Use in this case study
 ---------- |-------------
 [here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
 [readr](https://readr.tidyverse.org/) |  to import the data  as a csv file  
-[googlesheets4](https://googlesheets4.tidyverse.org/) | to import directly from googlesheets
+[googlesheets4](https://googlesheets4.tidyverse.org/) | to import directly from Google Sheets
 [tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data  
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (collapsing strings together, replace values, and detect values)
@@ -238,6 +239,7 @@ Package   | Use in this case study
 [DT](https://rstudio.github.io/DT/) | to create the interactive table  
 [htmltools](https://www.rdocumentation.org/packages/htmltools/versions/0.5.0) | to add a caption to our interactive table 
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots  
+[ggforce](https://cran.r-project.org/web/packages/ggforce/ggforce.pdf)   | to create a plot zoom
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
 [waffle](https://github.com/hrbrmstr/waffle) | to make waffle proportion plots  
 [poliscidata](https://cran.r-project.org/web/packages/poliscidata/poliscidata.pdf) | to get population values for the states
@@ -272,7 +274,7 @@ knitr::include_graphics(here::here("img", "exposed.png"))
 
 ##### [[source]](https://siepr.stanford.edu/sites/default/files/publications/19-036.pdf)
  
-This study followed students who experienced a school shootting the United States between 2008 and 2013 and assessed their mental well-being. They found that:
+This study followed students who experienced a school shooting the United States between 2008 and 2013 and assessed their mental well-being. They found that:
 
 > Fatal school shootings have large and persistent impacts on the mental health of local youth. In the two years following a fatal school shooting, the monthly number of antidepressant prescriptions written to individuals under age 20 is 21.3 percent higher in the shooting-exposed relative to the reference areas. 
 
@@ -376,7 +378,7 @@ str(shooting_data)
 
 ####
 
-Alternatively, if we wanted to make a dashboard that continually updated as the data got updated, we could do the following to import the data directly from the googlesheets document.
+Alternatively, if we wanted to make a dashboard that continually updated as the data got updated, we could do the following to import the data directly from the Google Sheets document.
 
 To do so we would use the `read_sheet()` function of the `googlesheets4` package. Typically authentication is required, which is generally simple, but since this is a public sheet we don't need to worry about authentication. To avoid this we would need to use the `gs4_deauth()` function which puts the package into a de-authorized state. 
 
@@ -386,7 +388,7 @@ To do so we would use the `read_sheet()` function of the `googlesheets4` package
 googlesheets4::gs4_deauth()
 ```
 
-Great, now we would need to get the shared link from the document. We can do so by clicking on the link to the actually google sheets document like so:
+Great, now we would need to get the shared link from the document. We can do so by clicking on the link to the actually Google Sheets document like so:
 ```{r, echo = FALSE, outwidth = "50%"}
 knitr::include_graphics(here::here("img", "gettodoc.png"))
 ```
@@ -905,7 +907,7 @@ There are several elements we would like to include in our dashboard.
 
 One thing we would like is an interactive table.
 
-### Interactive Table
+## Interactive Table
 
 We can done so using the `datatable()` function of the `DT` package.
 
@@ -956,7 +958,7 @@ shootings_per_year<- shooting_data %>%
 shootings_per_year
 
 ```
-Nice looks good!
+Good, this looks as expected.
 
 Now to make a plot of this data we will use the `ggplot2` package.
 
@@ -1013,7 +1015,7 @@ We will be creating a `geom_col()` plot, which is a particular type of bar plot 
 We will also modify the x-axis using the `scale_x_continuous()` function. This function allows for specification of the range or limits of the axis using the `limits` argument. We can use the base `seq()` function to create a sequence of numbers for each tick mark.
 
 
-We can add labels to our plot using the `labs()` function of `ggplot2`. This has arguments such as `x` and `y` for the axes and `title` and `subtitle` for titles.
+We can add labels to our plot using the `labs()` function of `ggplot2`. This has arguments such as `x` and `y` for the axes and `title` and `subtitle` for titles. We can use `NULL` to remove a label. For example to remove the x-axis label we can use `x = NULL`
 
 We will also modify the overall aesthetics of the plot using a `theme_*` function. See [here](https://ggplot2.tidyverse.org/reference/ggtheme.html) for a list of options.
 
@@ -1033,7 +1035,7 @@ shootings_per_year_p <-shootings_per_year %>%
 
    # labs(title = "Yearly Deaths Attributable to School Shootings",
          subtitle = "United States",
-         x = "",
+         x = NULL,
          y = "School Shootings")
 
 shootings_per_year_p 
@@ -1057,8 +1059,7 @@ deaths_per_year_p <-deaths_per_year %>%
     theme_minimal() +
    labs(title = "Yearly Deaths Attributable to School Shootings",
          subtitle = "United States",
-         y = "School Shootings",
-         x = "")
+         x = NULL)
 deaths_per_year_p
 
 
@@ -1066,10 +1067,9 @@ deaths_per_year_p
 
 OK, we want to make a plot that shows both the number of shootings per year and the number of deaths.
 
-We can do so by combining our `shootings_per_year` and  `deaths_per_year` tibbles together and making what is called a faceted plot.
+We can do so by combining our `shootings_per_year` and  `deaths_per_year` tibbles together and making what is called a faceted plot, using the `facet_wrap()` function to create two plots next to one another.
 
 To combine our data we will use the `full_join()` function of the `dplyr` package. This maintains all values from both tibbles.
-
 
 
 
@@ -1086,8 +1086,6 @@ There are 3 main arguments in this function:
 
 To specify that we want to collapse all the columns that have year values, we can chose  all those except the `Date_year` variable by  using the `-` minus sign. 
 
-We will also use the `fct_inorder()` function of the `forcats` package to reorder our `id` variable` to the order in which they appear first rather than by alphabetical order (which is default). Thus the number of shootings will appear on the left side (first) rather then on the right.
-
 ```{r}
 
 per_year<-full_join(shootings_per_year, deaths_per_year)
@@ -1095,16 +1093,31 @@ per_year %<>%pivot_longer( cols = -Date_year,
                            values_to = "events", 
                            names_to = "id")
 
+per_year
+```
+
+
+We will also use the `fct_inorder()` function of the `forcats` package to reorder our `id` variable` to the order in which they appear first rather than by alphabetical order (which is default). Thus the number of shootings will appear on the left side (first) rather then on the right.
+
+```{r}
 per_year%<>% 
   mutate(id = forcats::fct_inorder(id))
+```
+
+Now since we the new variable for the names is called `id` we will use this as the variable to create the facet like so: `facet_warp(~id)`. We can also specify that we want both plots to have their own y-axis with the `scales = "free"` argument. This causes each to have the y-axis automatically scaled for the data in each plot. We can then use the  `scale_y_continuous()` function to set both of the y-axes to be the same. 
+
+```{r}
 
 per_year %>%
 ggplot(aes(x = Date_year, y = events, fill =id)) +
   geom_col()+
-  facet_grid(~id)+
+  facet_wrap(~id, scales = "free") +
   scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
+  scale_y_continuous(breaks = seq(0, 120, by = 30),
+                 labels = seq(0, 120, by = 30),
+                 limits = c(0, 121))+
   theme_minimal() +
   labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
          subtitle = "United States",
@@ -1116,10 +1129,59 @@ ggplot(aes(x = Date_year, y = events, fill =id)) +
         axis.text.x = element_text(angle = 90),
         strip.background =element_rect(fill="cornflowerblue"),
         strip.text = element_text(colour = 'white', face = "bold", size = 14))
- 
-
 
 ```
+
+Now let's also update the plot so that it is more obvious what each plot is showing. We can update the names of the y -axis for each plot by changing the strip.position argument of the `facet_warp()` function to be placed on the left rather than above. Currently it is the label in blue that says what the value of the `id` variable is for each plot. This also requires some modification of the  `theme()` function to place the strip.text outside the plot area and to remove the background.  Furthermore, we will also change the text using the `labeller` argument of the `facet_wrap()` function. The `as_labeller()` function of the `ggplot2` package can change out the `id` values for other text like in the following code:
+
+```{r}
+
+per_year %>%
+ggplot(aes(x = Date_year, y = events, fill =id)) +
+  geom_col()+
+  facet_wrap(~id, scales = "free", 
+           labeller = as_labeller(c(Shootings = "Shootings (# of events)", 
+                                       Deaths = "Deaths (# of people)")), 
+            strip.position = "left") +
+  scale_x_continuous(breaks = seq(start, end, by = 5),
+                 labels = seq(start, end, by = 5),
+                 limits = c(start-1, end+1)) +
+  scale_y_continuous(breaks = seq(0, 120, by = 30),
+                 labels = seq(0, 120, by = 30),
+                 limits = c(0, 121))+
+  theme_minimal() +
+  labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
+         subtitle = "United States",
+         y = NULL,
+         x = "Year")+
+  scale_fill_manual(values = c("black", "black"))+
+  theme(legend.position = "none", 
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        strip.text = element_text(face = "bold", size = 14))
+```
+
+Good,  Now this is much easier to interpret.
+
+
+We can also save the style settings of this plot as theme like so to be reused by using the base `function()` function:
+
+```{r}
+
+theme_dashboard <- function(){ 
+  theme(legend.position = "none", 
+        legend.title = element_blank(),
+        axis.text.x = element_text(angle = 90, face = "bold"),
+        axis.title.x = element_text(face = "bold", size = 14),
+        strip.background = element_blank(),
+        strip.placement = "outside",
+        strip.text = element_text(face = "bold", size = 14))
+}
+```
+
+
 
 ## Yearly Cumulative Shootings
 
@@ -1166,25 +1228,28 @@ per_year_cum %>%
     ggplot(aes(x = Date_year, y = events, fill =id)) +
     #geom_col(aes(fill = id), position = "dodge") +
   geom_col()+
-  facet_grid(~id)+
+    facet_wrap(~id, scales = "free", 
+           labeller = as_labeller(c(Shootings = "Shootings (# of events)", 
+                                       Deaths = "Deaths (# of people)")), 
+            strip.position = "left") +
     scale_x_continuous(breaks = seq(start, end, by = 5),
                  labels = seq(start, end, by = 5),
                  limits = c(start-1, end+1)) +
+   scale_y_continuous(breaks = seq(0, 1500, by = 500),
+                 labels = seq(0, 1500, by = 500),
+                 limits = c(0, 1500))+
     theme_minimal() +
    labs(title = "Cumulative Yearly Shootings and Deaths\nAttributable to School Shootings",
          subtitle = "United States",
-         y = "Cumulative number of events",
+         y = NULL,
          x = "Year") +
   scale_fill_manual(values = c("black", "black"))+
-  theme(legend.position = "none", 
-        legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90),
-        strip.background =element_rect(fill="cornflowerblue"),
-        strip.text = element_text(colour = 'white', face = "bold", size = 14))
+    theme_dashboard()
  
 
 ```
 
+Note that the limits for the y-axis were determined by first plotting without the `scale_y_continuous()` function.
 
 ## Deaths per Shooting
 
@@ -1219,9 +1284,6 @@ shooting_data %>%
 It is a bit difficult to see the shootings that had more numerous deaths, so we will add a facet that zooms in on this portion of the plot. We can do so, using the `facet_zoom()` function of the `ggforce` package.
 
 ```{r}
-library(ggforce)
-
-
 shooting_data %>%
     ggplot(aes(x = `Killed (includes shooter)`)) +
     geom_bar(fill = "black") +
@@ -1360,7 +1422,6 @@ First we need to filter for only the data that we want to plot. We only want the
 The `waffle()` function requires that the data be in wide format. Thus we need to use `pivot_wider()` of the `tidyr` package to do so. This is very similar to the `pivot_longer()` function, however in this case we need to specify what existing column contains the names for the new columns using `names_from` and what existing column contains the values for the new columns using `values_from`. 
 
 ```{r}
-library(waffle)
 
 deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
   filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4\\+")) %>%
@@ -1614,13 +1675,13 @@ flexdashboard::gauge(value = 10,
 
 This creates the following output:
 ```{r, echo = FALSE}
-knitr::include_graphics(here::here("img", "guage_output.png"))
+knitr::include_graphics(here::here("img", "gauge_output.png"))
 ```
 
 Here is a more complicated example:
 
 ```{r, echo = FALSE}
-knitr::include_graphics(here::here("img", "guage.png"))
+knitr::include_graphics(here::here("img", "gauge.png"))
 ```
 
 ##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/using.html#value_boxes)
@@ -3173,7 +3234,7 @@ valueBox(value = 10
 
 Gauges, can be defined like so:
 
-### GuageText
+### GaugeText
 
 '''{r}
 flexdashboard::gauge(value = 10, 
@@ -3186,7 +3247,7 @@ flexdashboard::gauge(value = 10,
 ####
 Which will produce output like this:
 '''{r, out.width= "40%", echo = FALSE}
-knitr::include_graphics(here::here("img", "guage_output.png"))
+knitr::include_graphics(here::here("img", "gauge_output.png"))
 '''
 
 ### Additional Info
@@ -3415,7 +3476,7 @@ Package   | Use in this case study
 ---------- |-------------
 [here](https://github.com/jennybc/here_here){target="_blank"}       | to easily load and save data  
 [readr](https://readr.tidyverse.org/) |  to import the data  as a csv file  
-[googlesheets4](https://googlesheets4.tidyverse.org/) | to import directly from googlesheets
+[googlesheets4](https://googlesheets4.tidyverse.org/) | to import directly from Google Sheets
 [tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data  
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (collapsing strings together, replace values, and detect values)
@@ -3427,6 +3488,7 @@ Package   | Use in this case study
 [DT](https://rstudio.github.io/DT/) | to create the interactive table  
 [htmltools](https://www.rdocumentation.org/packages/htmltools/versions/0.5.0) | to add a caption to our interactive table 
 [ggplot2](https://ggplot2.tidyverse.org/){target="_blank"}      | to create plots  
+[ggforce](https://cran.r-project.org/web/packages/ggforce/ggforce.pdf)   | to create a plot zoom
 [forcats](https://forcats.tidyverse.org/){target="_blank"}      | to reorder factor for plot
 [waffle](https://github.com/hrbrmstr/waffle) | to make waffle proportion plots  
 [poliscidata](https://cran.r-project.org/web/packages/poliscidata/poliscidata.pdf) | to get population values for the states

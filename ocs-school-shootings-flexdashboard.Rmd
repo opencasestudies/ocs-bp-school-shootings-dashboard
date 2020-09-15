@@ -875,7 +875,7 @@ valueBox(value = 10
 Gauges, can be defined like so:
 
 ```
-### GuageText
+### GaugeText
 
 '''{r}
 flexdashboard::gauge(value = 10, 
@@ -888,7 +888,7 @@ flexdashboard::gauge(value = 10,
 ####
 Which will produce output like this:
 ```{r, out.width= "40%", echo = FALSE}
-knitr::include_graphics(here::here("img", "guage_output.png"))
+knitr::include_graphics(here::here("img", "gauge_output.png"))
 ```
 
 ### Additional Info
