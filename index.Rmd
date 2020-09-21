@@ -217,7 +217,6 @@ library(poliscidata)
 library(flexdashboard)
 library(shiny)
 library(leaflet)
-
 ```
 
 
@@ -246,6 +245,9 @@ Package   | Use in this case study
 [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the dashboard  
 [shiny](https://shiny.rstudio.com/){target="_blank"}      | to allow our dashboard to be interactive   
 [leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
+[maps]() | AVOCADO: needs to be added 
+[vembedr]() | AVOCADO: needs to be added 
+
 
 The first time we use a function, we will use the `::` to indicate which package we are using. Unless we have overlapping function names, this is not necessary, but we will include it here to be informative about where the functions we will use come from.
 
@@ -1549,9 +1551,8 @@ In fact if you click the button that says "code" on the upper right corner you w
 
 
 
-
 ```{r}
-library("vembedr")
+library(vembedr)
 embed_url("https://vimeo.com/178485416") %>%
   div(class = "vembedr") %>%
   div(align = "center")
