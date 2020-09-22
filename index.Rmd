@@ -1,5 +1,5 @@
 ---
-title: "Fifty Years of School Shootings in the United States"
+title: "Open Case Studies: School Shootings in the United States"
 css: style.css
 output:
   html_document:
@@ -40,10 +40,11 @@ library(knitr)
 
 #### {.outline }
 ```{r, echo=FALSE}
-knitr::include_graphics(here("img",
-                             "aboutpagelook.png"))
+knitr::include_graphics(here("img", "aboutpagelook.png"))
 ```
 ####
+
+AVOCADO: What is the black around the image above? 
 
 #### {.disclaimer_block}
 
@@ -61,11 +62,11 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [
 
 To cite this case study please use:
 
-Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://github.com/opencasestudies/ocs-youth-school-shootings-dashboard-case-study. Fifty Years of School Shootings in the United States (Version v1.0.0).
+Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://github.com/opencasestudies/ocs-youth-school-shootings-dashboard-case-study. Open Case Studies: School Shootings in the United States (Version v1.0.0).
 
 ####
 
-For users or instructors who only wish to look at the basics of how to create a dashboard in R with the `flexdashboard` package, please see the [**Dashboard Basics**] section. 
+For users or instructors who only wish to look at the basics of how to create a dashboard in R with the `flexdashboard` package, please see the [**Dashboard Basics**] Section. 
 
 # **Motivation**
 *** 
@@ -78,11 +79,11 @@ Flannery, D. J., Modzeleski, W. & Kretschmar, J. M. Violence and School Shooting
 
 ####
 
-This article explores characteristics of school shootings and violence in schools and discusses why these events may occur, as well as their impact on the communities in which they occur.
+The article explores characteristics of school shootings and violence in schools and discusses why these events may occur, as well as their impact on the communities in which they occur.
 
+The article also states that the shooters are most commonly white males, but that many previous studies of shooter characteristics could not identify any particular "profile" of shooters.
 
-
-This article states that the shooters of most commonly white males, but that many previous studies of shooter characteristics could not identify any particular "profile" of shooters.
+AVOCADO: I am starting to read through this section, but I'm a bit confused. A lot of the text in this section isn't clear to me why it's here. We do not look at profiles of the shooter in the dashboard? 
 
 > "To date, studies of school shootings have concluded that no
 consistent and reliable profile of school shooters exist, and
@@ -105,10 +106,7 @@ violent themes in writings or drawings)."
 knitr::include_graphics(here::here("img", "joshua-hoehne-CAokgx1GGKE-unsplash.jpg"))
 ```
 
-
 <span>Photo by <a href="https://unsplash.com/@mrthetrain?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Joshua Hoehne</a> on <a href="https://unsplash.com/s/photos/high-school?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
-
-
 
 > "School shootings are not all the same and may require
 different approaches to prevention and treatment, especially
@@ -133,18 +131,19 @@ They also point out that:
 
 Given this need for more research to better understand why these events occur and how they could be averted, in this case study we will demonstrate how to create a resource for others to more easily and interactively access data about school shootings. To do so we will create what is called a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report for a database. Dashboards summarize the data in a database and typically allow for users to interact with the data in some way.
 
-[Here](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/htmlwidgets-highcharter.html) you can see an example of a dashboard created in R.
+[Here](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/htmlwidgets-highcharter.html) you can see an example of a dashboard created in R about sales forecasts of food.
 
+AVOCADO: while I think the dashboard you linked to is interesting, it's not very well labeled or have much documentation? I'm guessing it has something to do with sales forecasts. Should we add more info? 
 
-On the website the tabs and and plots are interactive. The dashboard allows for users to get to know the data in a simple and quick way.
+On the website the tabs and and plots are interactive. The above dashboard allows for users to get to know the data in a simple and quick way.
 
-The data about food sales  is succinctly summarized in an impactful manner.
+The data about food sales is succinctly summarized in an impactful manner.
 
 ```{r, echo = FALSE, out.width= "60%"}
 knitr::include_graphics(here::here("img", "dashboard.png"))
 ```
 
-####[[source]](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/)
+##### [[source]](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/)
 
 Now let's learn how to do this with our data of interest.
 
@@ -160,10 +159,12 @@ Now let's learn how to do this with our data of interest.
 
 ####
 
+AVOCADO: the second question is pretty generic. I haven't read any further yet, but at this point I do not know what you mean by "characteristics of these events". Could we make this question more specific? 
+
 # **Learning Objectives** 
 *** 
 
-In this case study, we will demonstrate how to create a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report about a database. We will especially focus on using packages and functions from the [`Tidyverse`](https://www.tidyverse.org/){target="_blank"}, such as `package_name`, `package_name`. The tidyverse is a library of packages created by RStudio. While some students may be familiar with previous R programming packages, these packages make data science in R more legible and intuitive.
+In this case study, we will demonstrate how to create a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report about a database. We will especially focus on using packages and functions from the [`tidyverse`](https://www.tidyverse.org/){target="_blank"}, such as `package_name`, `package_name`. The tidyverse is a library of packages created by RStudio. While some students may be familiar with previous R programming packages, these packages make data science in R more human-readable and intuitive.
 
 
 ```{r, out.width = "20%", echo = FALSE, fig.align ="center"}
@@ -180,7 +181,7 @@ Data science skills:
 3. Geocoding data (`ggmap`)  and creating a jitter for geocoded data on a map (`SF`)
 4. How to reshape data by pivoting between "long" and "wide" formats and drop rows with `NA` values (`tidyr`)  
 5. How to create data visualizations with `ggplot2` 
-6. An introductory understand of R Markdown  
+6. An introduction to understand basics of R Markdown  
 7. How to create an interactive table (`DT`)  
 8. How to create a map (`leaflet`)  
 9. How to create an interactive dashboard with `flexdashboard` and `shiny`  
@@ -217,6 +218,8 @@ library(poliscidata)
 library(flexdashboard)
 library(shiny)
 library(leaflet)
+library(maps)
+library(vembedr)
 ```
 
 
@@ -245,8 +248,8 @@ Package   | Use in this case study
 [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the dashboard  
 [shiny](https://shiny.rstudio.com/){target="_blank"}      | to allow our dashboard to be interactive   
 [leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
-[maps]() | AVOCADO: needs to be added 
-[vembedr]() | AVOCADO: needs to be added 
+[maps]() | AVOCADO: needs to be added. Rmd did not compile otherwise. 
+[vembedr]() | AVOCADO: needs to be added. Rmd did not compile otherwise. 
 
 
 The first time we use a function, we will use the `::` to indicate which package we are using. Unless we have overlapping function names, this is not necessary, but we will include it here to be informative about where the functions we will use come from.
@@ -255,7 +258,9 @@ The first time we use a function, we will use the `::` to indicate which package
 # **Context**
 *** 
 
-Although school shooting events that result in homicide are rare, they can have a lasting impact on the communities in which they occur. Furthermore, suicide events and shootings with no victims can also be impactful.
+AVOCADO: where does the statement "Although school shooting events that result in homicide are rare" come from? I thought it came from the dashboard you built? or are you citing a paper? i guess my point is, how would a reader know that info at this point? 
+
+Although school shooting events that result in homicide are rare, they can have a lasting impact on the communities in which they occur. Furthermore, suicide events and shootings with no victims can have a lasting impact on the community.
 
 According to the [Center for Injury Research and Prevention at the Children's Hospital of Philadelphia](https://injury.research.chop.edu/violence-prevention-initiative/types-violence-involving-youth/school-shootings):
 
@@ -267,11 +272,8 @@ Another recently published [article](https://siepr.stanford.edu/sites/default/fi
 
 > Over **240,000** American students experienced a school shooting in the last two decades.
 
-
-
-```{r}
+```{r, echo=FALSE}
 knitr::include_graphics(here::here("img", "exposed.png"))
-
 ```
 
 ##### [[source]](https://siepr.stanford.edu/sites/default/files/publications/19-036.pdf)
@@ -286,6 +288,7 @@ knitr::include_graphics(here::here("img", "fernando-cferdo-6x2iKGi6SPU-unsplash.
 
 <span>Photo by <a href="https://unsplash.com/@cferdo?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Fernando @cferdo</a> on <a href="https://unsplash.com/s/photos/depression?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 
+AVOCADO: While I think the info in this section is interesting, it's not clear to me why it's relevant to the case study? Could we explain more or edit and take out material not directly relevant? 
 
 #### {.reference_block}
 
@@ -301,11 +304,13 @@ There are some important considerations regarding this data analysis to keep in 
 
 2) This dashboard only uses one source of data. There may be school shooting events that are not listed in this data or errors in this data.
 
-According to the database website:
+AVOCADO: what do you mean by "inferential conclusions"? Based on the main questions, you aren't asking if e.g. "there is a difference between two groups"? 
+
+According to the database website itself:
 
 >"This database was developed from open-source information and may include reporting errors."
 
-Furthermore, according to this [article](https://link.springer.com/article/10.1007/s11920-012-0331-6) schools are not required to report school shootings unless they resulted in a suicide or homicide, therefore there may be more events that result in only injury or no injuries or death that may not be included.
+Furthermore, according to this [article](https://link.springer.com/article/10.1007/s11920-012-0331-6), schools are not required to report school shootings unless they resulted in a suicide or homicide. Therefore there may be more events that result in only injury or no injuries or death that may not be included.
 
 There are indeed events in the dataset that include zero deaths and zero injuries, but it is very likely that many of these events are not listed.
 
@@ -327,7 +332,7 @@ This database includes information about school shooting events for students in 
 
 
 * Location of the event at the school  
-* If the event occured during a sporting event  
+* If the event occurred during a sporting event  
 * Time of day of the event  
 * Day of the week of the event  
 * Source for the shooting information  
@@ -340,7 +345,10 @@ According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset
 
 > The School Shooting Database Project is conducted as part of the [Advanced Thinking in Homeland Security (HSx)](https://www.chds.us/c/academic-programs/hsx/) program at the Naval Postgraduate School’s [Center for Homeland Defense and Security (CHDS)](Center for Homeland Defense and Security (CHDS).
 
+AVOCADO: the last link above seems like you forgot to paste in the URL and just copied the text twice? 
+
 > The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. All of the information is based on open-source information and 3rd party reporting.
+
 
 # **Data Import**
 *** 
