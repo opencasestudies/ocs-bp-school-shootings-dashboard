@@ -1317,17 +1317,20 @@ per_year_cum %>%
 
 ## Deaths per Shooting
 
-Now, lets make a plot of the number of deaths per shooting based on the `Killed (includes shooter)` variable. Our first plot could also have been made using `geom_bar()` instead of `geom_col()` this makes a similar plot but automatically uses the count for one of the axes. 
+Next, we will make a plot of the number of deaths per shooting based on the `Killed (includes shooter)` variable. Our first plot could also have been made using `geom_bar()` instead of `geom_col()` this makes a similar plot but automatically uses the count for one of the axes. 
+
+AVOCADO: maybe turn this into a learning opportunity with a question and answer? 
 
 ```{r}
 # This is equivalent:
-# deaths_per_event <- shooting_data %>%
-#     group_by(`Killed (includes shooter)`) %>%
-#     count() %>%
-#     ungroup()
+# deaths_per_event <- 
+#   shooting_data %>%
+#   group_by(`Killed (includes shooter)`) %>%
+#   count() %>%
+#   ungroup()
 # 
 # deaths_per_event %>%
-#     ggplot(aes(y = `Killed (includes shooter)`, x = n)) +
+#   ggplot(aes(y = `Killed (includes shooter)`, x = n)) +
 #     geom_col(fill = "black")+
 #     theme_minimal() +
 #     labs(title = "Deaths per School Shooting",
@@ -1336,81 +1339,83 @@ Now, lets make a plot of the number of deaths per shooting based on the `Killed 
 #          y = "")
 
 shooting_data %>%
-    ggplot(aes(x = `Killed (includes shooter)`)) +
+  ggplot(aes(x = `Killed (includes shooter)`)) +
     geom_bar(fill = "black") +
     theme_minimal() +
     labs(title = "Deaths per School Shooting",
          subtitle = "United States",
          x = "School Shootings",
          y = "")
-
 ```
-It is a bit difficult to see the shootings that had more numerous deaths, so we will add a facet that zooms in on this portion of the plot. We can do so, using the `facet_zoom()` function of the `ggforce` package.
+
+Because of the skewed distribution, it is difficult to see the shootings that had more numerous deaths, so we will add a facet that zooms in on this portion of the plot. We can do so, using the `facet_zoom()` function of the `ggforce` package.
 
 ```{r}
 shooting_data %>%
-    ggplot(aes(x = `Killed (includes shooter)`)) +
+  ggplot(aes(x = `Killed (includes shooter)`)) +
     geom_bar(fill = "black") +
-   scale_x_continuous(breaks = seq(0, max(pull(shooting_data, `Killed (includes shooter)`)), by = 1),
-                      labels = seq(0, max(pull(shooting_data, `Killed (includes shooter)`)), by = 1))+
-  #                    limits = c(-1,10)) +
-ggforce::facet_zoom(xlim = c(4, max(pull(shooting_data, `Killed (includes shooter)`))), ylim = c(0,20))+
-theme_minimal() +
+    scale_x_continuous(breaks = seq(0, max(pull(shooting_data, 
+                                    `Killed (includes shooter)`)), by = 1),
+                       labels = seq(0, max(pull(shooting_data,
+                                    `Killed (includes shooter)`)), by = 1)) +
+    ggforce::facet_zoom(xlim = c(4, max(pull(shooting_data, 
+                                    `Killed (includes shooter)`))), 
+                        ylim = c(0,20)) +
+    theme_minimal() +
     labs(title = "Deaths per School Shooting",
          subtitle = "United States",
          x = "Deaths per shooting",
-         y = "Number of events with given number of deaths")+
+         y = "Number of events with given number of deaths") +
   theme(axis.text.x = element_text(angle = 90))
 ```
 
-This is still a bit difficult to interpret. Let's try some other options.
+It is still difficult to see. Let's try some other options.
 
 The `geom_freqpoly()` function creates a graph that makes it very easy to see that most shootings result in zero or one death and that the maximum number of deaths in this data for a single event is in the upper twenties. 
 ```{r}
-
 shooting_data %>%
     ggplot(aes(x = `Killed (includes shooter)`)) +
     geom_freqpoly()
 ```
 
-This really shows that most shooting events luckily result in no deaths, but what are the actual proportions. One way to look at this is to calculate the percentage of events that resulted in each number of deaths. We can do so by dividing the number of events by the overall sum of events and multiplying by 100. The base `round()` function can round this value to the nearest 1 decimal place by specifying that we want 1 digit after the decimal with `digits = 1`.
-
+This really shows that most shooting events luckily result in no deaths, but what are the actual proportions of shootings that end in 0 deaths, 1 death, 2 deaths, etc. 
+One way to look at this is to calculate the percentage of events that resulted in each number of deaths. 
+We can do this by dividing the number of events by the overall sum of events and multiplying by 100. 
+The base `round()` function can round this value to the nearest 1 decimal place by specifying that we want 1 digit after the decimal with `digits = 1`.
 
 ```{r}
-deaths_perc_event <-shooting_data %>%
-   count(`Killed (includes shooter)`) %>%
-   rename("num_events"= n) %>%
-   mutate(percent = round(num_events/sum(num_events)*100, digits =1))
+deaths_perc_event <-
+  shooting_data %>%
+  count(`Killed (includes shooter)`) %>%
+  rename("num_events"= n) %>%
+  mutate(percent = round(num_events/sum(num_events)*100, digits =1))
 
 deaths_perc_event
 
 deaths_perc_event %>%
-  ggplot(aes(x =`Killed (includes shooter)` , y = percent)) +
+  ggplot(aes(x =`Killed (includes shooter)`, y = percent)) +
     geom_col()
 ```
 
-OK, this is easier to interpret than the raw count values. We can see that greater than 60% of the events had no deaths. It is however, still a bit difficult to interpret.
+We can see that greater than 60% of the events had no deaths. It is however, the plot is still unsatisfactory because there is such a long tail.
 
-So now, we will also collapse the events that resulted in 4 or more deaths together and we will create a pie chart which you are likely familiar with as well as alternative plot called a waffle plot.
-
+Next, we can try collapsing the events that resulted in 4 or more deaths together and create a pie chart which you are likely familiar with as well as alternative plot called a waffle plot.
 
 First to collapse the percentage for the events that had 4 or more deaths, we need to do a bit of wrangling.
 
-We will start with filtering the data to only these events and then we will sum  each of the columns using the base `colSums()` function with the goal of creating a new row in the `deaths_perc_event` object that will contain information about all events with 4 or more deaths. We will use the `>=` greater than or equal to operator.
+We will start with filtering the data to only these events and then we will sum each of the columns using the base R function `colSums()` with the goal of creating a new row in the `deaths_perc_event` object that will contain information about all events with 4 or more deaths. We will use the `>=` greater than or equal to operator.
 
 ```{r}
-greater_than4<-deaths_perc_event %>% 
+greater_than4 <- 
+  deaths_perc_event %>% 
   filter(`Killed (includes shooter)` >= 4) %>% 
   colSums()
 
 greater_than4
-
 ```
-Good, now we know the overall percentage for the events that unfortunately resulted in a larger number of deaths. 
+Good, now we know the overall percentage for the events that unfortunately resulted in more than 4 deaths. 
 
-Now we can combine this with the rest of our data using the `bind_rows()` function of the `dplyr` package which appends a tibble to another.
-
-
+Next, we combine this with the rest of our data using the `bind_rows()` function of the `dplyr` package which appends a tibble to another.
 
 ```{r, echo = FALSE, outwidth = "40%"}
 knitr::include_graphics(here::here("img", "bindrows.png"))
@@ -1420,135 +1425,165 @@ knitr::include_graphics(here::here("img", "bindrows.png"))
 
 
 ```{r}
-deaths_perc_event %<>%  bind_rows(greater_than4)
+deaths_perc_event %<>%
+  bind_rows(greater_than4)
 
 deaths_perc_event 
 ```
 
-Now we want to add a new variable so that it is easy to plot and interpret the number of deaths for each percentage. We will simply add the word "deaths" to each value in the `Killed (includes shooter)` variable using the base `paste0()` function. Note that this function automatically will result in no space or any other character between pasted elements. The `paste()` function can alternatively be used for those cases. 
+Next, we add a new variable so that it is easy to plot and interpret the number of deaths for each percentage. 
+We will add the word "deaths" to each value in the `Killed (includes shooter)` variable using the base `paste0()` function. Note that this function automatically will result in no space or any other character between pasted elements. The `paste()` function can alternatively be used for those cases. 
 
 ```{r}
-deaths_perc_event %<>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "(", percent, "%)")) 
+deaths_perc_event %<>% 
+  mutate(category = paste0(`Killed (includes shooter)`, 
+                           " deaths ", "(", percent, "%)")) 
 
 deaths_perc_event
 ```
 
-We would like to change the value for the last row about the events that resulted in 4+ deaths. 
+We can change the value for the last row about the events that resulted in more than 4 deaths. 
 
 We can use the `last()` function of the `dplyr` package combined with the `pull()` function to specifically grab this value.
 
 ```{r}
 last(pull(deaths_perc_event, category))
-
 ```
 
+Using the `case_when()` function, we can change this value. 
 
-Now we can use the `case_when()` function yet again to change this value. Note that we could have used a `stringr` function to replace the specific value of "85 deaths", but this would not be reproducible. Say we used this code again after the data got updated. Then there may be more deaths in this category and therefore this value would no longer be "85 deaths". Instead, by using `case_when()`, we can use an expression for the last value of the `deaths_perc_event` tibble and replace that, regardless of what the value is, with "4+deaths". Recall that `case_when()` replaces all other values that are not specified with `NA`. We do not want to lose the other values for the `category` variable. So to avoid this, we assign each of the values that are not the last value or the `"1 deaths"` value to what they currently are for the `category` variable, using `TRUE ~ category` (Note that all remaining unassigned values are indicated as `TRUE`).
+Note that we could have used a `stringr` function to replace the specific value of "85 deaths", but this would not be reproducible. Say we used this code again after the data got updated. Then there may be more deaths in this category and therefore this value would no longer be "85 deaths". Instead, by using `case_when()`, we can use an expression for the last value of the `deaths_perc_event` tibble and replace that, regardless of what the value is, with "4+deaths". Recall that `case_when()` replaces all other values that are not specified with `NA`. We do not want to lose the other values for the `category` variable. So to avoid this, we assign each of the values that are not the last value or the `"1 deaths"` value to what they currently are for the `category` variable, using `TRUE ~ category` (Note that all remaining unassigned values are indicated as `TRUE`).
 
-Note that we could actually type out the percentage of 4+death cases, but it is always more reproducible to instead use an expression that will evaluate to the value we want. This way if we were to update our data with additional shooting events, this evaluation would also update.
+AVOCADO: this sections seems like a good learning opportunity for Q and A
+
+**Note**: we could actually type out the percentage of 4+death cases, but it is always more reproducible to instead use an expression that will evaluate to the value we want. This way if we were to update our data with additional shooting events, this evaluation would also update.
 
 ```{r}
 deaths_perc_event %<>% 
-  mutate(category = case_when(
-    category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "(", percent, "%)"),
-    category == "1 deaths" ~ "1 death",
-    TRUE ~ category))
+  mutate(category =
+           case_when(category == last(pull(deaths_perc_event, category)) ~ 
+                        paste0("4+ deaths ", "(", percent, "%)"),
+                     category == "1 deaths" ~ "1 death",
+                     TRUE ~ category))
 
 deaths_perc_event
 ```
 
-Looks as we hoped. OK, now we are ready to make more plots. 
+Looks as we hoped. OK, now we are ready to make plots. 
 
-First we will start with the pie chart. This is a bit of a controversial type of plot. However, it can be very useful when you are actually looking at percentages and the goal is to see major trends in the data, such as all the groups are roughly equal or one group is particularly larger than the rest. When this is the case and you are presenting the data to an audience that is less familiar with data science, they may expect to see a pie chart. Thus it is useful to know how to make one. However, in most other cases pie charts do a poor job at allowing us to see more subtle differences, and they are particularly confusing when we are not looking at proportions but raw counts. In those cases it is better to use a bar chart as we have already done. 
+Let's start with the pie chart. Historically, this has become a bit controversial type of plot. However, it can be very useful when you are actually looking at percentages and the goal is to see major trends in the data, such as all the groups are roughly equal or one group is particularly larger than the rest. When this is the case and you are presenting the data to an audience that is less familiar with data science, they may expect to see a pie chart. Thus it is useful to know how to make one. However, in most other cases pie charts do a poor job at allowing us to see more subtle differences, and they are particularly confusing when we are not looking at proportions, but raw counts. In those cases it is better to use a bar chart as we have already done. 
 
 There is no `geom_*` function that allows you to create a pie chart directly. Instead we will create our bar plot as we have and then use the `coord_polar()` function to wrap our y axis into a circular shape.
 
 ```{r}
 deaths_perc_event %>%
   filter(percent>0.5) %>%
-    ggplot(aes(x = "", y = percent, fill = category)) +
-  # adding color here adds a black outline
+  ggplot(aes(x = "", y = percent, fill = category)) +
+      # adding color here adds a black outline
     geom_col(color = "black") +
     coord_polar("y", start = 0) +
-  scale_y_continuous(breaks= NULL)+
-  theme_minimal()+
-  theme(axis.title = element_blank())+
-  scale_fill_viridis_d()+
-  labs(title = "Percentages of school shooting deaths\n(including the shooter)")
-
+    scale_y_continuous(breaks= NULL) +
+    theme_minimal() +
+    theme(axis.title = element_blank()) +
+    scale_fill_viridis_d() +
+    labs(title = "Percentages of school shooting deaths\n(including the shooter)")
 ```
 
 This is actually a fairly easy plot to interpret. We can see that most events resulted in zero deaths and that the next largest proportion resulted in one death, while a sizable but small proportion resulted in two deaths. A very small proportion resulted in three or four or more deaths.
 
-Now we will also create a waffle plot. This plot offers one advantage over the pie chart, in that it also allows for easier interpretation of more subtle proportion differences while also showing big picture differences in efficient manner. 
-First we need to filter for only the data that we want to plot. We only want the 0,1,2,3, or 4+ categories. We can do so by using the `str_detect()` function of the `stringr` package. This allows us to find the values that match multiple patterns. The patterns are separated by the `|` or operator. Thus any value matching any of the patterns should be kept. Notice that the `\\` is necessary before the `+` so that is not interpreted as a mathematical plus sign. 
+We also can create a waffle plot. This plot offers one advantage over the pie chart, in that it also allows for easier interpretation of more subtle proportion differences while also showing big picture differences in efficient manner. 
+
+First, we filter for only the data that we want to plot. We only want the 0,1,2,3, or 4+ categories. We can do so by using the `str_detect()` function of the `stringr` package. This allows us to find the values that match multiple patterns. The patterns are separated by the `|` or operator. Thus any value matching any of the patterns should be kept. Notice that the `\\` is necessary before the `+` so that is not interpreted as a mathematical plus sign. 
 
 The `waffle()` function requires that the data be in wide format. Thus we need to use `pivot_wider()` of the `tidyr` package to do so. This is very similar to the `pivot_longer()` function, however in this case we need to specify what existing column contains the names for the new columns using `names_from` and what existing column contains the values for the new columns using `values_from`. 
 
 ```{r}
-
-deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
+deaths_perc_event %>% 
+  select(-`Killed (includes shooter)`) %>%
   filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4\\+")) %>%
   mutate(percent = round(percent)) %>%
   select(-num_events) %>%
   tidyr::pivot_wider(names_from = category, 
-                    values_from = percent) %>%
+                     values_from = percent) %>%
   waffle::waffle(legend_pos = "bottom", title="Deaths Per School Shooting", 
-       xlab="1 square ~ 1%") +  scale_fill_viridis_d()
-
+                 xlab="1 square ~ 1%") +
+  scale_fill_viridis_d()
 ```
-
-We are also interested in including some statistics in our dashboard. For example we are interested in how many shooters committed or attempted suicide.
 
 ### Percentages
 
+Another thing we are interested in is to include statistics in our dashboard. For example, we are interested in how many shooters committed or attempted suicide.
+
+AVOCADO: the next sentence seems incomplete? 
+
 Since we converted variables with `yes` or `no` answers because they were inconsistently coded as `yes`/ `y` and `no`/`n`.  Furthermore, logical variables are easier to work with in terms of performing calculations because `TRUE` values are treated like a `1` while `FALSE` values are treated like a `0`. 
 
-We would like to calculate the percentage of shooters that committed or attempted suicide out of all entries that have data for this information, thus we don't want to include `NA` values in the calculation, otherwise this might give us a distorted picture of the truth.
+We can calculate the percentage of shooters that committed or attempted suicide out of all entries that have data for this information. Thus we do not want to include `NA` values in the calculation, otherwise this might give us a distorted picture of the truth.
 
 Let's take a look at the data for this variable:
 
 ```{r}
-shooting_data %>% count(`Suicide (or attempted suicide) by Shooter (Y/N)`)
+shooting_data %>% 
+  count(`Suicide (or attempted suicide) by Shooter (Y/N)`)
 ```
 
 We can see that there are 45 `NA` values. 
 
-
 If we calculate a sum of the `TRUE` values, (which are those that are equivalent to `1`), we can do so by just summing this variable, which is equivalent to summing values that are greater than `0`. 
 
 ```{r}
-sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`), na.rm = TRUE)
-sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`) > 0, na.rm = TRUE)
+sum(pull(shooting_data, 
+         `Suicide (or attempted suicide) by Shooter (Y/N)`), 
+    na.rm = TRUE)
+sum(pull(shooting_data, 
+         `Suicide (or attempted suicide) by Shooter (Y/N)`) > 0, 
+    na.rm = TRUE)
 ```
 
 In contrast, `FALSE` values are those that are equivalent to `0`. Thus if we want to divide by the sum of all values that are `FALSE` are `TRUE`, then we can sum all values greater than or equal to `0`.
 
 ```{r}
-sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`) >= 0, na.rm = TRUE)
+sum(pull(shooting_data, 
+         `Suicide (or attempted suicide) by Shooter (Y/N)`) >= 0, 
+    na.rm = TRUE)
 ```
 
-Thus we can calculate the percentage of all reporting values like so, where the `TRUE` values are divided by the sum of all `TRUE` and `FALSE` values: (We also multiply by 100 using `*100` to get the percentage value.) 
+Thus, we can calculate the percentage of all reporting values like so, where the `TRUE` values are divided by the sum of all `TRUE` and `FALSE` values: (We also multiply by 100 using `*100` to get the percentage value.) 
 
 ```{r}
-suicide <-(sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`), na.rm = TRUE) /
-sum(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, na.rm = TRUE))*100
+suicide <- 
+  (sum(pull(shooting_data,`Suicide (or attempted suicide) by Shooter (Y/N)`), na.rm = TRUE) /
+   sum(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, na.rm = TRUE))*100
 
 suicide
 ```
 
-We can use the `round()` function to round this value and the `format()` to make sure that the value has the correct number of digits. If the rounded value is a whole number the `format()` function allows the number of zeros to be displayed after the decimal to be specified. So say if we rounded the percentage to 2 decimal places and we got a value of  `13.4` (That is not the case here, so we will instead round to 1 decimal places for this illustration). We could then add a zero after the `4` like so:
+We can use the `round()` function to round this value and the `format()` to make sure that the value has the correct number of digits. 
+
 ```{r}
-suicide <-round(suicide, 1)
+suicide <- round(suicide, 1)
 suicide
+```
+
+AVOCADO: we did get 13.4, right? not sure what you are saying below? 
+
+If the rounded value is a whole number, the `format()` function allows the number of zeros to be displayed after the decimal to be specified. So say if we rounded the percentage to 2 decimal places and we got a value of  `13.4` (That is not the case here, so we will instead round to 1 decimal places for this illustration). We could then add a zero after the `4` like so:
+
+```{r}
 format(suicide, nsmall = 2)
 ```
 
 To calculate the percentage of shootings where this information was reported we can do the following, by calculating all values that are not `NA` using `>=0` and calculating the number all possible values using the base `length()` function.
 
 ```{r}
-reporting_suic <- (sum(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, na.rm = TRUE)/
-                     length(pull(shooting_data, `Suicide (or attempted suicide) by Shooter (Y/N)`)))*100
+reporting_suic <- 
+  (sum(pull(shooting_data, 
+            `Suicide (or attempted suicide) by Shooter (Y/N)`)>=0, 
+       na.rm = TRUE) /
+   length(pull(shooting_data, 
+               `Suicide (or attempted suicide) by Shooter (Y/N)`))
+   )*100
+
 reporting_suic <- round(reporting_suic, 1)
 reporting_suic
 ```
