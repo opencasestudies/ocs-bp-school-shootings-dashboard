@@ -1598,23 +1598,24 @@ For the sake of brevity, we will not include explanations here.
 # **Dashboard Basics**
 ***
 
-OK, now we have our data and our plots for our dashboard!
+We are now ready to build our dashboard!
 
-Now we will introduce some basics about creating dashboards in R with the `flexdashboard` package.
-
+Let's introduce some basics about creating dashboards in R in the `flexdashboard` package.
 
 ## Dashboard packages
 To make our dashboard we will use three very useful packages:
 
-1) [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)
+1. [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)
 
-Flexdashboard is a package that was created by RStudio and [released](https://blog.rstudio.com/2016/05/17/flexdashboard-easy-interactive-dashboards-for-r/) in May of 2016. This package allows for users to more easily create dashboards using [R markdown](http://rmarkdown.rstudio.com/). 
+Flexdashboard is a package that was created by RStudio and [released](https://blog.rstudio.com/2016/05/17/flexdashboard-easy-interactive-dashboards-for-r/) in May of 2016. This package allows for users to more easily create dashboards using [R Markdown](http://rmarkdown.rstudio.com/). 
 
 See [here](https://rstudio.com/resources/webinars/introducing-flexdashboards/) for a video about flexdashboard and [here](https://rmarkdown.rstudio.com/flexdashboard/) for a more information on how to use this package.
 
-2) [leaflet](https://rstudio.github.io/leaflet/)
+2. [leaflet](https://rstudio.github.io/leaflet/)
 
 [Leaflet](https://leafletjs.com/) is the leading open-source JavaScript library for interactive maps and is used by many websites. The [leaflet](https://rstudio.github.io/leaflet/) R package allows for users to more easily integrate leaflet maps in R, to create maps like the one below. We will use this package to create a map of where school shootings have occurred in the US.
+
+Here is an example of an interactive map made with `leaflet`
 
 ```{r,echo=FALSE}
 library(maps)
@@ -1623,10 +1624,11 @@ leaflet(data = mapStates) %>% addTiles() %>%
   addPolygons(fillColor = topo.colors(10, alpha = NULL), stroke = FALSE)
 ```
 
-
-3) [shiny](https://shiny.rstudio.com/)
+3. [shiny](https://shiny.rstudio.com/)
 
 [Shiny](https://shiny.rstudio.com/) is an R package that makes it easier to create interactive web applications in R. See [here](https://shiny.rstudio.com/gallery/) for a gallery of examples. People have created a variety of diverse applications using this package- from [interactive websites](https://shiny.rstudio.com/gallery/real-estate-investment.html) to [games](https://shiny.rstudio.com/gallery/hex-memory.html).
+
+Here is an screenshot of a `shiny` app.
 
 ```{r, echo = FALSE, out.width= "60%"}
 knitr::include_graphics(here::here("img", "game.png"))
@@ -1640,13 +1642,11 @@ See [here](https://rmarkdown.rstudio.com/flexdashboard/using.html#components) fo
 
 ## R Markdown
 
-The case study that you are reading right now was created using an [R Markdown document](https://rmarkdown.rstudio.com/). This means that it is a document that uses the `Markdown` language syntax. 
+The case study that you are reading right now was created using an [R Markdown document](https://rmarkdown.rstudio.com/). This means that it is a document that uses the `Markdown` language syntax with enhanced capabilities of executing R code in the document. 
 
-In fact if you click the button that says "code" on the upper right corner you will download the [R Markdown](https://rmarkdown.rstudio.com/articles_intro.html#:~:text=R%20Markdown%20is%20a%20file,code%2C%20like%20the%20document%20below.) document for this case study. 
+In fact, if you click the button that says "code" on the upper right corner at the top of the HTML you will download the [R Markdown](https://rmarkdown.rstudio.com/articles_intro.html#:~:text=R%20Markdown%20is%20a%20file,code%2C%20like%20the%20document%20below.) document for this case study. 
 
 [R Markdown (Rmd)](https://rmarkdown.rstudio.com/articles_intro.html#:~:text=R%20Markdown%20is%20a%20file,code%2C%20like%20the%20document%20below.) is a file format that contains Markdown syntax and embedded R code (it can also incorporate code from some other languages like [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) and [SQL](https://en.wikipedia.org/wiki/SQL)).
-
-
 
 ```{r}
 library(vembedr)
@@ -1657,15 +1657,17 @@ embed_url("https://vimeo.com/178485416") %>%
 
 ##### [[source]](https://rmarkdown.rstudio.com/lesson-1.html) 
 
-These Rmd files are rendered into a variety of file outputs like PDF, word, HTML etc. by the  [`knitr`](https://yihui.org/knitr/) and [`rmarkdown`](https://cran.r-project.org/web/packages/rmarkdown/rmarkdown.pdf) packages.
+AVOCADO: maybe a brief sentence about `vembedr`?
+
+These Rmd files can be rendered into a variety of file outputs like PDF, word, HTML etc. by the  [`knitr`](https://yihui.org/knitr/) and [`rmarkdown`](https://cran.r-project.org/web/packages/rmarkdown/rmarkdown.pdf) packages.
 
 This relies on conversion of the Rmd file into the [Markdown](https://en.wikipedia.org/wiki/Markdown) language by software called [Pandoc](https://en.wikipedia.org/wiki/Pandoc).
 
-[Markdown](https://en.wikipedia.org/wiki/Markdown) (which has been implemented by many languages, such as [Perl](https://en.wikipedia.org/wiki/Perl), [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Python](https://en.wikipedia.org/wiki/Python_(programming_language)), [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)), [Ruby](https://en.wikipedia.org/wiki/Ruby_(programming_language)), etc.) is a language of a particular class of programming languages called [lightweight markup languages(LML)](https://en.wikipedia.org/wiki/Lightweight_markup_language). 
+[Markdown](https://en.wikipedia.org/wiki/Markdown) (which has been implemented by many languages, such as [Perl](https://en.wikipedia.org/wiki/Perl), [Java](https://en.wikipedia.org/wiki/Java_(programming_language)), [Python](https://en.wikipedia.org/wiki/Python_(programming_language)), [C#](https://en.wikipedia.org/wiki/C_Sharp_(programming_language)), [Ruby](https://en.wikipedia.org/wiki/Ruby_(programming_language)), etc.) is a language of a particular class of programming languages called [lightweight markup languages (LML)](https://en.wikipedia.org/wiki/Lightweight_markup_language). 
 
-LMLs have relatively simple and intuitive syntax, and are therefore relatively easy to write and read and are converted by software into some type of less human-friendly language to create an output document like a PDF or an HTML file.  In fact, multiple output files can be created from the same LML file!
+LMLs have relatively simple and intuitive syntax, and are therefore relatively easy to write and read and are converted by software into some type of less human-friendly language to create an output document like a PDF or an HTML file. In fact, multiple output files can be created from the same LML file!
 
-In our case we are interested in rendering our Rmd document into a website. Thus the code in our R Markdown document will be interpreted and converted ultimately into html code.
+In our case we are interested in rendering our Rmd document into a website. The code in our R Markdown document will be interpreted and converted ultimately into HTML code.
 
 Although LMLs tend to be quite similar, here you can see some of the differences in syntax:
 
@@ -1679,18 +1681,15 @@ See this [book](https://bookdown.org/yihui/rmarkdown/) for more information on w
 
 The RStudio [cheatsheet for R Markdown](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) and this [tutorial](https://ourcodingclub.github.io/tutorials/rmarkdown/) are great for getting started. 
 
-avocado- how do you feel about including this tutorial - it is very good - and not code academy- but I am not familiar with the coding club but they seem like a nice group 
-
-
 ## Flexdashboard
 
-There are several important features about the R markdown that the `flexdashboard` package utilizes. 
+There are several important features about the R Markdown language that the `flexdashboard` package leverages. 
 
-These are used to specify the layout and elements of the dashboard.
+These features are used to specify the layout and elements of the dashboard.
 
-Here are some major R markdown features to keep in mind for `flexdashboard`
+Here are some major R Markdown features to keep in mind for `flexdashboard`:
 
-1) The beginning of an R markdown document is what is called the [YAML](https://en.wikipedia.org/wiki/YAML) header. This is delineated by `---` three dash marks before and after the header YAML code.
+1. The beginning of an R Markdown document is what is called the [YAML](https://en.wikipedia.org/wiki/YAML) header. This is delineated by `---` three dash marks before and after the header YAML code.
 
 Like so:
 ```{r, echo = FALSE}
@@ -1701,9 +1700,9 @@ knitr::include_graphics(here::here("img", "yaml.png"))
 
 [YAML](https://en.wikipedia.org/wiki/YAML) is yet another language, but unlike Markdown it is a data-oriented language and is often used for the [configuration](https://en.wikipedia.org/wiki/Configuration_file) of software or to set up how a software program should work.
 
-Thus whatever code you put in the YAML header will influence the rest of the document and essentially set up how the R markdown document will render. In the example the type of output is specified.
+Whatever code you put in the YAML header will influence the rest of the document and essentially set up how the R Markdown document will render. In the example above, the type of output is specified.
 
-But other more complicated features can be included. For example, we can specify that we are creating a dashboard with flexdashboard and we can specify how we want the layout of our dashboard to be displayed like so:
+Other more complicated features can be included. For example, we can specify that we are creating a dashboard with `flexdashboard` and we can specify how we want the layout of our dashboard to be displayed like so:
 
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "yaml_dashboard.png"))
@@ -1713,18 +1712,16 @@ knitr::include_graphics(here::here("img", "yaml_dashboard.png"))
 
 We will describe this in more detail soon.
 
-2) To add a page to a navigation bar (also called a navbar) the following syntax is used `=======`. The number of dashes does not matter. (This is a level 1 header in markdown, just like `#`)
+2. To add a page to a navigation bar (also called a navbar) the following syntax is used `=======`. The number of dashes does not matter. (This is a level 1 header in Markdown, just like `#`)
 
+3. To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modified to specify to create rows, than this same syntax will be used to create rows. The number of dashes does not matter. (This is a level 2 header in Markdown, just like `##`)
 
-3) To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modified to specify to create rows, than this same syntax will be used to create rows. The number of dashes does not matter. (This is a level 2 header in markdown, just like `##`)
-
-
-4) Components within the dashboard are delineated by using `###` - if you are familiar with markdown notation, this is a level 3 markdown header.
+4. Components within the dashboard are delineated by using `###` - if you are familiar with Markdown notation, this is a level 3 Markdown header.
 
 If this includes text like so: `### text`, this adds header text to the component, however this is not required. 
 
 
-5) To  include a plot or any output from R, use the following syntax:
+5. To  include a plot or any output from R, use the following syntax:
 `"```{r}"` on it's own line followed by your code, followed by `"```"`. This creates what is called a code chunk.
 
 ```{r, echo = FALSE}
@@ -1733,8 +1730,7 @@ knitr::include_graphics(here::here("img", "code_chunk.png"))
 
 ##### [[source]](https://ourcodingclub.github.io/tutorials/rmarkdown/)
 
-
-6)  Another component of `flexdashboard` is value boxes. These are essentially text boxes for statistics  or text that you  might like feature or emphasize. To do this again the `###` syntax is used to put a text label describing what the value box contains followed by a code chunk that uses the `valueBox()` function of the `flexdasboard` package. The value to display is specified using the `value` argument, as well as optional other aspects using additional arguments, such as the color of the value box using the `color` argument like the example below:
+6. Another component of `flexdashboard` is value boxes. These are essentially text boxes for statistics or text that youmight like feature or emphasize. To do this again the `###` syntax is used to put a text label describing what the value box contains followed by a code chunk that uses the `valueBox()` function of the `flexdasboard` package. The value to display is specified using the `value` argument, as well as optional other aspects using additional arguments, such as the color of the value box using the `color` argument like the example below:
 
 ```
 ### ValueBoxText
@@ -1746,7 +1742,7 @@ valueBox(value = 10
 '''
 ```
 
-Note that in our examples of code we will use `"'''"` instead of `"```"`. This is only to allow for easy viewing of examples. All code chunks require `"```"`.
+**Note**: in our examples of code we will use `"'''"` instead of `"```"`. This is only to allow for easy viewing of examples. All code chunks require `"```"`.
 
 Here you can see a more thorough example which includes icons:
 ```{r, echo = FALSE}
@@ -1755,7 +1751,7 @@ knitr::include_graphics(here::here("img", "valuebox.png"))
 
 ##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/using.html#value_boxes)
 
-6) Instead of value boxes you can also include a slight variation called a gauge. These are created with the `guage()` function of the `flexdashboard` package. This requires numeric values for a `value`, a `min`, and a `max` argument. Optionally, a symbol can also be added with the `symbol` argument. The value argument does not have to be explicitly called though, which is also true of the `valueBox()` function.
+7. Instead of value boxes you can also include a slight variation called a gauge. These are created with the `guage()` function of the `flexdashboard` package. This requires numeric values for a `value`, a `min`, and a `max` argument. Optionally, a symbol can also be added with the `symbol` argument. The value argument does not have to be explicitly called though, which is also true of the `valueBox()` function.
 
 Here is a simple example:
 
@@ -1800,7 +1796,7 @@ knitr::include_graphics(here::here("img", "columns.png"))
 
 
 ### Adding Rows
-To add multiple rows - the yaml needs to state that the orientation is for rows instead of for columns (see the image below),  and then the same syntax is used `---------`  for each row instead of columns. In this example two rows are created that will be oriented on top of one another and elements within the rows will be placed next to each other.
+To add multiple rows - the yaml needs to state that the orientation is for rows instead of for columns (see the image below),  and then the same syntax is used `---------`  for each row instead of columns. In this example, two rows are created that will be oriented on top of one another and elements within the rows will be placed next to each other.
 
 Again the word `Row` is not actually necessary.
 
@@ -1821,7 +1817,7 @@ To add tabs columns/rows we can use the following:
 Column {.tabset}
 ```
 
-Here is an example, where two columns are created and then two tabs are added to the second column.
+In this example, two columns are created and then two tabs are added to the second column.
 
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "tab.png"))
@@ -1831,9 +1827,9 @@ knitr::include_graphics(here::here("img", "tab.png"))
 
 ### Shiny
 
-Interactive elements can be added to dashboards. In our dashboard we will use packages such as `DT` and `Leaflet` that have shiny functionality. This requires that shiny is enabled in the YAML header by including `runtime:shiny` in the YAML.
+Interactive elements can be added to dashboards. In our dashboard, we will use packages such as `DT` and `leaflet` that have shiny functionality. This requires that shiny is enabled in the YAML header by including `runtime:shiny` in the YAML.
 
-Here is an example of a YML that includes this:
+Here is an example of a YAML that includes this:
 
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "shiny_yml.png"))
@@ -1876,13 +1872,13 @@ The `output:` line specifies what type of output we want the .Rmd file to be ren
 
 We need to include `flexdashboard::flex_dashboard:` as the output to create a dashboard with the `flexdashboard` package. This can be included on the same line as `output:` or on the next line with a preceding tab.
 
-Note that YAML is sensitive to spacing, thus this tab is required to get the proper output.
+**Note**: that YAML is sensitive to spacing, thus this tab is required to get the proper output.
 
-Then the next four lines are arguments for how the dashboard should be created.
+The next four lines are arguments for how the dashboard should be created.
 
-1) `logo:` allows you to include a logo on top of your dashboard. With this theme this will be in the upper left corner. The logo we chose to use came from [here](https://iconarchive.com/), but you could theoretically use any png of appropriate size.
+1. `logo:` allows you to include a logo on top of your dashboard. With this theme this will be in the upper left corner. The logo we chose to use came from [here](https://iconarchive.com/), but you could theoretically use any png of appropriate size.
 
-2) `theme:` allows you to specify how the dashboard will look in general. Note that this can be used to modify the general look of any type of R Markdown output, not just dashboards created with `flexdashboard`. See [here](https://www.datadreaming.org/post/r-markdown-theme-gallery/) for a list of options. In our case the theme is called readable and will create documents that look like this:
+2. `theme:` allows you to specify how the dashboard will look in general. Note that this can be used to modify the general look of any type of R Markdown output, not just dashboards created with `flexdashboard`. See [here](https://www.datadreaming.org/post/r-markdown-theme-gallery/) for a list of options. In our case, the theme is called readable and will create documents that look like this:
 
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "readable.png"))
@@ -1890,11 +1886,11 @@ knitr::include_graphics(here::here("img", "readable.png"))
 
 ##### [[source]](https://www.datadreaming.org/post/r-markdown-theme-gallery/)
 
-3) `orientation:` the options are `columns` or `rows` and specifies if the `--------` syntax creates rows or columns for the layout. This is not necessary if the option is `columns`.
+3. `orientation:` the options are `columns` or `rows` and specifies if the `--------` syntax creates rows or columns for the layout. This is not necessary if the option is `columns`.
 
-4) `source_code:` specifies if a URL will be included as a navigation bar item with access to the source code. 
+4. `source_code:` specifies if a URL will be included as a navigation bar item with access to the source code. 
 
-5) `vertical_layout:` The options are `fill` or `scroll`. Fill causes the charts to re-size to fill the page, while the scroll option renders plots as their natural height which may or may not require scrolling the page.
+5. `vertical_layout:` The options are `fill` or `scroll`. Fill causes the charts to re-size to fill the page, while the scroll option renders plots as their natural height which may or may not require scrolling the page.
 
 There are many other argument options for how the dashboard is displayed.
 
@@ -1904,11 +1900,13 @@ You can run the following command in the console to see more information about t
 ?flexdashboard::flex_dashboard()
 ```
 
-Also see the cran [documentation](https://cran.r-project.org/web/packages/flexdashboard/flexdashboard.pdf) for more details.
+Also see the CRAN [documentation](https://cran.r-project.org/web/packages/flexdashboard/flexdashboard.pdf) for more details.
 
 ## Loading the packages and data
 
-Since we are creating our dashboard in a new Rmd file, we need to load the necessary packages and the wrangled data that we created in this Rmd file. In that Rmd file, it looks something like this. Note that all the rest of the code shown would be added to the Rmd file for the dashboard and are simply shown here for illustrative purposes.
+Since we are creating our dashboard in a new Rmd file, we need to load the necessary packages and the wrangled data that we created in this Rmd file. In that Rmd file, it looks something like this. 
+
+**Note**: all the following code would be **added to the Rmd file for the dashboard** and are simply shown here for illustrative purposes.
 
 ```{r,eval = FALSE}
 library(here)
@@ -1930,12 +1928,13 @@ library(DT)
 For more information about what these packages were used for, see the beginning of this case study and the [Helpful Links] section.
 
 ```{r,eval = FALSE}
+shooting_data <- 
+  read_csv(here("processed_data",
+                "shooting_data_pre_geo_wrangled.csv"))
 
-shooting_data <- read_csv(here("processed_data",
-                                        "shooting_data_pre_geo_wrangled.csv"))
-
-shooting_data_geocoded <- read_csv(here("processed_data",
-                                        "shooting_data_wrangled.csv"))
+shooting_data_geocoded <- 
+  read_csv(here("processed_data",
+                "shooting_data_wrangled.csv"))
 ```
 
 
@@ -1943,13 +1942,11 @@ shooting_data_geocoded <- read_csv(here("processed_data",
 
 Recall that `===` is used to designate elements that are part of the navigation bar.
 
-
 We want 7 items besides the source code (which was added automatically based on the YAML code).
 
+First, we create 7 divisions for these main pages. We add icons to each from [Font Awesome](https://fontawesome.com/icons?d=gallery).
 
-So first we will create 7 divisions for these main pages. We will add icons to each from [Font Awesome](https://fontawesome.com/icons?d=gallery).
-
-Use this [link](https://fontawesome.com/icons?d=gallery) to find other icon options. If you click on the "start using this icon" button it will take you to a page with html code like this:  
+Use this [link](https://fontawesome.com/icons?d=gallery) to find other icon options. If you click on the "start using this icon" button it will take you to a page with HTML code like this:  
 
 ```{r, echo = FALSE, out.width="60%"}
 knitr::include_graphics(here::here("img", "fontawesome.png"))
@@ -1957,8 +1954,7 @@ knitr::include_graphics(here::here("img", "fontawesome.png"))
 
 #### [[source]](https://fontawesome.com/icons/database?style=solid)
 
-
-Only  the `fa-database` portion is required in the brackets after `data-icon=` to add the icon to the navigation bar.
+Onlythe `fa-database` portion is required in the brackets after `data-icon=` to add the icon to the navigation bar.
 
 ```
 
@@ -1987,10 +1983,9 @@ Hotline {data-icon="fa-exclamation-triangle"}
 
 ## The About Page
 
-OK, now we will start with the About page.
+Here, we create content in the About page.
 
 ### Look
-
 
 This is what the page will look like:
 
@@ -2000,7 +1995,6 @@ knitr::include_graphics(here::here("img" , "aboutpagelook.png"))
 
 ### Overall Structure
 
-
 Here is the overall structure for this page:
 
 ```{r, echo=FALSE}
@@ -2009,13 +2003,12 @@ knitr::include_graphics(here::here("img" , "about_page_structure.png"))
 
 ### Details
 
-
+***
 <details> <summary> Click here if you would like to see all of the code for this page. </summary>
 
 On this page we will have two columns - one which will be wider than the other.  Size specifications on `flexdashboard` are unit-less; the width of any column included on a page is a function of the width set for a column against the sum of widths for all columns on that page. If we set columns sizes of 600 and 300 on a page with two columns, one column will be twice as large as the other column. We want the left column to be quite a bit larger than the right, so we will set the left as `70` and the right as `30`.
 
-
-Thus we will start out like so:
+We will start out like so:
 
 ```
 About {data-icon="fa-question-circle"}
@@ -2033,8 +2026,7 @@ Column {data-width = 30}
 
 ```
 
-
-Recall that `###` is used to add elements to columns and rows. Note that there is no text next to the `###` syntax that designates an element of our dashboard. Previously in the examples that we showed a header was used like so `### header`:
+Recall that `###` is used to add elements to columns and rows. Note that there is no text next to the `###` syntax that designates an element of our dashboard. In the previous examples, a header was used like so `### header`:
 
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "tab.png"))
@@ -2042,11 +2034,11 @@ knitr::include_graphics(here::here("img", "tab.png"))
 
 [[source](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)]
 
-avocado if we add `###` for the source like usual, then we will no longer have the subsequent headers following the <details> section
+avocado if we add `###` for the source like usual, then we will no longer have the subsequent headers following the details section
 
-We don't actually want a header now, so we can simply use `###` without any text following it. Note that you can get away with not using the `###` but some elements will not render properly. 
+We do no actually want a header now, so we can simply use `###` without any text following it. Note that you can get away with not using the `###`, but some elements will not render properly. 
 
-Now we will add a block of text describing the dashboard to the first column and we will add an image to the second column like the following. Notice that two asterisks `**` around text makes them appear as bold and one `*` makes it appear as italic. See [this RStudio cheatsheet](https://rmarkdown.rstudio.com/lesson-15.html) for some basic markdown syntax for stylizing text:
+Next, we add a block of text describing the dashboard to the first column and we will add an image to the second column like the following. Notice that two asterisks `**` around text makes them appear as bold and one `*` makes it appear as italic. See [this RStudio cheatsheet](https://rmarkdown.rstudio.com/lesson-15.html) for some basic Markdown syntax for stylizing text:
 
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "markdownsyntax.png"))
@@ -2054,9 +2046,9 @@ knitr::include_graphics(here::here("img", "markdownsyntax.png"))
 
 [[source](https://rmarkdown.rstudio.com/lesson-15.html)] 
 
-avocado if we add `###` for the source like usual, then we will no longer have the subsequent headers following the <details> section
+avocado if we add `###` for the source like usual, then we will no longer have the subsequent headers following the details section
 
-Thus this is what the code for this page looks like (notice that there is an internal link to the `Tutrial` page:
+This is what the code for this page looks like (notice that there is an internal link to the `Tutrial` page):
 
 ```
 About {data-icon="fa-question-circle"}
@@ -2134,7 +2126,7 @@ The image used in this second column is from a website called unsplash (https://
 
 Notice the `echo = FALSE` specification for the code chunk which causes the code to be evaluated but but not shown, while `fig.cap` adds the figure caption.
 
-The image is included using the `include_graphics()` function of the `knitr` package. We need to specify where this image is located for this to work. You can do this without specifying a path if the image file is in the same directory as your .Rmd file that you are using to create your dashboard. However using the `here()` function of the `here` package we can organize our files a bit. This function will automatically start the path wherever we have included an RStudio project file, this can be done in RStudio like so:
+The image is included using the `include_graphics()` function of the `knitr` package. We need to specify where this image is located for this to work. You can do this without specifying a path if the image file is in the same directory as your `.Rmd` file that you are using to create your dashboard. However using the `here()` function of the `here` package we can organize our files a bit. This function will automatically start the path wherever we have included an RStudio project file, this can be done in RStudio like so:
 
 ```{r, echo=FALSE, out.width="60%"}
 knitr::include_graphics(here::here("img" , "project.png"))
@@ -2148,10 +2140,7 @@ Then if we create a directory or folder called `img` and place our image files i
 knitr::include_graphics(here::here("img" , "newdir.png"))
 ```
 
-
 Also you may have noticed the  `<style>` html code to add a blue and green background to portions of the text. 
-
-
 
 The text that we want altered with this particular style is delineated by the `<div>` to start and the `</div>` to end the style. 
 
@@ -2181,13 +2170,13 @@ text
 
 See this [website](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div) to learn more about HTML and CSS.
 
-
 </details>
 
+***
 
 ## The Data Page (Interactive)
 
-Now Let's create a page about the data that we are using.
+Let's create a page about the data that we are using.
 
 ### Look
 
@@ -2207,9 +2196,10 @@ knitr::include_graphics(here::here("img" , "Data_page_structure.png"))
 
 ### Details
 
- <details> <summary> Click here to see the code for this page. </summary>
+***
+<details> <summary> Click here to see the code for this page. </summary>
  
-To create the structure for this page that will display the data, we will have two columns, with the first one (on the left) wider than the other. Again we will have a block of text in the column on the left like so:
+To create the structure for this page that will display the data, we have two columns, with the first one (on the left) wider than the other. Again we have a block of text in the column on the left like so:
 
 ```
 The Data {data-icon="fa-database"}
@@ -2239,10 +2229,7 @@ Column {data-width=30}
 
 ```
 
-
-
-Now we will add our `DT_table` to the first column. First we need to include the code that we previously used to create the `DT_table` in our dashboard .Rmd file:
-
+Now we will add our `DT_table` to the first column. First, we need to include the code that we previously used to create the `DT_table` in our dashboard `.Rmd` file:
 
 ```{r, eval = FALSE}
 DT_table <- shooting_data%>%
@@ -2256,9 +2243,11 @@ DT_table <- shooting_data%>%
   rename("Narrative" = `Narrative (Detailed Summary/ Background)`)
 ```
 
+We then include some code to render this interactive table in our dashboard. Since we have `shiny` enabled in our YAML header, we can use the `renderDataTable()` of the `DT` package to produce the output we desire. 
 
-We then include some code to render this interactive table in our dashboard. Since we have `shiny` enabled in our YAML header, we can use the `renderDataTable()` of the `DT` package to produce the output we desire. We also want to use the `options` argument to specify how the data is rendered. The `scroller = TRUE` argument adds a scroll bar to the table, the `scrollY` argument specifies that the scroll bar should be for they Y axis direction (up and down) of the table and specifies how large the scroller should be, the `pageLength` argument specifies how many rows should be displayed simultaneously within the table, and the `autoWidth = TRUE` argument specifies that the table should fit the space of the column or page it is within. We will also add a caption with a link to the original data using the `tags()` and `withTags()` functions of the `htmltools` package. Different options for types of tags can be selected using the `$`.
+We also want to use the `options` argument to specify how the data is rendered. The `scroller = TRUE` argument adds a scroll bar to the table, the `scrollY` argument specifies that the scroll bar should be for they Y axis direction (up and down) of the table and specifies how large the scroller should be, the `pageLength` argument specifies how many rows should be displayed simultaneously within the table, and the `autoWidth = TRUE` argument specifies that the table should fit the space of the column or page it is within. 
 
+We will also add a caption with a link to the original data using the `tags()` and `withTags()` functions of the `htmltools` package. Different options for types of tags can be selected using the `$`.
 
 ```{r, echo = FALSE, out.width="60%"}
 knitr::include_graphics(here::here("img", "tags.png"))
@@ -2271,16 +2260,14 @@ DT::renderDataTable({
                   style = 'caption-side: top; text-align: Left;',
                   htmltools::withTags(
                     div(HTML('<a href="https://www.chds.us/ssdb/dataset/)">Click here to be redirected to a page where this data can be downloaded.</a>')))),
-                options = list(autoWidth = TRUE,
-                               pageLength = 10,
-                               scroller = TRUE,
-                               scrollY = '450px'))
+                  options = list(autoWidth = TRUE,
+                                 pageLength = 10,
+                                 scroller = TRUE,
+                                 scrollY = '450px'))
 })
 ```
 
-
 We will also add another image to the column on the right, overall the code looks like this:
-
 
 ```
 
@@ -2342,9 +2329,11 @@ knitr::include_graphics(here::here("img", "ruben-rodriguez-IXTvnOOSTyU-unsplash.
 
 </details>
 
+***
+
 ## The US Statistics Page
 
-Now Let's create a page for **US Statistics** we would like to share. 
+Let's create a page for **US Statistics** we would like to share. 
 
 ### Look
 This is what the page will look like:
@@ -2356,7 +2345,7 @@ knitr::include_graphics(here::here("img" , "US_Statistics_page.png"))
 ### Overall Structure
 Here is the overall structure for this page which uses a tab layout:
 
-```{r, echo=FALSE, out.width="60%"}
+```{r, echo=FALSE, out.width="90%"}
 knitr::include_graphics(here::here("img" , "US_stats_page_overview.png"))
 ```
 
@@ -2364,10 +2353,10 @@ avocado in the case of new mexico... the rounded values add up to 99 which creat
 
 ### Details
 
- <details> <summary> Click here to see the code for this page. </summary>
+***
+<details> <summary> Click here to see the code for this page. </summary>
 
-
-This time we will use  the `.tabset` and `.tabset-fade` options specified for our first column. 
+Here we use the `.tabset` and `.tabset-fade` options specified for our first column. 
 
 ```
 US Statistics {data-icon="fa-flag"}
@@ -2387,7 +2376,7 @@ knitr::include_graphics(here::here("img" , "tab.png"))
 [[source](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)]
 
 
-Let's make a tab for yearly shooting events and deaths, a tab for cumulative shooting events and deaths, and a tab about the number of deaths per shooting. In each tab we will include the code for the plots that we have previously created. 
+Let's make a tab for yearly shooting events and deaths, a tab for cumulative shooting events and deaths, and a tab about the number of deaths per shooting. In each tab, we will include the code for the plots that we have previously created. 
 
 ```
 US Statistics {data-icon="fa-flag"}
@@ -2465,35 +2454,35 @@ theme_dashboard <- function(){
 ### Yearly Cumulative Deaths and Shootings
 
 '''{r}
-
-shootings_per_year_cum <- shootings_per_year %>%
+shootings_per_year_cum <- 
+    shootings_per_year %>%
     mutate(Shootings = cumsum(Shootings))
 
-deaths_per_year_cum <- deaths_per_year %>%
-    mutate(Deaths= cumsum(Deaths))
-
+deaths_per_year_cum <- 
+    deaths_per_year %>%
+    mutate(Deaths = cumsum(Deaths))
 
 per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
 
+per_year_cum %<>% 
+  pivot_longer(cols = c(Shootings, Deaths ), 
+               values_to = "events", 
+               names_to = "id")
 
-per_year_cum %<>%pivot_longer( cols = c(Shootings,
-                                        Deaths ), 
-                           values_to = "events", 
-                           names_to = "id")
-per_year_cum%<>% 
+per_year_cum %<>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year_cum %>%
-ggplot(aes(x = Date_year, y = events, fill =id)) +
+  ggplot(aes(x = Date_year, y = events, fill =id)) +
     geom_col()+
     facet_wrap(~id, scales = "free", 
                labeller = as_labeller(c(Shootings = "Shootings (cumulative # of events)", 
                                         Deaths = "Deaths(cumulative # of people)")), 
                strip.position = "left")+
     scale_x_continuous(breaks = seq(start, end, by = 5),
-                 labels = seq(start, end, by = 5),
-                 limits = c(start-1, end+1)) +
-    scale_fill_manual(values = c("black", "black"))+
+                       labels = seq(start, end, by = 5),
+                       limits = c(start-1, end+1)) +
+    scale_fill_manual(values = c("black", "black")) +
     theme_minimal() +
     labs(title = "Cumulative Yearly Shootings and Deaths Attributable to\nSchool Shootings",
          subtitle = "United States",
@@ -2505,25 +2494,30 @@ ggplot(aes(x = Date_year, y = events, fill =id)) +
 ### Deaths Per Shooting
 
 '''{r}
-deaths_perc_event <-shooting_data %>%
+deaths_perc_event <- 
+   shooting_data %>%
    count(`Killed (includes shooter)`) %>%
    rename("num_events"= n) %>%
    mutate(percent = round(num_events/sum(num_events)*100, digits =1))
 
-greater_than4<-deaths_perc_event %>% 
+greater_than4 <- 
+  deaths_perc_event %>% 
   filter(`Killed (includes shooter)` >= 4) %>% 
   colSums()
 
-deaths_perc_event %<>%  bind_rows(greater_than4)
+deaths_perc_event %<>% bind_rows(greater_than4)
 
-deaths_perc_event %<>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
+deaths_perc_event %<>% 
+  mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
+
 deaths_perc_event %<>% 
   mutate(category = case_when(
     category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "\n(", percent, "%)"),
     category == "1 deaths" ~ "1 death",
     TRUE ~ category))
 
-deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
+deaths_perc_event %>% 
+  select(-`Killed (includes shooter)`) %>%
   filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4\\+")) %>%
   mutate(percent = round(percent)) %>%
   select(-num_events) %>%
@@ -2535,7 +2529,7 @@ deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
 '''
 ```
 
-In the second column we will include what are called value boxes to contain statistics that will remain static as the user moves through the tabs of the first column.
+In the second column, we will include what are called value boxes to contain statistics that will remain static as the user moves through the tabs of the first column.
 
 ```
 Column {data-width=30}
@@ -2555,13 +2549,13 @@ To create a value box we will use the `valueBox()` function of the `flexdashboar
 
 There are a few arguments to be aware of for this function:
 
-1) value - this is the value to be displayed in the box - this usually a number, but might be text
-2) caption - if desired, you can add text to be displayed under the value but keep in mind that you will also include text with the `###` syntax
-3) icon - if you would like to add an icon you can specify it like so: `icon = fa-flag`
-4) color - this changes the color of the box
-5) href - if you would like to add a URL link you can do so with this argument
+1. `value` - this is the value to be displayed in the box - this usually a number, but might be text
+2. `caption` - if desired, you can add text to be displayed under the value but keep in mind that you will also include text with the `###` syntax
+3. `icon` - if you would like to add an icon you can specify it like so: `icon = fa-flag`
+4. `color` - this changes the color of the box
+5. `href` - if you would like to add a URL link you can do so with this argument
 
-Thus we can create a value box for the total number of people wounded as follows, where we use the base `sum()` function to calculate the sum of all the values for the `Wounded` variable which was extracted using the `pull()` function of the `dplyr` package. We need to remove `NA` values to be able to calculate the sum and we can do this using the `na.rm = TRUE` argument. 
+We can create a value box for the total number of people wounded as follows, where we use the base `sum()` function to calculate the sum of all the values for the `Wounded` variable which was extracted using the `pull()` function of the `dplyr` package. We need to remove `NA` values to be able to calculate the sum and we can do this using the `na.rm = TRUE` argument. 
 
 
 ```
@@ -2667,15 +2661,15 @@ reporting rate of shooter gender = 'r reporting_male'%
 
 ```
 
- </details> 
+</details> 
 
+***
 
 ## The State Statistics Page (Interactive)
 
-Now Let's create a page for **State Statistics** we would like to share. Importantly this page allows for the user to choose what state to look at.
+Let's create a page for **State Statistics** we would like to share. Importantly this page allows for the user to choose what state to look at.
 
 ### Look
-
 
 This is what the page will look like:
 
@@ -2688,33 +2682,33 @@ knitr::include_graphics(here::here("img" , "State_Statistics_page.png"))
 
 Here is the overall structure for this page:
 
-```{r, echo=FALSE, out.width="60%"}
+```{r, echo=FALSE, out.width="90%"}
 knitr::include_graphics(here::here("img" , "states_stats_page_overview.png"))
 ```
 
-Note that the other value Boxes are not included in this image.  You can see that the `renderPlot()` function is used for plots and the `renderValueBox()` function is used for value boxes. 
+**Note**: the other value Boxes are not included in this image. You can see that the `renderPlot()` function is used for plots and the `renderValueBox()` function is used for value boxes. 
 
 ### Details
 
-
 On this page we want the user to be able to select data for a specific state and render plots and get statistics just for the selected state. To do this we will utilize the `renderPlot()` and `renderValueBox()` functions of the `flexdashboard` package, as well as the `selectInput()` function of the `shiny` package. See this [website](https://rmarkdown.rstudio.com/flexdashboard/shiny.html) for more information on using `shiny` to create interactive dashboards with `flexdashboard`.
 
+***
 <details> <summary> Click here to see the code for this page. </summary>
-
 
 The first thing we need to do to allow this page to be interactive is to add `runtime: shiny` to the YAML header at the top of the R Markdown file.
 
 The next thing we want to do is add the `{.sidebar}` attribute to the first column of this page. This allows us to use `shiny` input functions in this column.
 
-Then we will use the `selectInput()` function to create a menu for the user to interact with and add it to this column.
+Then, we use the `selectInput()` function to create a menu for the user to interact with and add it to this column.
 
-Finally we will use the `renderPlot()` function  and `renderValueBox()` function to use the input from the user to render plots and value boxes based on their input.
+Finally, we use the `renderPlot()` function  and `renderValueBox()` function to use the input from the user to render plots and value boxes based on their input.
 
 The `selectInput()` function allows us to provide the user with a pull down menu of options for states. The main arguments for this function are:
-1) inputId - this is what the selection will be called in subsequent code
-2) label - this is what the user sees above the pull down menu
-3) choices - this is a list of options for the menu
-4) selected - this causes a particular option to be the default choice
+
+1. `inputId` - this is what the selection will be called in subsequent code
+2. `label` - this is what the user sees above the pull down menu
+3. `choices` - this is a list of options for the menu
+4. `selected` - this causes a particular option to be the default choice
 
 This is placed in a column on the far left side that is more narrow than the others. 
 
@@ -2731,12 +2725,11 @@ Note that the statistics shown do not account for other possibly influential sta
 '''{r}
   
 selectInput(inputId = "state_selected", 
-              label = "Select a state to explore:",
+            label = "Select a state to explore:",
             choices = shooting_data %>% 
-              pull(State) %>% 
-              unique() %>%
-              sort(), selected = "Alabama")
-
+            pull(State) %>% 
+            unique() %>%
+            sort(), selected = "Alabama")
 
 #  Washington, D.C. gets excluded by this
 '''
@@ -2744,10 +2737,13 @@ selectInput(inputId = "state_selected",
 
 Note that we used the `unique()` function to select only unique values of the `State` variable of the `shooting_data` tibble. The `sort()` function was used to put the options in alphabetical order.
 
+In the next column, we have our plots like we did on the last page. Again we will use `tabset`. However, the difference here is that we need to include the `renderPlot()` function around all of our code for each plot and we need to use the data that the user selected. 
 
-In the next column we will have our plots like we did on the last page, thus again we will use tabset. However, the difference here is that we need to include the `renderPlot()` function around all of our code for each plot and we need to use the data that the user selected. This will automatically be in a data object called `input` and it will be within a variable called `state_selected"` based on what we used for the `inputID` in the `select_Input()` function (this requires the base R way of selecting a specific variable using the `$`). Notice that the `renderPlot()` function requires that the code be within brackets `{}` The data is filtered first for just the state that was selected. The code for the plots is essentially the same with minor modifications to allow for all unique cases that the different states present. For example the `deaths_perc_event %<>%filter (!duplicated(category))` is added to the last plot about the number of deaths per shooting to avoid duplications of the rows in cases like Colorado where the there is only one event that had 4 or more deaths (because in the other cases this value is a sum of all shooting with 4 or more deaths). It's always good to check as many possible input values as possible to make sure that your plot shows up as you expect!
+This will automatically be in a data object called `input` and it will be within a variable called `state_selected"` based on what we used for the `inputID` in the `select_Input()` function (this requires the base R way of selecting a specific variable using the `$`). 
 
+Notice that the `renderPlot()` function requires that the code be within brackets `{}`. The data is filtered first for just the state that was selected. The code for the plots is essentially the same with minor modifications to allow for all unique cases that the different states present. For example the `deaths_perc_event %<>%filter (!duplicated(category))` is added to the last plot about the number of deaths per shooting to avoid duplication of the rows in cases like Colorado where the there is only one event that had 4 or more deaths (because in the other cases this value is a sum of all shooting with 4 or more deaths). 
 
+It's always good to check as many possible input values as possible to make sure that your plot shows up as you expect!
 
 ```
 Column {data-width=750 .tabset .tabset-fade}
@@ -2770,12 +2766,12 @@ deaths_per_year<-shooting_data_state  %>%
   summarize(Deaths =sum(`Killed (includes shooter)`))
 
 
-per_year<-full_join(shootings_per_year, deaths_per_year)
-per_year %<>%pivot_longer( cols = (-Date_year), 
+per_year <- full_join(shootings_per_year, deaths_per_year)
+per_year %<>% pivot_longer(cols = (-Date_year), 
                            values_to = "events", 
                            names_to = "id")
 
-per_year%<>% 
+per_year %<>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year %<>%
@@ -2800,8 +2796,6 @@ per_year %<>%
 })
 '''
 
- 
-
 ### Yearly Cumulative Deaths and Shootings
 
 '''{r}
@@ -2816,26 +2810,27 @@ shootings_per_year<- shooting_data_state  %>%
   rename("Shootings" = n) %>%
     ungroup()
 
-shootings_per_year_cum <- shootings_per_year %>%
-    mutate(Shootings = cumsum(Shootings))
+shootings_per_year_cum <- 
+  shootings_per_year %>%
+  mutate(Shootings = cumsum(Shootings))
 
 deaths_per_year<-shooting_data_state  %>% 
   group_by(Date_year) %>%
   summarize(Deaths =sum(`Killed (includes shooter)`))
 
-
-deaths_per_year_cum <- deaths_per_year %>%
-    mutate(Deaths= cumsum(Deaths))
-
+deaths_per_year_cum <- 
+  deaths_per_year %>%
+  mutate(Deaths = cumsum(Deaths))
 
 per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
 
 
-per_year_cum %<>%pivot_longer( cols = c(Shootings,
-                                        Deaths ), 
-                           values_to = "events", 
-                           names_to = "id")
-per_year_cum%<>% 
+per_year_cum %<>% 
+  pivot_longer(cols = c(Shootings, Deaths ), 
+               values_to = "events", 
+                names_to = "id")
+                
+per_year_cum %<>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year_cum %>%
@@ -2875,23 +2870,27 @@ deaths_perc_event <-shooting_data_state %>%
      tidyr::drop_na() %>%
    mutate(percent = round(num_events/sum(num_events)*100, digits =1))
 
-
-greater_than4<-deaths_perc_event %>% 
+greater_than4 <- 
+  deaths_perc_event %>% 
   filter(`Killed (includes shooter)` >= 4) %>% 
   colSums()
 
-deaths_perc_event %<>%  bind_rows(greater_than4)
+deaths_perc_event %<>% bind_rows(greater_than4)
 
-deaths_perc_event %<>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
+deaths_perc_event %<>% 
+  mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
+
 deaths_perc_event %<>% 
   mutate(category = case_when(
     category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "\n(", percent, "%)"),
     category == "1 deaths" ~ "1 death",
     TRUE ~ category))
 
-deaths_perc_event %<>%filter (!duplicated(category))
+deaths_perc_event %<>% 
+  filter (!duplicated(category))
 
-deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
+deaths_perc_event %>% 
+  select(-`Killed (includes shooter)`) %>%
   filter(str_detect(category, "0 deaths|1 death|2 deaths|3 deaths|4\\+")) %>%
   mutate(percent = round(percent)) %>%
   select(-num_events) %>%
@@ -2924,8 +2923,8 @@ valueBox(sum(pull(shooting_data_state,`Killed (includes shooter)`), na.rm = TRUE
 '''
 
 ### **US State Average Death Count**
-'''{r}
 
+'''{r}
 shooting_data_state <-shooting_data %>% 
   group_by(State_abb, State) %>%
   count(na.rm = TRUE) %>%
@@ -2942,26 +2941,20 @@ state_data %<>%
 
 shooting_data_state<-left_join(shooting_data_state, state_data, by = c("State_abb" = "stateid"))
 
-
-
 deaths_State <-shooting_data %>% 
   group_by(State) %>%
   summarise( deaths = sum(`Killed (includes shooter)`, na.rm = TRUE))
 
- 
+state_data <- left_join(shooting_data_state, deaths_State)
 
-state_data <-left_join(shooting_data_state, deaths_State)
-
-USavg<- round(mean(pull(state_data, deaths), na.rm = TRUE), 2)
-valueBox(USavg,
-         color = "white")
+USavg <- round(mean(pull(state_data, deaths), na.rm = TRUE), 2)
+valueBox(USavg, color = "white")
 '''
 
 
 ### **State Death Rate (per 100,000 people)**
 
 '''{r}
-
 state_data %<>%
   mutate(percapita_deaths  = deaths/pop2010_hun_thou)
 
@@ -2969,7 +2962,7 @@ renderValueBox({
   
   shooting_data_state <- state_data %>% filter(State == input$state_selected)
 
-valueBox(format(round(pull(shooting_data_state, percapita_deaths), digits = 3), nsmall = 3),
+  valueBox(format(round(pull(shooting_data_state, percapita_deaths), digits = 3), nsmall = 3),
          color = "white")
 })
 
@@ -3023,14 +3016,15 @@ valueBox(value = round(US_percap, digits = 3),
 Per capita calculations are based on 2010 population values.
 ```
 
-
 </details>
+
+***
 
 ##  The Map page (Interactive)
 
-OK now we are ready to create our map page. Previously, in the  [**Data Exploration and Wrangling**] section, we geocoded our data and modified the `latitude` and `longitude` variables so that events that occurred in the same location would have slightly different values so that they will not cover one another in our map.
+Next, we create our map page. Previously, in the  [**Data Exploration and Wrangling**] section, we geocoded our data and modified the `latitude` and `longitude` variables so that events that occurred in the same location would have slightly different values so that they will not cover one another in our map.
 
-To create our map we will use the `leaflet` package which uses the [Leaflet](https://leafletjs.com/)  JavaScript library. 
+To create our map, we will use the `leaflet` package which uses the [Leaflet](https://leafletjs.com/)  JavaScript library. 
 
 ### Leaflet
 
@@ -3042,13 +3036,11 @@ Clustering options can also be applied to circles/markers. Some examples of this
 
 The `groups` in leaflet can be thought of as layer-specific IDs that create labels for legends and allow specific layers to be referred to in separate functions. 
 
-Thus, if we called a group "Layer 1" and then in a subsequent layer refer to "Layer 1", `Leaflet` will correctly identify which layer is being referenced.
+Thus, if we called a group "Layer 1" and then in a subsequent layer refer to "Layer 1", `leaflet` will correctly identify which layer is being referenced.
 
 Note that `leaflet` can require a lot of computational power depending on the types of maps produced.
 
-
 ### Look
-
 
 This is what the page will look like:
 
@@ -3058,8 +3050,7 @@ knitr::include_graphics(here::here("img" , "The_Map_Page.png"))
 
 ### Overall Structure
 
-
-The overall structure for this page is simple. There is just one column which will contain the map.
+The overall structure for this page is simple. There is just one column ,which will contain the map.
 
 ```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "map_page_structure.png"))
@@ -3067,20 +3058,22 @@ knitr::include_graphics(here::here("img" , "map_page_structure.png"))
 
 ### Details
 
- <details> <summary> Click here to see the code for this page. </summary>
+***
+<details> <summary> Click here to see the code for this page. </summary>
 
-
-First we create a smaller dataset that just includes the data that we want to use in the map. We will include the date, the name of the school and the narrative for each point as a [popup](https://rstudio.github.io/leaflet/popups.html) that will be shown when the user hovers over a point. 
+First, we create a smaller dataset that just includes the data that we want to use in the map. We will include the date, the name of the school and the narrative for each point as a [popup](https://rstudio.github.io/leaflet/popups.html) that will be shown when the user hovers over a point. 
 
 We need to do this using [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML) code as the `leaflet` package will ultimately render the map using this language.
 
-First we will use the paste function to combine these elements as well as HTML code to create line breaks and bold the name of the school.
+We use the `paste()` function to combine these elements as well as HTML code to create line breaks and bold the name of the school.
 
-To create line breaks in HTML, the `<br>` syntax is used. Thus this is used to separate each part of the elements that are getting pasted together with the base `paste()` function by being specified as the separator with the `sep` argument.
+To create line breaks in HTML, the `<br>` syntax is used. This is used to separate each part of the elements that are getting pasted together with the base `paste()` function by being specified as the separator with the `sep` argument.
 
 To create bold font in HTML, the text is surrounded by `<b>` and `</b>` like so: `<b> Bold text </b>`. Thus only the school name is in bold.
 
-Finally the `<div>` and `</div>` are content dividers in html. Thus they separate the individual shooting event information sections that will be plotted on the map. The first divider can also take information about the style of the output. This uses [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) code, which is what is used to stylize HTML.  The code here states that the height of the text box for each event should have a height that is proportional to the text, that the [height of each line](https://developer.mozilla.org/en-US/docs/Web/CSS/line-height) should be of 1 [em units](https://www.w3.org/Style/Examples/007/units.en.html) (which stands for element - thus 1 unit relative to the size of the element - therefore gaps between lines are the same height as the lines of text), the `overflow:visible` code specifies what to do in case the text box text is too large - in this case users can scroll (see [here](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow) for more options), and the [padding](https://developer.mozilla.org/en-US/docs/Web/CSS/padding) specification sets the size of the margins of the text box around the text.  
+Finally, the `<div>` and `</div>` are content dividers in HTML.  They separate the individual shooting event information sections that will be plotted on the map. The first divider can also take information about the style of the output. This uses [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) code, which is what is used to stylize HTML. 
+
+The code here states that the height of the text box for each event should have a height that is proportional to the text, that the [height of each line](https://developer.mozilla.org/en-US/docs/Web/CSS/line-height) should be of 1 [em units](https://www.w3.org/Style/Examples/007/units.en.html) (em stands for element). Hence, 1 unit relative to the size of the element. Therefore gaps between lines are the same height as the lines of text. The `overflow:visible` code specifies what to do in case the text box text is too large - in this case users can scroll (see [here](https://developer.mozilla.org/en-US/docs/Web/CSS/overflow) for more options), and the [padding](https://developer.mozilla.org/en-US/docs/Web/CSS/padding) specification sets the size of the margins of the text box around the text.  
 
 See this [website](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div) to learn more about HTML code.
 
@@ -3119,24 +3112,23 @@ This first line of code starts the process of making the widget, but just like t
 
 The `addProviderTiles()` function of the `leaflet()` package does just that, by adding the map background. We will add three different kinds of map backgrounds. See [here](http://leaflet-extras.github.io/leaflet-providers/preview/index.html) for all the options of providers which create a variety of distinct backgrounds and then the `group` argument names each of these layers to be referred to later. The last layer added will be the one shown by default.
 
-OK, at this point we still only have a map in general. Now we need to add the data about shooting events. 
+At this point we still only have a map in general. Now we need to add the data about shooting events. 
 
-To do this we will add markers to the plot using the `addCircleMarkers()` function. This function takes many different arguments. See details about them [here](https://cran.r-project.org/web/packages/leaflet/leaflet.pdf). 
+To do this, we add markers to the plot using the `addCircleMarkers()` function. This function takes many different arguments. See details about them [here](https://cran.r-project.org/web/packages/leaflet/leaflet.pdf). 
 
 Importantly, we need to specify what variables in our provided data `shooting_data_geocoded` contains the longitude values (`lng`) and the latitude values (`lat`). 
 
 We will also use the following arguments:  
-+ The`radius` argument specifies how large the circles for the points will be  
-+ The `color` argument specifies the color of the individual points  
-+ The `fillOpacity` argument allows for the filling of the points to a bit translucent if set below 1  
-+ Importantly the `clusterOptions` argument can be used to cluster points together into larger circles  
-+ The `group` argument specifies what the points should be called in the legend and what this layer should be referred to as for later use  
 
+- `radius` - argument specifies how large the circles for the points will be  
+- `color` - argument specifies the color of the individual points  
+- `fillOpacity` - argument allows for the filling of the points to a bit translucent if set below 1  
+- `clusterOptions` - argument can be used to cluster points together into larger circles  
+- `group` - argument specifies what the points should be called in the legend and what this layer should be referred to as for later use  
 
-We will also add a mini map using the `addMiniMap()` function which can be useful to see where you are on the map. The type of plot style to use for the mini map is specified with the `tiles` argument and the `toggleDisplay` argument allows for the user to remove this feature.
+We also add a mini map using the `addMiniMap()` function, which can be useful to see where you are on the map. The type of plot style to use for the mini map is specified with the `tiles` argument and the `toggleDisplay` argument allows for the user to remove this feature.
 
 Importantly, the `addLayersControl()` function  allows users to toggle between different backgrounds and markers. In our case we have three different background layers which are referred to as `baseGroups` and we have one `overlayGroups` which is our circle markers for shooting events. The group names for these need to be identified to allow users to toggle between them. 
-
 
 The `set_view()` function allows for the starting position and zoom to be modified. This allows us to center the map around the continental US.
 
@@ -3164,13 +3156,15 @@ leaflet(shooting_data_geocoded) %>%
    setView(lng = -98.35, lat = 39.5, zoom = 4)
 '''
 ```
- </details>
+
+</details>
  
+***
  
 
 ## The Tutorial Page
 
-Now we will create a **Tutorial** page that links to this case study. This will provide a simple overview of how we created the dashboard. 
+Here, we create a **Tutorial** page that links to this case study. This provides a simple overview of how we created the dashboard. 
 
 ### Look
 
@@ -3183,16 +3177,20 @@ knitr::include_graphics(here::here("img" , "the_Tutorial_Page.png"))
 
 ### Overall Structure
 
-To create this page we will use a special layout called a [storyboard](https://en.wikipedia.org/wiki/Storyboard). Story boards are used in many other fields but the idea is that there are multiple images in a sequence. To create our storyboard page with `flexdashboard` we will use `{.stroyboard}` next to the page name. Then each page name will be specified using this syntax: `###`. 
+To create this page we will use a special layout called a [storyboard](https://en.wikipedia.org/wiki/Storyboard). Story boards are used in many other fields, but the idea is that there are multiple images in a sequence. To create our storyboard page with `flexdashboard` we will use `{.stroyboard}` next to the page name. Each page name will be specified using this syntax: `###`. 
 
-Here you can see the top part of the overall structure:
+Here you see the top part of the overall structure:
+
 ```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "tutorialStructure.png"))
 ```
 
 ### Details
 
- <details> <summary> Click here to see the code for this page. </summary>
+AVOCADO: all the following code and text in this section is in the back ticks. Should that be the case? It wasn't clear to me what should have been moved out? 
+
+***
+<details> <summary> Click here to see the code for this page. </summary>
 
 ```
 Tutorial {.storyboard data-icon="fa-list-ol"}
@@ -3357,10 +3355,11 @@ This [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE
 
 </details>
 
+***
 
 ## The Get Help page
 
-Lastly, we will create a **Get Help** page to spread awareness.
+We create a **Get Help** page to spread awareness on this important public health topic.
 
 ### Look
 
@@ -3380,7 +3379,10 @@ knitr::include_graphics(here::here("img" , "The_Get_Help_Page_structure.png"))
 
 ### Details
 
- <details> <summary> Click here to see the code for this page. </summary>
+AVOCADO: should there be more text in this section explaining things?
+
+***
+<details> <summary> Click here to see the code for this page. </summary>
 
 ```
 Get Help {data-icon="fa-exclamation-triangle"}
@@ -3477,19 +3479,20 @@ The **National Suicide Prevention Lifeline (NSPL)** is available 24 hours a day,
 The deaf and hard of hearing can contact the **(NSPL)** via TTY at **[1-800-799-4889](tel:18007994889)**. All calls are confidential.
 ```
 
- </details>
+</details>
 
+***
 
 # **Summary**
 *** 
 
 ## Synopsis
 
-In this case study we have demonstrated the basics of R Markdown and how to create a dashboard with using the `flexdashboard` package. We also demonstrated how to include an interactive table with the `DT` package, how to include interactive plots using functions of the `shiny` package such as `renderPlot()`. We also included interactive value boxes using the `renderValueBox()` function of the `flexdashboard` package which works with the `shiny` package. Finally we also showed how to include interactive maps using the `leaflet` package. 
+In this case study, we demonstrated the basics of R Markdown and how to create a dashboard with using the `flexdashboard` package. We also demonstrated how to include an interactive table with the `DT` package, how to include interactive plots using functions of the `shiny` package such as `renderPlot()`. We included interactive value boxes using the `renderValueBox()` function of the `flexdashboard` package, which works with the `shiny` package. Finally, we showed how to include interactive maps using the `leaflet` package. 
 
-This case study also explored how to properly calculate and interpret percentages when the data has missing values. We also discussed the benefits and limiting aspects of pie charts (using `ggplot2`) and waffle plots (using `waffle`).
+This case study also explored how to properly calculate and interpret percentages when the data has missing values. We also discussed the benefits and limiting aspects of pie charts (using the `ggplot2` package) and waffle plots (using the `waffle` package).
 
-Overall the dashboard that we created shows that the number of shootings per year has increased overtime. Further investigation is necessary to determine if this is simply due to increases in population alone or if the rate has increased due to other factors and if so, what those factors might be. It is also clear that the number of shootings and the number of deaths per capita varies by state. Thus there appears to be other aspects accounting for state differences. 
+Overall, the dashboard we created shows that the number of shootings per year has increased overtime. Further investigation is necessary to determine if this is simply due to increases in population alone or if the rate has increased due to other factors and if so, what those factors might be. It is also clear that the number of shootings and the number of deaths per capita varies by state. There appears to be other aspects accounting for state differences. 
 
 # **Suggested Homework**
 *** 
@@ -3508,8 +3511,6 @@ Create another dashboard with graphs and statistics featuring other elements wit
 [RStudio projects](https://r4ds.had.co.nz/workflow-projects.html)
 
 [Tidyverse](https://www.tidyverse.org/){target="_blank"}   
-
-   
 
 [Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
 
@@ -3537,7 +3538,7 @@ Also see this [article](https://siepr.stanford.edu/sites/default/files/publicati
 
 [Lightweight markup languages(LML)](https://en.wikipedia.org/wiki/Lightweight_markup_language)  
 [Markdown](https://en.wikipedia.org/wiki/Markdown)  
-[R markdown](http://rmarkdown.rstudio.com/)   
+[R Markdown](http://rmarkdown.rstudio.com/)   
 [`knitr`](https://yihui.org/knitr/)  
 [`rmarkdown` (package)](https://cran.r-project.org/web/packages/rmarkdown/rmarkdown.pdf)
 
@@ -3593,6 +3594,8 @@ Package   | Use in this case study
 [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the dashboard  
 [shiny](https://shiny.rstudio.com/){target="_blank"}      | to allow our dashboard to be interactive   
 [leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
+[maps]() | AVOCADO: needs to be added. Rmd did not compile otherwise. 
+[vembedr]() | AVOCADO: needs to be added. Rmd did not compile otherwise. 
 
 
 #### {.emphasis_block}
