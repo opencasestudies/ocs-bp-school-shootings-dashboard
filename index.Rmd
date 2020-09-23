@@ -46,6 +46,8 @@ knitr::include_graphics(here("img", "aboutpagelook.png"))
 
 AVOCADO: What is the black around the image above? 
 
+AVOCADO: no questions or answers? 
+
 #### {.disclaimer_block}
 
 **Disclaimer**: The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**. A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
@@ -944,11 +946,13 @@ write_csv(shooting_data_geocoded,
 First let's load the data by reading in our wrangled version of the data.
 
 ```{r}
-shooting_data <- read_csv(here("processed_data",
-                                        "shooting_data_pre_geo_wrangled.csv"))
+shooting_data <- 
+  read_csv(here("processed_data",
+                "shooting_data_pre_geo_wrangled.csv"))
 
-shooting_data_geocoded <- read_csv(here("processed_data",
-                                        "shooting_data_wrangled.csv"))
+shooting_data_geocoded <- 
+  read_csv(here("processed_data",
+                "shooting_data_wrangled.csv"))
 ```
 
 
@@ -958,18 +962,18 @@ One thing we would like is an interactive table.
 
 ## Interactive Table
 
-We can done so using the `datatable()` function of the `DT` package.
+We can do this using the `datatable()` function of the `DT` package.
 
 ```{r, eval = FALSE}
 DT::datatable(shooting_data)
 ```
 This creates a searchable table and the order in which the data is displayed can be toggled to change for each variable.
 
-However, we have many variables, so this get's to be overwhelming. Since there are so many this even modifies the way the r markdown for this case study is rendered, thus instead of displaying all of the variables, let's choose only some of the most interesting to display on our dashboard.
-
+However, we have many variables or columns in our dataset, so this can be overwhelming. Instead of displaying all of the variables, let's choose only some of the most interesting to display in our dashboard.
 
 ```{r}
-DT_table <- shooting_data%>%
+DT_table <- 
+  shooting_data %>%
   dplyr::select(Date,
                 School,
                 City,
@@ -982,36 +986,33 @@ DT_table <- shooting_data%>%
 DT::datatable(DT_table)
 ```
 
+Next, we will maake some data visualizations. 
 
-Now we would also like to make some visualizations of our data.
 
 ## Yearly Shootings
 
-First, we would like to create a plot of the number of shootings per year.
+We would like to create a plot of the number of shootings per year.
 
-To do this we will first count the number of shootings per year by using the `group_by()` function  and the `count()` function of the `dplyr` package. The `group_by()` functions allows us to summarize the data across specific groups specified by a variable or multiple variables. By grouping by `Date_year` we can then use the `count()` function to count the number of rows with shooting event information 
-for each unique value of the `Date_year` variable.
+To do this, we will first count the number of shootings per year by using the `group_by()` function and the `count()` function of the `dplyr` package. The `group_by()` functions allows us to summarize the data across specific groups specified by a variable or multiple variables. Specifically, we will group by the `Date_year` variable. 
 
-We then want to use the `ungroup()` function to get the data out of this grouping based on the `Data_year` varaible.
-
+**Note**: After `group_by()`, we need to use the `ungroup()` function to get the data out of this grouping based on the `Data_year` variable.
 
 ```{r}
-
-shootings_per_year<- shooting_data %>%
-    group_by(Date_year) %>%
-    count() %>%
+shootings_per_year <- 
+  shooting_data %>%
+  group_by(Date_year) %>%
+  count() %>%
   rename("Shootings" = n) %>%
-    ungroup()
-
+  ungroup()
 
 shootings_per_year
-
 ```
 Good, this looks as expected.
 
 Now to make a plot of this data we will use the `ggplot2` package.
 
-<details><summary> Click here for an introduction about this package if you are  new to using `ggplot2` </summary>
+***
+<details><summary> Click here for an introduction about this package for more information on using `ggplot2` </summary>
 
 The [ggplot2 package](http://ggplot2.tidyverse.org) is generally intuitive for beginners because it is based on a  [grammar of graphics](http://vita.had.co.nz/papers/layered-grammar.html) or the `gg` in `ggplot2`. 
 The idea is that you can construct many sentences by learning just a few nouns, adjectives, and verbs. There are specific “words” that we will need to learn and once we do, you will be able to create (or “write”) hundreds of different plots.
@@ -1046,23 +1047,38 @@ Anything that goes in the `ggplot()` object becomes a global setting.
 From there, we use the `geom` objects to add more layers to the base `ggplot()` object. 
 These will define what we are interested in illustrating using the data.
 
-***
 </details>
+
+***
 
 For more of an introduction on creating plots with `ggplot2` , see this [case study]()
 
+AVOCADO: missing link to the case study above.
+
+***
+
 First, we start with the `ggplot()` function of the `ggplot2` package.
 
-This function requires that the aesthetics `aes()` be specified. This involves choosing what variable will be plotted on the x-axis and the y axis. 
+This function requires that the aesthetics `aes()` be specified. This involves choosing what variable will be plotted on the x-axis and the y-axis. 
 
-This will create an empty plot area, next we need to use one of the `geom*` functions of the `ggplot2` package to specify what type of plot we want to create.
+```{r}
+shootings_per_year %>%
+    ggplot(aes(x = Date_year, y = Shootings))
+```
 
-Type geom into the RStudio console and you will see many options to scroll through.
+Using the `ggplot()` function alone will create an empty plot area. To make our plot not empty, we need to select one of the `geom_*` functions of the `ggplot2` package to specify what type of plot we want to create.
 
-We will be creating a `geom_col()` plot, which is a particular type of bar plot that uses the actual values to plot, rather than counts, which is the default of `geom_bar()` We will specify with the `fill` argument, that we want our bars to be filled with the color black.
+Assuming the `ggplot2` library is loaded, type `geom` into the RStudio console and you will see many options to scroll through.
 
-We will also modify the x-axis using the `scale_x_continuous()` function. This function allows for specification of the range or limits of the axis using the `limits` argument. We can use the base `seq()` function to create a sequence of numbers for each tick mark.
+Here, we use a `geom_col()` plot, which is a particular type of bar plot that uses the actual values to plot, rather than counts, which is the default of `geom_bar()`. We will specify with the `fill` argument, that we want our bars to be filled with the color black.
 
+```{r}
+shootings_per_year %>%
+    ggplot(aes(x = Date_year, y = Shootings)) +
+    geom_col(fill = "black")
+```
+
+We also modify the x-axis using the `scale_x_continuous()` function. This function allows for specification of the range or limits of the axis using the `limits` argument. We can use the base `seq()` function to create a sequence of numbers for each tick mark.
 
 We can add labels to our plot using the `labs()` function of `ggplot2`. This has arguments such as `x` and `y` for the axes and `title` and `subtitle` for titles. We can use `NULL` to remove a label. For example to remove the x-axis label we can use `x = NULL`
 
@@ -1072,55 +1088,54 @@ We will also modify the overall aesthetics of the plot using a `theme_*` functio
 start <- 1970
 end <- 2020
 
-
-shootings_per_year_p <-shootings_per_year %>%
+shootings_per_year_p <- 
+  shootings_per_year %>%
     ggplot(aes(x = Date_year, y = Shootings)) +
-    geom_col( fill = "black") +
-    scale_x_continuous(breaks = seq(start, end, by = 5),
-                 labels = seq(start, end, by = 5),
-                 limits = c(start-1, end+1)) +
-    theme_minimal() +
+      geom_col(fill = "black") +
+      scale_x_continuous(breaks = seq(start, end, by = 5),
+                         labels = seq(start, end, by = 5),
+                         limits = c(start-1, end+1)) +
+      theme_minimal() +
       labs(title = "Yearly School Shootings",
-
-   # labs(title = "Yearly Deaths Attributable to School Shootings",
-         subtitle = "United States",
-         x = NULL,
-         y = "School Shootings")
+           subtitle = "United States",
+           x = NULL,
+           y = "School Shootings")
 
 shootings_per_year_p 
 ```
 
 ## Yearly Deaths
 
-Notice that when using summarize we don't use mutate here.
+Let's make a similar plot for the number of deaths
+
 ```{r}
-
-deaths_per_year<-shooting_data %>% 
+deaths_per_year<-
+  shooting_data %>% 
   group_by(Date_year) %>%
-  summarize(Deaths =sum(`Killed (includes shooter)`))
+  summarize(Deaths = sum(`Killed (includes shooter)`))
 
-deaths_per_year_p <-deaths_per_year %>%
+deaths_per_year_p <- 
+  deaths_per_year %>%
     ggplot(aes(x = Date_year, y = Deaths)) +
-    geom_col( fill = "black")+
-    scale_x_continuous(breaks = seq(start, end, by = 5),
-                 labels = seq(start, end, by = 5),
-                 limits = c(start-1, end+1)) +
-    theme_minimal() +
-   labs(title = "Yearly Deaths Attributable to School Shootings",
-         subtitle = "United States",
-         x = NULL)
+      geom_col(fill = "black") +
+      scale_x_continuous(breaks = seq(start, end, by = 5),
+                         labels = seq(start, end, by = 5),
+                         limits = c(start-1, end+1)) +
+      theme_minimal() +
+      labs(title = "Yearly Deaths Attributable to School Shootings",
+           subtitle = "United States",
+           x = NULL)
+
 deaths_per_year_p
-
-
 ```
 
-OK, we want to make a plot that shows both the number of shootings per year and the number of deaths.
+**Note**: When using the `summarize()` function, we don't use the `mutate()` function here.
+
+Next, for the purposes of the dashboard, we actually want to create just one plot that shows both the number of shootings per year and the number of deaths.
 
 We can do so by combining our `shootings_per_year` and  `deaths_per_year` tibbles together and making what is called a faceted plot, using the `facet_wrap()` function to create two plots next to one another.
 
 To combine our data we will use the `full_join()` function of the `dplyr` package. This maintains all values from both tibbles.
-
-
 
 To do so we will be making our table "longer", meaning that it will have fewer columns and more rows. 
 See [here](https://en.wikipedia.org/wiki/Wide_and_narrow_data) for more information about different table formats, typically referred to as wide and long or sometimes narrow.
@@ -1133,92 +1148,93 @@ There are 3 main arguments in this function:
 2. `names_to` - which specifies the name of the new column that will be created that will contain the column names of the columns you are collapsing  
 3. `values_to` - which specifies the name of the new column that will be created that will contain the values from the columns you are collapsing 
 
-To specify that we want to collapse all the columns that have year values, we can chose  all those except the `Date_year` variable by  using the `-` minus sign. 
+To specify that we want to collapse all the columns that have year values, we can choose all those except the `Date_year` variable by using the `-` negative operator. 
 
 ```{r}
+per_year <- 
+  full_join(shootings_per_year, deaths_per_year)
 
-per_year<-full_join(shootings_per_year, deaths_per_year)
-per_year %<>%pivot_longer( cols = -Date_year, 
-                           values_to = "events", 
-                           names_to = "id")
+per_year %<>%
+  pivot_longer(cols = -Date_year, 
+               values_to = "events", 
+               names_to = "id")
 
 per_year
 ```
 
+Hmmm, we see the data type of the `id` column is a character (`<chr>`). Let's convert it to a factor, so that the the order in which `Shootings` and `Deaths` appear is the order in which they appear first rather than by alphabetical order (which is default).
 
-We will also use the `fct_inorder()` function of the `forcats` package to reorder our `id` variable` to the order in which they appear first rather than by alphabetical order (which is default). Thus the number of shootings will appear on the left side (first) rather then on the right.
+Using the `fct_inorder()` function of the `forcats` package, we can easily reorder the `id` variable`. 
 
 ```{r}
-per_year%<>% 
+per_year %<>% 
   mutate(id = forcats::fct_inorder(id))
+
+per_year
 ```
 
-Now since we the new variable for the names is called `id` we will use this as the variable to create the facet like so: `facet_warp(~id)`. We can also specify that we want both plots to have their own y-axis with the `scales = "free"` argument. This causes each to have the y-axis automatically scaled for the data in each plot. We can then use the  `scale_y_continuous()` function to set both of the y-axes to be the same. 
+Now since we the new variable for the names is called `id` we will use this as the variable to create the facet like so: `facet_wrap(~id)`. We can also specify that we want both plots to have their own y-axis with the `scales = "free"` argument. This causes each to have the y-axis automatically scaled for the data in each plot. We can then use the  `scale_y_continuous()` function to set both of the y-axes to be the same. 
 
 ```{r}
-
 per_year %>%
-ggplot(aes(x = Date_year, y = events, fill =id)) +
-  geom_col()+
-  facet_wrap(~id, scales = "free") +
-  scale_x_continuous(breaks = seq(start, end, by = 5),
-                 labels = seq(start, end, by = 5),
-                 limits = c(start-1, end+1)) +
-  scale_y_continuous(breaks = seq(0, 120, by = 30),
-                 labels = seq(0, 120, by = 30),
-                 limits = c(0, 121))+
-  theme_minimal() +
-  labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
+  ggplot(aes(x = Date_year, y = events, fill =id)) +
+    geom_col() +
+    facet_wrap(~id, scales = "free") +
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                       labels = seq(start, end, by = 5),
+                       limits = c(start-1, end+1)) +
+    scale_y_continuous(breaks = seq(0, 120, by = 30),
+                       labels = seq(0, 120, by = 30),
+                       limits = c(0, 121))+
+    theme_minimal() +
+    labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
          subtitle = "United States",
          y = "Number of events",
          x = "Year")+
-  scale_fill_manual(values = c("black", "black"))+
-  theme(legend.position = "none", 
-        legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90),
-        strip.background =element_rect(fill="cornflowerblue"),
-        strip.text = element_text(colour = 'white', face = "bold", size = 14))
-
+    scale_fill_manual(values = c("black", "black"))+
+    theme(legend.position = "none", 
+          legend.title = element_blank(),
+          axis.text.x = element_text(angle = 90),
+          strip.background =element_rect(fill="cornflowerblue"),
+          strip.text = element_text(colour = 'white', face = "bold", size = 14))
 ```
 
-Now let's also update the plot so that it is more obvious what each plot is showing. We can update the names of the y -axis for each plot by changing the strip.position argument of the `facet_warp()` function to be placed on the left rather than above. Currently it is the label in blue that says what the value of the `id` variable is for each plot. This also requires some modification of the  `theme()` function to place the strip.text outside the plot area and to remove the background.  Furthermore, we will also change the text using the `labeller` argument of the `facet_wrap()` function. The `as_labeller()` function of the `ggplot2` package can change out the `id` values for other text like in the following code:
+Next, we can modify the plot further so that it is more obvious what each plot is showing. We can update the names of the y-axis for each plot by changing the `strip.position` argument of the `facet_wrap()` function to be placed on the left rather than above. Currently it is the label in blue that says what the value of the `id` variable is for each plot. This also requires some modification of the `theme()` function to place the `strip.text` outside the plot area and to remove the background.Furthermore, we also change the text using the `labeller` argument of the `facet_wrap()` function. The `as_labeller()` function of the `ggplot2` package can change out the `id` values for other text like in the following code:
 
 ```{r}
-
 per_year %>%
-ggplot(aes(x = Date_year, y = events, fill =id)) +
-  geom_col()+
-  facet_wrap(~id, scales = "free", 
-           labeller = as_labeller(c(Shootings = "Shootings (# of events)", 
-                                       Deaths = "Deaths (# of people)")), 
-            strip.position = "left") +
-  scale_x_continuous(breaks = seq(start, end, by = 5),
-                 labels = seq(start, end, by = 5),
-                 limits = c(start-1, end+1)) +
-  scale_y_continuous(breaks = seq(0, 120, by = 30),
-                 labels = seq(0, 120, by = 30),
-                 limits = c(0, 121))+
-  theme_minimal() +
-  labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
+  ggplot(aes(x = Date_year, y = events, fill =id)) +
+    geom_col() +
+    facet_wrap(~id, 
+               scales = "free", 
+               labeller = as_labeller(c(Shootings = "Shootings (# of events)", 
+                                        Deaths = "Deaths (# of people)")), 
+               strip.position = "left") +
+    scale_x_continuous(breaks = seq(start, end, by = 5),
+                       labels = seq(start, end, by = 5),
+                       limits = c(start-1, end+1)) +
+    scale_y_continuous(breaks = seq(0, 120, by = 30),
+                       labels = seq(0, 120, by = 30),
+                       limits = c(0, 121))+
+    theme_minimal() +
+    labs(title = "Yearly Shootings and Deaths Attributable to School Shootings",
          subtitle = "United States",
          y = NULL,
          x = "Year")+
-  scale_fill_manual(values = c("black", "black"))+
-  theme(legend.position = "none", 
-        legend.title = element_blank(),
-        axis.text.x = element_text(angle = 90),
-        strip.background = element_blank(),
-        strip.placement = "outside",
-        strip.text = element_text(face = "bold", size = 14))
+    scale_fill_manual(values = c("black", "black"))+
+    theme(legend.position = "none", 
+          legend.title = element_blank(),
+          axis.text.x = element_text(angle = 90),
+          strip.background = element_blank(),
+          strip.placement = "outside",
+          strip.text = element_text(face = "bold", size = 14))
 ```
 
 Good,  Now this is much easier to interpret.
 
-
-We can also save the style settings of this plot as theme like so to be reused by using the base `function()` function:
+Our last step in this section is to save the style settings of this plot as theme so we can reuse it for future plots. To do this, we use the base `function()` function:
 
 ```{r}
-
 theme_dashboard <- function(){ 
   theme(legend.position = "none", 
         legend.title = element_blank(),
@@ -1234,33 +1250,34 @@ theme_dashboard <- function(){
 
 ## Yearly Cumulative Shootings
 
-Now let's make another plot of the cumulative deaths each year including those of the previous years. In this case we can use the `shooting_per_year` object that we previously made. We want to add a new variable using the `mutate` function called `n_cum_sum` by using the `cumsum()` function to calculate a cumulative sum based on the yearly count. 
-
-
+Now let's make another plot of the cumulative deaths each year including those of the previous years. In this case we can use the `shooting_per_year` object that we previously made.
 
 ```{r}
-
 shootings_per_year
+```
 
+However, we want to add a new variable using the `mutate` function called `n_cum_sum` by using the `cumsum()` function to calculate a cumulative sum based on the yearly count. 
+
+```{r}
 shootings_per_year_cum <- shootings_per_year%>%
     mutate(Shootings = cumsum(Shootings))
-
-shootings_per_year_cum 
 
 deaths_per_year_cum <- deaths_per_year%>%
     mutate(Deaths = cumsum(Deaths))
 
-shootings_per_year_cum 
+shootings_per_year_cum
+```
 
+Next, we join these tables together
 
+```{r}
+per_year_cum <- 
+  full_join(shootings_per_year_cum, deaths_per_year_cum)
 
-per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
-
-
-per_year_cum %<>%pivot_longer(cols = c(Shootings,
-                                        Deaths ), 
-                           values_to = "events", 
-                           names_to = "id")
+per_year_cum %<>% 
+  pivot_longer(cols = c(Shootings,Deaths ), 
+               values_to = "events", 
+               names_to = "id")
 
 per_year_cum
 ```
@@ -1274,31 +1291,29 @@ per_year_cum %<>%
   mutate(id = forcats::fct_inorder(id))
 
 per_year_cum %>%
-    ggplot(aes(x = Date_year, y = events, fill =id)) +
-    #geom_col(aes(fill = id), position = "dodge") +
-  geom_col()+
-    facet_wrap(~id, scales = "free", 
-           labeller = as_labeller(c(Shootings = "Shootings (# of events)", 
-                                       Deaths = "Deaths (# of people)")), 
-            strip.position = "left") +
-    scale_x_continuous(breaks = seq(start, end, by = 5),
-                 labels = seq(start, end, by = 5),
-                 limits = c(start-1, end+1)) +
-   scale_y_continuous(breaks = seq(0, 1500, by = 500),
-                 labels = seq(0, 1500, by = 500),
-                 limits = c(0, 1500))+
-    theme_minimal() +
-   labs(title = "Cumulative Yearly Shootings and Deaths\nAttributable to School Shootings",
-         subtitle = "United States",
-         y = NULL,
-         x = "Year") +
-  scale_fill_manual(values = c("black", "black"))+
-    theme_dashboard()
- 
-
+    ggplot(aes(x = Date_year, y = events, fill = id)) +
+      geom_col() +
+      facet_wrap(~id, scales = "free", 
+                 labeller = as_labeller(c(Shootings = "Shootings (# of events)", 
+                                          Deaths = "Deaths (# of people)")), 
+                 strip.position = "left") +
+      scale_x_continuous(breaks = seq(start, end, by = 5),
+                         labels = seq(start, end, by = 5),
+                         limits = c(start-1, end+1)) +
+      scale_y_continuous(breaks = seq(0, 1500, by = 500),
+                         labels = seq(0, 1500, by = 500),
+                         limits = c(0, 1500)) +
+      theme_minimal() +
+      labs(title = "Cumulative Yearly Shootings and Deaths\nAttributable to School Shootings",
+           subtitle = "United States",
+           y = NULL,
+           x = "Year") +
+      scale_fill_manual(values = c("black", "black")) +
+      theme_dashboard()
 ```
 
-Note that the limits for the y-axis were determined by first plotting without the `scale_y_continuous()` function.
+**Note**: the limits for the y-axis were determined by first plotting without the `scale_y_continuous()` function.
+
 
 ## Deaths per Shooting
 
