@@ -83,9 +83,6 @@ The article explores characteristics of school shootings and violence in schools
 
 The article also states that the shooters are most commonly white males, but that many previous studies of shooter characteristics could not identify any particular "profile" of shooters.
 
-AVOCADO: no questions or answers? 
-
-
 > "To date, studies of school shootings have concluded that no
 consistent and reliable profile of school shooters exist..."
 
@@ -237,8 +234,8 @@ Package   | Use in this case study
 [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the dashboard  
 [shiny](https://shiny.rstudio.com/){target="_blank"}      | to allow our dashboard to be interactive   
 [leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
-[maps]() | AVOCADO: needs to be added. Rmd did not compile otherwise. 
-[vembedr]() | AVOCADO: needs to be added. Rmd did not compile otherwise. 
+[maps](https://cran.r-project.org/web/packages/maps/maps.pdf) | to create the simple leaflet map example   
+[vembedr](https://github.com/ijlyttle/vembedr) | to include a video in our case study   
 
 
 The first time we use a function, we will use the `::` to indicate which package we are using. Unless we have overlapping function names, this is not necessary, but we will include it here to be informative about where the functions we will use come from.
@@ -297,11 +294,7 @@ knitr::include_graphics(here::here("img", "fernando-cferdo-6x2iKGi6SPU-unsplash.
 *** 
 There are some important considerations regarding this data analysis to keep in mind: 
 
-1) This analysis is exploratory and, as such, does not intend to provide inferential conclusions.  
-
-2) This dashboard only uses one source of data. There may be school shooting events that are not listed in this data or errors in this data.
-
-AVOCADO: what do you mean by "inferential conclusions"? Based on the main questions, you aren't asking if e.g. "there is a difference between two groups"? 
+This dashboard only uses one source of data. There may be school shooting events that are not listed in this data or errors in this data.
 
 According to the database website itself:
 
@@ -823,28 +816,42 @@ shooting_data_geocoded[1:4]
 ```
 
 To allow our points to not overlap for events that took place in the same location, we will add a bit more range so that they do not overlap one another on our map. 
-To do this, we will transform the coordinates using the `st_transform()` function  of the `sf` package into a two dimensional projection (called the [Albers equal-area conic projection](https://en.wikipedia.org/wiki/Albers_projection#:~:text=The%20Albers%20equal%2Darea%20conic,that%20uses%20two%20standard%20parallels.&text=The%20Albers%20projection%20is%20used,the%20United%20States%20Census%20Bureau.)) with units in meters using the [crs 102008](https://spatialreference.org/ref/esri/102008/html/) and then use the `st_jitter()` of the `sf` package function to allow a specified amount of range near the actual original GPS coordinates. In this case we will allow for 50 meters of range.
 
-AVOCADO: how did you possibly know about this? From a reader's point of view, it comes a bit of out left field.... :/ 
+To do this, we will transform the coordinates using the `st_transform()` function  of the `sf` package into a two dimensional projection (called the [Albers equal-area conic projection](https://en.wikipedia.org/wiki/Albers_projection#:~:text=The%20Albers%20equal%2Darea%20conic,that%20uses%20two%20standard%20parallels.&text=The%20Albers%20projection%20is%20used,the%20United%20States%20Census%20Bureau.)) with units in meters using the [crs 102008](https://spatialreference.org/ref/esri/102008/html/) reference and then use the `st_jitter()` function of the `sf` package  to allow a specified amount of range near the actual original GPS coordinates. 
 
 To learn more about geospatial coordinate systems see [here](https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf) and [here](https://guides.library.duke.edu/r-geospatial/CRS).
 
-So here we can see the output after transforming our data:
+So here we can see the output after transforming our data to the [crs 102008](https://spatialreference.org/ref/esri/102008/html/) reference:
 
 ```{r}
 shooting_data_geocoded  %<>%
   st_transform(crs = 102008) 
 ```
 
+
+Notice how the  class for the `geometry` variable is now `<POINT [m]>` as our data has been transformed into corrdinates in meters.
+
 ```{r}
 shooting_data_geocoded[1:4]
 ```
-And here we can see the output after adding the jitter:
+
+And now we will add a jitter to the points using the `st_jitter()` function, meaning that we will randomly move the coordinates a little bit to allow for points at the same location to not overlap on the map.
+
+You can see the tidyverse explanation about when to use a jitter plot  [here](https://ggplot2.tidyverse.org/reference/geom_jitter.html), they state that a jitter:
+
+> adds a small amount of random variation to the location of each point, and is a useful way of handling overplotting caused by discreteness in smaller datasets.
+
+In this case we will allow for 50 meters of range using the `amount = 50` argument.
 
 ```{r}
 shooting_data_geocoded %<>%
-   st_jitter(amount = 50)
+   sf::st_jitter(amount = 50)
+```
 
+
+We can now see that the coordiates are slighly modified. 
+
+```{r}
 shooting_data_geocoded[1:4]
 ```
 
@@ -899,18 +906,7 @@ shooting_data_geocoded %>%
   slice_head(n = 4)
 ```
 
-Great! That looks like we expected. We can see that the coordinate values are slightly different now.
-
-```{r}
-original_shooting_data_geocoded <- read_csv(here("processed_data",
-              "shooting_data_geo.csv"))
-
-original_shooting_data_geocoded %>%
-  select(longitude, latitude) %>% 
-  slice_head(n = 4)
-```
-
-AVOCADO: in my knitted html, the first 4 lat/long rows were identical between old and new dataset? Should we use a `set.seed()`? 
+Great! That looks like we expected.
 
 Finally, we save our wrangled data, again using `write_csv()`.
 
@@ -992,6 +988,7 @@ shootings_per_year <-
 
 shootings_per_year
 ```
+
 Good, this looks as expected.
 
 Now to make a plot of this data we will use the `ggplot2` package.
@@ -1300,27 +1297,40 @@ per_year_cum %>%
 
 ## Deaths per Shooting
 
-Next, we will make a plot of the number of deaths per shooting based on the `Killed (includes shooter)` variable. Our first plot could also have been made using `geom_bar()` instead of `geom_col()` this makes a similar plot but automatically uses the count for one of the axes. 
-
-AVOCADO: maybe turn this into a learning opportunity with a question and answer? 
+Next, we will make a plot of the number of deaths per shooting based on the `Killed (includes shooter)` variable. 
 
 ```{r}
-# This is equivalent:
-# deaths_per_event <- 
-#   shooting_data %>%
-#   group_by(`Killed (includes shooter)`) %>%
-#   count() %>%
-#   ungroup()
-# 
-# deaths_per_event %>%
-#   ggplot(aes(y = `Killed (includes shooter)`, x = n)) +
-#     geom_col(fill = "black")+
-#     theme_minimal() +
-#     labs(title = "Deaths per School Shooting",
-#          subtitle = "United States",
-#          x = "School Shootings",
-#          y = "")
+deaths_per_event <-
+  shooting_data %>%
+  group_by(`Killed (includes shooter)`) %>%
+  count() %>%
+  ungroup()
 
+deaths_per_event %>%
+  ggplot(aes(y = `Killed (includes shooter)`, x = n)) +
+    geom_col(fill = "black")+
+    theme_minimal() +
+    labs(title = "Deaths per School Shooting",
+         subtitle = "United States",
+         x = "School Shootings",
+         y = "")
+```
+
+Our first plot could also have been made using `geom_bar()` instead of `geom_col()` this makes a similar plot but automatically uses the count for one of the axes, thus it is not required to first summarize the data using the `count()` function. 
+
+#### {.think_question_block}
+<b><u> Question Opportunity </u></b>
+
+See if you can come up with the code for the plot using `geom_bar()` instead without using the `count()` function.
+
+####
+
+***
+
+<details> <summary> Click here to reveal the answer. </summary>
+
+
+```{r}
 shooting_data %>%
   ggplot(aes(x = `Killed (includes shooter)`)) +
     geom_bar(fill = "black") +
@@ -1330,6 +1340,8 @@ shooting_data %>%
          x = "School Shootings",
          y = "")
 ```
+
+</details>
 
 Because of the skewed distribution, it is difficult to see the shootings that had more numerous deaths, so we will add a facet that zooms in on this portion of the plot. We can do so, using the `facet_zoom()` function of the `ggforce` package.
 
@@ -1355,6 +1367,7 @@ shooting_data %>%
 It is still difficult to see. Let's try some other options.
 
 The `geom_freqpoly()` function creates a graph that makes it very easy to see that most shootings result in zero or one death and that the maximum number of deaths in this data for a single event is in the upper twenties. 
+
 ```{r}
 shooting_data %>%
     ggplot(aes(x = `Killed (includes shooter)`)) +
@@ -1415,6 +1428,7 @@ deaths_perc_event
 ```
 
 Next, we add a new variable so that it is easy to plot and interpret the number of deaths for each percentage. 
+
 We will add the word "deaths" to each value in the `Killed (includes shooter)` variable using the base `paste0()` function. Note that this function automatically will result in no space or any other character between pasted elements. The `paste()` function can alternatively be used for those cases. 
 
 ```{r}
@@ -1433,13 +1447,7 @@ We can use the `last()` function of the `dplyr` package combined with the `pull(
 last(pull(deaths_perc_event, category))
 ```
 
-Using the `case_when()` function, we can change this value. 
-
-Note that we could have used a `stringr` function to replace the specific value of "85 deaths", but this would not be reproducible. Say we used this code again after the data got updated. Then there may be more deaths in this category and therefore this value would no longer be "85 deaths". Instead, by using `case_when()`, we can use an expression for the last value of the `deaths_perc_event` tibble and replace that, regardless of what the value is, with "4+deaths". Recall that `case_when()` replaces all other values that are not specified with `NA`. We do not want to lose the other values for the `category` variable. So to avoid this, we assign each of the values that are not the last value or the `"1 deaths"` value to what they currently are for the `category` variable, using `TRUE ~ category` (Note that all remaining unassigned values are indicated as `TRUE`).
-
-AVOCADO: this sections seems like a good learning opportunity for Q and A
-
-**Note**: we could actually type out the percentage of 4+death cases, but it is always more reproducible to instead use an expression that will evaluate to the value we want. This way if we were to update our data with additional shooting events, this evaluation would also update.
+Using the `case_when()` function, we can change this value:
 
 ```{r}
 deaths_perc_event %<>% 
@@ -1452,7 +1460,26 @@ deaths_perc_event %<>%
 deaths_perc_event
 ```
 
-Looks as we hoped. OK, now we are ready to make plots. 
+#### {.think_question_block}
+<b><u> Question Opportunity </u></b>
+
+We could of used the`str_replace()` function of the `stringr` package to replace the value for the last row. This function would directly change the value of "85 deaths" to "4+deaths", but this would not be as reproducible. Why is that? 
+
+####
+
+***
+
+<details> <summary> Click here to reveal the answer. </summary>
+
+Say we used this code again after the data got updated. Then there may be more deaths in this category and therefore this value would no longer be "85 deaths". Instead, by using `case_when()`, we can use an expression for the last value of the `deaths_perc_event` tibble and replace that, regardless of what the value is, with "4+deaths". Recall that `case_when()` replaces all other values that are not specified with `NA`. We do not want to lose the other values for the `category` variable. So to avoid this, we assign each of the values that are not the last value or the `"1 deaths"` value to what they currently are for the `category` variable, using `TRUE ~ category` (Note that all remaining unassigned values are indicated as `TRUE`).
+
+We could also actually type out the percentage of 4+death cases, but it is always more reproducible to instead use an expression that will evaluate to the value we want. This way if we were to update our data with additional shooting events, this evaluation would also update.
+
+</details>
+
+***
+
+OK, this looks as we hoped. OK, now we are ready to make plots. 
 
 Let's start with the pie chart. Historically, this has become a bit controversial type of plot. However, it can be very useful when you are actually looking at percentages and the goal is to see major trends in the data, such as all the groups are roughly equal or one group is particularly larger than the rest. When this is the case and you are presenting the data to an audience that is less familiar with data science, they may expect to see a pie chart. Thus it is useful to know how to make one. However, in most other cases pie charts do a poor job at allowing us to see more subtle differences, and they are particularly confusing when we are not looking at proportions, but raw counts. In those cases it is better to use a bar chart as we have already done. 
 
@@ -1495,7 +1522,7 @@ deaths_perc_event %>%
 
 ### Percentages
 
-Another thing we are interested in is to include statistics in our dashboard. For example, we are interested in how many shooters committed or attempted suicide.
+We are also interested in including statistics in our dashboard. For example, we are interested in how many shooters committed or attempted suicide.
 
 We previously converted variables with `yes` or `no` answers because they were inconsistently coded as `yes`/ `y` and `no`/`n`.  Furthermore, logical variables are easier to work with in terms of performing calculations because `TRUE` values are treated like a `1` while `FALSE` values are treated like a `0`. 
 
@@ -1573,8 +1600,65 @@ We can see that 97% of the shootings have information about this variable.
 
 It is important to check and report this percentage so that people can better understand if our percentages are reliable. If only 2% of the shootings had this information and in all cases of the 2% the shootings involved a suicide (or attempt), then this would lead people to believe that 100% of school shootings involve a shooter suicide (or attempt). This would clearly be misleading!  In our case the majority of the shootings included this information, so we will indeed report the percentage and we will also let people know how much of the shooting data had this information.
 
-You will see that we performed variations of these calculations to calculate other statistics for our dashboard.
-For the sake of brevity, we will not include explanations here.
+
+#### {.think_question_block}
+<b><u> Question Opportunity </u></b>
+
+Now try to perform variations of these calculations to calculate other statistics for our dashboard, such as the percentage of the shooters that were male or the percentage of events where a single handgun was used, (hint the `Firearm Type` value will be `Handgun`).
+
+####
+
+
+**Shooter Was Male**
+
+<details> <summary> Click here to reveal the code. </summary>
+
+```{r}
+
+
+gender <- paste(as.character(round(100 * (sum(
+    case_when(pull(shooting_data,`Shooter Gender`) == "Male" ~ TRUE,
+                                                        TRUE ~ FALSE),
+                                      na.rm = TRUE)
+    /
+      sum(pull(shooting_data, `Shooter Gender`)>=0, na.rm = TRUE)),
+    1)), "%")
+
+reporting_male <- (sum(pull(shooting_data, `Shooter Gender`)>=0, na.rm = TRUE)/
+              length(pull(shooting_data, `Shooter Gender`)))*100
+reporting_male <- round(reporting_male, 1)
+
+
+gender
+reporting_male
+
+```
+
+</details>
+
+**Use of a Single Handgun**
+
+<details> <summary> Click here to reveal the code. </summary>
+
+
+```{r}
+handgun <-paste(as.character(round(100 *(sum(case_when(
+      pull(shooting_data,`Firearm Type`) == "Handgun" ~ TRUE,
+                                                 TRUE ~ FALSE), na.rm = TRUE)
+    /
+      sum(pull(shooting_data, `Firearm Type`)>=0, na.rm = TRUE)),
+    1)), "%")
+
+reporting_gun <- (sum(pull(shooting_data, `Firearm Type`)>=0, na.rm = TRUE)/
+              length(pull(shooting_data, `Firearm Type`)))*100
+reporting_gun <- round(reporting_gun, 1)
+
+handgun
+reporting_gun
+```
+</details>
+
+
 
 # **Dashboard Basics**
 ***
@@ -1598,7 +1682,7 @@ See [here](https://rstudio.com/resources/webinars/introducing-flexdashboards/) f
 
 Here is an example of an interactive map made with `leaflet`
 
-```{r,echo=FALSE}
+```{r, echo=FALSE}
 library(maps)
 mapStates = map("state", fill = TRUE, plot = FALSE)
 leaflet(data = mapStates) %>% addTiles() %>%
@@ -1629,7 +1713,7 @@ In fact, if you click the button that says "code" on the upper right corner at t
 
 [R Markdown (Rmd)](https://rmarkdown.rstudio.com/articles_intro.html#:~:text=R%20Markdown%20is%20a%20file,code%2C%20like%20the%20document%20below.) is a file format that contains Markdown syntax and embedded R code (it can also incorporate code from some other languages like [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) and [SQL](https://en.wikipedia.org/wiki/SQL)).
 
-```{r}
+```{r, echo = FALSE}
 library(vembedr)
 embed_url("https://vimeo.com/178485416") %>%
   div(class = "vembedr") %>%
@@ -1638,7 +1722,19 @@ embed_url("https://vimeo.com/178485416") %>%
 
 ##### [[source]](https://rmarkdown.rstudio.com/lesson-1.html) 
 
-AVOCADO: maybe a brief sentence about `vembedr`?
+
+<details> <summary> Click here to see how this video was embedded in this R Markdown. </summary>
+
+This video was included using the `vembedr` package. Videos on [Vimeo](https://vimeo.com/) or [YouTube](https://youtube.com/) can be added like so, where a url is added within quotation marks and the following two lines of code allow for the video to be centered in the R Markdown output. See [here]([vembedr](https://github.com/ijlyttle/vembedr)  to learn more about embedding videos with this pacakge.
+
+```{r, eval = FALSE}
+library(vembedr)
+embed_url("https://vimeo.com/178485416") %>%
+  div(class = "vembedr") %>%
+  div(align = "center")
+```
+
+</details>
 
 These Rmd files can be rendered into a variety of file outputs like PDF, word, HTML etc. by the  [`knitr`](https://yihui.org/knitr/) and [`rmarkdown`](https://cran.r-project.org/web/packages/rmarkdown/rmarkdown.pdf) packages.
 
@@ -2883,7 +2979,7 @@ deaths_perc_event %>%
 '''
 ```
 
-In the third column, the state specific statistics are displayed. Some of these are static, while others update for the state selected. To calculate some of these we will also use data form the `poliscidata` function to get the state population values in 2010. The `pop2010_hun_thou` variable is the population in terms of 100,000 people.  avocado... this is the only thing I didn't really explain in detail... do you think we need to?
+In the third column, the state specific statistics are displayed. Some of these are static, while others update for the state selected. To calculate some of these we will also use data form the `poliscidata` function to get the state population values in 2010. The `pop2010_hun_thou` variable is the population in terms of 100,000 people.  
 
 ```
 Column {data-width=450}
@@ -3597,8 +3693,8 @@ Package   | Use in this case study
 [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)     | to create the dashboard  
 [shiny](https://shiny.rstudio.com/){target="_blank"}      | to allow our dashboard to be interactive   
 [leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
-[maps]() | AVOCADO: needs to be added. Rmd did not compile otherwise. 
-[vembedr]() | AVOCADO: needs to be added. Rmd did not compile otherwise. 
+[maps](https://cran.r-project.org/web/packages/maps/maps.pdf) | to create the simple leaflet map example   
+[vembedr](https://github.com/ijlyttle/vembedr) | to include a video in our case study   
 
 
 #### {.emphasis_block}
