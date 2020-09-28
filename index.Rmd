@@ -42,11 +42,9 @@ library(knitr)
 ```{r, echo=FALSE}
 knitr::include_graphics(here("img", "aboutpagelook.png"))
 ```
+
 ####
 
-AVOCADO: What is the black around the image above? 
-
-AVOCADO: no questions or answers? 
 
 #### {.disclaimer_block}
 
@@ -85,23 +83,17 @@ The article explores characteristics of school shootings and violence in schools
 
 The article also states that the shooters are most commonly white males, but that many previous studies of shooter characteristics could not identify any particular "profile" of shooters.
 
-AVOCADO: I am starting to read through this section, but I'm a bit confused. A lot of the text in this section isn't clear to me why it's here. We do not look at profiles of the shooter in the dashboard? 
+AVOCADO: no questions or answers? 
+
 
 > "To date, studies of school shootings have concluded that no
-consistent and reliable profile of school shooters exist, and
-most researchers and clinicians would agree that predicting
-violent behavior is a slippery slope that will usually result in
-more false positives than false negatives."
+consistent and reliable profile of school shooters exist..."
 
 However previous studies note some commonalities such as:
 
-> "...most shooters were depressed, had experienced some significant
-loss, felt persecuted or bullied by others, and had prior
-difficulty coping or had previously tried suicide. Most of
-the shooters did not, however, have a history of drug abuse
-or violence or cruelty to animals, common psychiatric indicators of risk, nor did they report excessive exposure to
-violence in the media (though many produced their own
-violent themes in writings or drawings)."
+> "...most shooters were depressed, had experienced some significant loss, felt persecuted or bullied by others, and had prior difficulty coping or had previously tried suicide." 
+
+Therefore in our dashboard we will examine how often a shooter was male or attempted or committed suicide during an event.
 
 
 ```{r, echo = FALSE, out.width= "60%"}
@@ -110,14 +102,10 @@ knitr::include_graphics(here::here("img", "joshua-hoehne-CAokgx1GGKE-unsplash.jp
 
 <span>Photo by <a href="https://unsplash.com/@mrthetrain?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Joshua Hoehne</a> on <a href="https://unsplash.com/s/photos/high-school?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 
-> "School shootings are not all the same and may require
-different approaches to prevention and treatment, especially
-with respect to identifying risk factors at the individual, school
-or community levels, and particularly with regard to examining
-the role that mental health issues may play to increase risk for
-perpetration. The field **needs to know more** about shooting
-incidents that are averted, those that result in injury but not
-death and about the characteristics of the more common occurrence of single homicide school shootings."
+> "School shootings are not all the same and may require different approaches to prevention and treatment, especially with respect to identifying risk factors at the individual, school
+or community levels, and particularly with regard to examining the role that mental health issues may play to increase risk for perpetration. 
+
+> The field **needs to know more** about shooting incidents that are averted, those that result in injury but not death and about the characteristics of the more common occurrence of single homicide school shootings."
 
 
 ```{r, echo = FALSE, out.width= "60%"}
@@ -127,27 +115,25 @@ knitr::include_graphics(here::here("img", "andre-hunter-AQ908FfdAMw-unsplash.jpg
 <span>Photo by <a href="https://unsplash.com/@dre0316?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Andre Hunter</a> on <a href="https://unsplash.com/s/photos/high-school?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 
 
-They also point out that:
-
-> "Most media attention is on the mental health of school shooters, but we cannot forget the **impact of school shooting incidents on the surviving victims**, including those who may not have been injured but who may have witnessed the incident or been affected by it in other ways. Psychiatrists must pay attention to the long-term mental health consequences of these incidents on all affected parties (not just formal PTSD diagnoses, but related trauma symptoms) as well as maladaptive coping strategies that some may employ in response to such unpredictable, tragic events."
-
 Given this need for more research to better understand why these events occur and how they could be averted, in this case study we will demonstrate how to create a resource for others to more easily and interactively access data about school shootings. To do so we will create what is called a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report for a database. Dashboards summarize the data in a database and typically allow for users to interact with the data in some way.
 
-[Here](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/htmlwidgets-highcharter.html) you can see an example of a dashboard created in R about sales forecasts of food.
+[Here](https://jjallaire.shinyapps.io/shiny-crandash/#dashboardl) you can see an example of a dashboard created in R about downloads of packages on [cran](https://cran.r-project.org/).
 
-AVOCADO: while I think the dashboard you linked to is interesting, it's not very well labeled or have much documentation? I'm guessing it has something to do with sales forecasts. Should we add more info? 
 
 On the website the tabs and and plots are interactive. The above dashboard allows for users to get to know the data in a simple and quick way.
 
-The data about food sales is succinctly summarized in an impactful manner.
+The data about package downloads is succinctly summarized in an impactful manner.
 
-```{r, echo = FALSE, out.width= "60%"}
+```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "dashboard.png"))
 ```
 
+We can quickly get a sense that the `magrittr` package is among the top most widely downloaded packages on cran.
+
+
 ##### [[source]](https://beta.rstudioconnect.com/jjallaire/htmlwidgets-highcharter/)
 
-Now let's learn how to do this with our data of interest.
+Now let's learn how to create a dashboard with our data of interest.
 
 # **Main Questions**
 *** 
@@ -155,15 +141,14 @@ Now let's learn how to do this with our data of interest.
 #### {.main_question_block}
 <b><u> Our main questions: </u></b>
 
-1) What has been the yearly rate of school shootings and where have they occurred in the last 50 years (from January 1970 to June 2020)? 
+1) What has been the yearly rate of school shootings and where in the country have they occurred in the last 50 years (from January 1970 to June 2020)? 
 
-2) What are the characteristics of these events?
+2) How many individuals are typically killed in a shooting?
+
+3) What were the characteristics of the shooters: How often was a shooter male? How often did a shooter attempt or commit suicide?
 
 ####
 
-AVOCADO: the second question is pretty generic. I haven't read any further yet, but at this point I do not know what you mean by "characteristics of these events". Could we make this question more specific? 
-
-AVOCADO: Also, becuase we are focused on maps in dashboards, should we add a main question that has to do with the spatial?
 
 # **Learning Objectives** 
 *** 
@@ -262,15 +247,21 @@ The first time we use a function, we will use the `::` to indicate which package
 # **Context**
 *** 
 
-AVOCADO: where does the statement "Although school shooting events that result in homicide are rare" come from? I thought it came from the dashboard you built? or are you citing a paper? i guess my point is, how would a reader know that info at this point? 
+Shooting events can also have braod and lasting impacts for those who witness but are not directly involved. 
 
-Although school shooting events that result in homicide are rare, they can have a lasting impact on the communities in which they occur. Furthermore, suicide events and shootings with no victims can have a lasting impact on the community.
 
 According to the [Center for Injury Research and Prevention at the Children's Hospital of Philadelphia](https://injury.research.chop.edu/violence-prevention-initiative/types-violence-involving-youth/school-shootings):
 
->The most common shootings on school grounds rarely involve large numbers of victims, but even a shooting of just one student at school has ramifications far beyond those directly involved. Students and staff that witness school shootings are likely to suffer from [traumatic stress](https://en.wikipedia.org/wiki/Traumatic_stress) symptoms, become anxious or depressed and have general concerns about their safety. While many witnesses will have temporary symptoms, others will be symptomatic for a much longer period of time and even develop chronic psychiatric disorders. Even short-term impairments can cause severe distress and have profound effects on academic achievement and the social and emotional growth of impacted students. 
+> The most common shootings on school grounds rarely involve large numbers of victims, but even a shooting of just one student at school has ramifications far beyond those directly involved. 
+
+> Students and staff that witness school shootings are likely to suffer from [traumatic stress](https://en.wikipedia.org/wiki/Traumatic_stress) symptoms, become anxious or depressed and have general concerns about their safety. 
+
+> While many witnesses will have temporary symptoms, others will be symptomatic for a much longer period of time and even develop chronic psychiatric disorders. 
+
+> Even short-term impairments can cause severe distress and have profound effects on academic achievement and the social and emotional growth of impacted students. 
  
-Furthermore, fatal shootings can have vast and lasting impacts because many students can witness a single event.
+
+Furthermore, shootings can have vast and lasting impacts because many students can witness a single event.
 
 Another recently published [article](https://siepr.stanford.edu/sites/default/files/publications/19-036.pdf) indicates that:
 
@@ -286,19 +277,21 @@ This study followed students who experienced a school shooting the United States
 
 > Fatal school shootings have large and persistent impacts on the mental health of local youth. In the two years following a fatal school shooting, the monthly number of antidepressant prescriptions written to individuals under age 20 is 21.3 percent higher in the shooting-exposed relative to the reference areas. 
 
+#### {.reference_block}
+
+Rossin-Slater, M., Schnell, M., Schwandt, H., Trejo, S. & Uniat, L. Local Exposure to School Shootings and Youth Antidepressant Use. w26563 http://www.nber.org/papers/w26563.pdf (2019) doi:10.3386/w26563.
+
+####
+
+Thus, it is important that we characterize shootings so that we might better understand why shootings have occured to not only prevent the direct involvement of students in future events, but also to prevent students and staff from witnessing these events.
+
+
 ```{r, echo = FALSE, outwidth = "40%"}
 knitr::include_graphics(here::here("img", "fernando-cferdo-6x2iKGi6SPU-unsplash.jpg"))
 ```
 
 <span>Photo by <a href="https://unsplash.com/@cferdo?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Fernando @cferdo</a> on <a href="https://unsplash.com/s/photos/depression?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></span>
 
-AVOCADO: While I think the info in this section is interesting, it's not clear to me why it's relevant to the case study? Could we explain more or edit and take out material not directly relevant? 
-
-#### {.reference_block}
-
-Rossin-Slater, M., Schnell, M., Schwandt, H., Trejo, S. & Uniat, L. Local Exposure to School Shootings and Youth Antidepressant Use. w26563 http://www.nber.org/papers/w26563.pdf (2019) doi:10.3386/w26563.
-
-####
  
 # **Limitations**
 *** 
@@ -314,17 +307,14 @@ According to the database website itself:
 
 >"This database was developed from open-source information and may include reporting errors."
 
-Furthermore, according to this [article](https://link.springer.com/article/10.1007/s11920-012-0331-6), schools are not required to report school shootings unless they resulted in a suicide or homicide. Therefore there may be more events that result in only injury or no injuries or death that may not be included.
+Furthermore, according to this [article](https://link.springer.com/article/10.1007/s11920-012-0331-6), schools in 2013, schools were not required to report school shootings unless they resulted in a suicide or homicide. Therefore there may be more events that result in only injury or no injuries or death that may not be included.
 
 There are indeed events in the dataset that include zero deaths and zero injuries, but it is very likely that many of these events are not listed.
-
-Avocado... this source from 2013 says that schools are not required to report.. is this still true?
-
 
 # **What are the data?**
 *** 
 
-We will use data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) downloaded from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School) in Monterey, California. This data is updated daily. The data used in this case study was downloaded in June of 2020. 
+We will use data from the open-source [K-12 Shool Shooting Database](https://www.chds.us/ssdb/data-map/) from the [Center for Homeland Defense and Security](https://www.chds.us/c/) at the at the [Naval Postgraduate School(NPS)](https://en.wikipedia.org/wiki/Naval_Postgraduate_School) in Monterey, California. This data is updated daily. The data used in this case study was downloaded in June of 2020. 
 
 #### {.reference_block}
 
@@ -344,11 +334,11 @@ This database includes information about school shooting events for students in 
 - Shooter characteristics (affiliation with the school, if they had accomplices, if they took hostages, and their age and race)  
 - Victim characteristics (affiliation with the school, if they were targeted, their age and race)  
 
-According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/) website:
+According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/about/) website:
 
-> The School Shooting Database Project is conducted as part of the [Advanced Thinking in Homeland Security (HSx)](https://www.chds.us/c/academic-programs/hsx/) program at the Naval Postgraduate School’s [Center for Homeland Defense and Security (CHDS)](Center for Homeland Defense and Security (CHDS).
 
-AVOCADO: the last link above seems like you forgot to paste in the URL and just copied the text twice? 
+
+> The School Shooting Database Project is conducted as part of the [Advanced Thinking in Homeland Security (HSx)](https://www.chds.us/c/academic-programs/hsx/) program at the Naval Postgraduate School’s [Center for Homeland Defense and Security (CHDS)](https://en.wikipedia.org/wiki/Center_for_Homeland_Defense_and_Security).
 
 > The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. All of the information is based on open-source information and 3rd party reporting.
 
@@ -356,9 +346,11 @@ AVOCADO: the last link above seems like you forgot to paste in the URL and just 
 # **Data Import**
 *** 
 
-To start this section, we downloaded a `.CSV` file from the [K-12 School Shooting Database](https://www.chds.us/ssdb/dataset/) website. We can import this raw `.CSV` file using the `read_csv()` function of the `readr` package. Let's start by only importing the first five rows with the `n_max` argument which is the max number of rows to read in from the file.  
+Previously, the website for this data was located at "https://www.chds.us/ssdb/dataset/" (which is no longer an active link), which displayed an active Google Sheets document and a link to download a csv file of the data. At the time that we created this case study (June of 2020) we downloaded the data from this website.
 
-AVOCADO: maybe a link to how you found the file on the website? or sentence?
+Now the data can be found at this [link](https://www.chds.us/ssdb/about/) and a csv file of the raw data can be dowloaded by clicking the "DOWNLOAD RAW DATA" botton.
+
+We can import the raw `.CSV` file using the `read_csv()` function of the `readr` package. Let's start by only importing the first five rows with the `n_max` argument which is the max number of rows to read in from the file.  
 
 We will use the `here()` function of the `here` package to easily locate the data within the `raw_data` directory within the main directory that contains the `.Rproj` file.
 
@@ -393,9 +385,7 @@ glimpse(shooting_data)
 
 ####
 
-We can also use the utils `str()` function to see more details about the values. Typically we would be able to see these with `glimpse()` but some of the columns have very long names, thus obscuring the first few values in the output.
-
-AVOCADO: maybe a brief sentence on what `str()` means and does? 
+We can also use the utils `str()` function, which is short for "structure" to see more details about the internal structure of the data. Therefore, the `str()` function will give us more information about the actual values for each column within the data, not just the columns themeselves. Typically we would be able to see some of the values with `glimpse()` function as well, but some of the columns have very long names, thus obscuring the first few values in the output. 
 
 #### {.scrollable }
 ```{r}
@@ -403,23 +393,23 @@ AVOCADO: maybe a brief sentence on what `str()` means and does?
 str(shooting_data)
 ```
 
-AVOCADO: could we point out anything that might be useful for the student to know by looking through this? e.g. something that you address in data explore and wrangling section such as noting there is no state name and how it would be nice if a state name existed (vs just abbreivation)
+
+
+We can see from this that many of the variables have Yes or No values, while others have relatively long distriptions. You may also notice that the `State` values are state abbreviations, not full state names. This is something that we will add to the data later. 
+
 
 ####
 
-Alternatively, if we wanted to make a dashboard that continually updated as the data got updated, we could do the following to import the data directly from the Google Sheets document.
+Alternatively, if we wanted to make a dashboard that continually updated as data got updated, we could do the following to import the data directly from a live Google Sheets document as previously this was available for this data.
 
-AVOCADO: how did you know it was a google sheets doc? Above you said it was just a CSV file? 
+To do so we would use the `read_sheet()` function of the `googlesheets4` package. Typically authentication is required, (meaning that you would need to sign in with your Google account using a username and or password), but since this was a public sheet we did not need to worry about authentication. To avoid being asked about this we used the `gs4_deauth()` function which puts the package into a de-authorized state that will not ask for users to sign in. 
 
-To do so we would use the `read_sheet()` function of the `googlesheets4` package. Typically authentication is required, which is generally simple, but since this is a public sheet we do not need to worry about authentication. To avoid this we would need to use the `gs4_deauth()` function which puts the package into a de-authorized state. 
-
-AVOCADO: you mention "authentication" or "de-authorized", but do we need to explain what we mean by that? 
 
 ```{r}
 googlesheets4::gs4_deauth()
 ```
 
-Great, now we would need to get the shared link from the document. We can do so by clicking on the link to the actually Google Sheets document like so:
+Great, now we would need to get the shared link from the document. We could previously do so by clicking on the link to the actually Google Sheets document like so:
 
 ```{r, echo = FALSE, outwidth = "50%"}
 knitr::include_graphics(here::here("img", "gettodoc.png"))
@@ -437,7 +427,7 @@ Finally we can click on "copy link" button to copy the link:
 knitr::include_graphics(here::here("img", "getlink.png"))
 ```
 
-Once you have copied the link, you can use the `read_sheet()` function to import the data by simply pasting the link in quotes, like so:
+Once you copy a link like this, you can use the `read_sheet()` function to import the data by simply pasting the link in quotes, like so:
 
 ```{r eval = FALSE}
 data_url <- "https://docs.google.com/spreadsheets/d/1HqbfMxnk9X3_mQvLyW_LEUe3Yyr7cXMPfwqUVfdq7sY/edit?usp=sharing"
@@ -446,7 +436,7 @@ googlesheet_data <-
   read_sheet(data_url)
 ```
 
-This is a great option, however, we chose not to do this for this case study to allow this tutorial to be more easily maintained over time.
+This is a great option, however, we chose not to do this for this case study to allow this tutorial to be more easily maintained over time. This was evidently a good choice since the data is no longer accessible in the same way. 
 
 ####
 
@@ -581,15 +571,15 @@ Note, that with `recode()` there is the option that other values be recoded to `
 
 ***
 
-AVOCADO: you mention "quotation marks necessary", but no explaination of what you mean by that? 
-
 OK let's start by looking at the columns of interest by using the `select()` function and asking for any patterns that match the character string "Y/N" or "Specific" or "Random" or "Pre-planned". 
+
 Formally, we can search for these using the `|` symbol, which is interpreted as an or, thus any variables that has a name that matches any of these patterns will be changed. 
 
 ```{r}
 shooting_data %>% 
   select(matches("Y/N|Specific|Random|Pre-planned"))
 ```
+
 We see the `Yes` and `No` values. Let's look closer at one of these columns. 
 
 ```{r}
@@ -598,7 +588,7 @@ shooting_data %>%
 ```
 We see there are six different values in this column. To recode this column, we need to consider what we recode all the values. 
 
-To implement the `case_when()` recoding of values, the existing values are written on the left of the `~` sign (quotation marks necessary) and new values are written on the right (quotations marks are not necessary as these are `TRUE` and `FALSE` statements).
+To implement the `case_when()` recoding of values, the existing values are written on the left of the `~` sign (quotation marks are necessary around the existing values) and new values are written on the right (quotations marks are not necessary as these are `TRUE` and `FALSE` statements).
 
 ```{r}
 shooting_data %>%
@@ -695,9 +685,10 @@ ggmap::register_google(key = "mQkzTpiaLYjPqXQBotesgif3EfGL2dbrNVOrogg")
 
 ***
 
-Once we have obtained an API key and registered, we can geocode our data.
+Once we have obtained an API key and are registered, we can geocode our data.
 
-Note that this step is time intensive, as there are many addresses to look up! Therefore, we will just show how this is done.
+Note that this step is time intensive, as there are many addresses to look up! Therefore, we will just show how this is done and **will not evaluate the code for the next few code chunks**. Again we will use the `geocode()` function of the `ggmap` package to perform this step.
+
 
 ```{r, eval=FALSE}
 shooting_data <- 
@@ -705,21 +696,16 @@ shooting_data <-
   mutate(coords = ggmap::geocode(address, 
                                  output = c("latlon"), 
                                  source = c("google")))
-
-readr::write_csv(shooting_data, 
-                 path = here("processed_data",
-                             "shooting_data_geo.csv"))
 ```
 
-This results in tibble called `coords` being added to our `shooting_data` tibble. That's right we can have a tibble as a column or variable within a tibble.   Using the `glimpse` function again, and looking at the last few variables, we can see that now the last variable listed is `coords` of class `<tibble>`.
+This results in tibble called `coords` being added to our `shooting_data` tibble. That's right, we can have a tibble as a column or variable within a tibble.   Using the `glimpse` function again, and looking at the last few variables, we can see that now the last variable listed is `coords` of class `<tibble>`.
 
 ```{r,echo = FALSE, out.width="90%"}
 knitr::include_graphics(here::here("img", "shooting_data_coords.png"))
 ```
 
-If we take a look at the first couple of values of the `coords` tibble, using the `slice_head()` function of the `dplyr` package, we see a tibble that looks like this:
+If we take a look at the first couple of values of the `coords` tibble, we see a tibble that looks like this:
 
-AVOCADO: I didn't understand this section. Should we read in file where you show the `slice_head()` function? Otherwise, i'm not sure the purpose of stating it? 
 
 ```{r,echo = FALSE, out.width="30%"}
 knitr::include_graphics(here::here("img", "coords.png"))
@@ -760,7 +746,6 @@ readr::write_csv(shooting_data,
                              "shooting_data_geo.csv"))
 ```
 
-AVOCADO: there is a lot of `eval=FALSE` in this section. Should we put it in a "details" box? or should we have a file what we read in at the beginning of this section and demonstrate the code? 
 
 Great now we will work with this data, thus you do not need to get an API key to get to this point. We can read our processed geocoded data into R by using the `read_csv()` function of the `readr` package.
 
@@ -829,9 +814,9 @@ dim(shooting_data_geocoded)
 
 We can see that our `latitude` and `longitude` variables were used to create a single new variable called `geometry` of class  `<POINT` [$^{\circ}$]`>`, thus we have one less column.
 
-In this case, we can take a look at just the first 4 variables and we will also see our last `sf` variable as well appended at the end. So now we can see the variables related to location by simply typing `[1:4]` next to the name of our tibble `shooting_data_geocoded`.
+In this case, this type of variable will always be shown. Even if we were to look at just the  first 4 variables using indexes (like this: `[1:4]`), we will also see our last `sf` variable appended at the end.
 
-AVOCADO: The section above doesn't make sense to me. If you want to see the first four variables, why do you index it like `[1:4]`?
+So now we can see all variables related to location (which happen to be the first four variables and the `geometry` variable) by simply typing `[1:4]` next to the name of our tibble `shooting_data_geocoded`.
 
 ```{r}
 shooting_data_geocoded[1:4]
@@ -1051,9 +1036,7 @@ These will define what we are interested in illustrating using the data.
 
 ***
 
-For more of an introduction on creating plots with `ggplot2` , see this [case study]()
-
-AVOCADO: missing link to the case study above.
+For more of an introduction on creating plots with `ggplot2` , see this [case study](https://opencasestudies.github.io/ocs-bp-co2-emissions/)
 
 ***
 
@@ -1514,9 +1497,7 @@ deaths_perc_event %>%
 
 Another thing we are interested in is to include statistics in our dashboard. For example, we are interested in how many shooters committed or attempted suicide.
 
-AVOCADO: the next sentence seems incomplete? 
-
-Since we converted variables with `yes` or `no` answers because they were inconsistently coded as `yes`/ `y` and `no`/`n`.  Furthermore, logical variables are easier to work with in terms of performing calculations because `TRUE` values are treated like a `1` while `FALSE` values are treated like a `0`. 
+We previously converted variables with `yes` or `no` answers because they were inconsistently coded as `yes`/ `y` and `no`/`n`.  Furthermore, logical variables are easier to work with in terms of performing calculations because `TRUE` values are treated like a `1` while `FALSE` values are treated like a `0`. 
 
 We can calculate the percentage of shooters that committed or attempted suicide out of all entries that have data for this information. Thus we do not want to include `NA` values in the calculation, otherwise this might give us a distorted picture of the truth.
 
@@ -1561,13 +1542,13 @@ suicide
 We can use the `round()` function to round this value and the `format()` to make sure that the value has the correct number of digits. 
 
 ```{r}
-suicide <- round(suicide, 1)
+suicide <- round(suicide, 2)
 suicide
 ```
 
-AVOCADO: we did get 13.4, right? not sure what you are saying below? 
+If after rounding we wanted zeros after the decimal so that the number of digits after the decimal was consistent for the different statistics we were dispalying, we could use the `format()` function to specify this. 
 
-If the rounded value is a whole number, the `format()` function allows the number of zeros to be displayed after the decimal to be specified. So say if we rounded the percentage to 2 decimal places and we got a value of  `13.4` (That is not the case here, so we will instead round to 1 decimal places for this illustration). We could then add a zero after the `4` like so:
+So we can add a zero after  `13.4` like so:
 
 ```{r}
 format(suicide, nsmall = 2)
@@ -2034,7 +2015,6 @@ knitr::include_graphics(here::here("img", "tab.png"))
 
 [[source](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)]
 
-avocado if we add `###` for the source like usual, then we will no longer have the subsequent headers following the details section
 
 We do no actually want a header now, so we can simply use `###` without any text following it. Note that you can get away with not using the `###`, but some elements will not render properly. 
 
@@ -2046,7 +2026,6 @@ knitr::include_graphics(here::here("img", "markdownsyntax.png"))
 
 [[source](https://rmarkdown.rstudio.com/lesson-15.html)] 
 
-avocado if we add `###` for the source like usual, then we will no longer have the subsequent headers following the details section
 
 This is what the code for this page looks like (notice that there is an internal link to the `Tutrial` page):
 
@@ -2349,7 +2328,7 @@ Here is the overall structure for this page which uses a tab layout:
 knitr::include_graphics(here::here("img" , "US_stats_page_overview.png"))
 ```
 
-avocado in the case of new mexico... the rounded values add up to 99 which creates an empty extra square only when using scale_fill_viridis_d()
+
 
 ### Details
 
@@ -3187,7 +3166,7 @@ knitr::include_graphics(here::here("img" , "tutorialStructure.png"))
 
 ### Details
 
-AVOCADO: all the following code and text in this section is in the back ticks. Should that be the case? It wasn't clear to me what should have been moved out? 
+The code for this page is similar to the other pages, except for the story board structure. 
 
 ***
 <details> <summary> Click here to see the code for this page. </summary>
@@ -3379,7 +3358,31 @@ knitr::include_graphics(here::here("img" , "The_Get_Help_Page_structure.png"))
 
 ### Details
 
-AVOCADO: should there be more text in this section explaining things?
+This page has two columns. The first column is much wider than the second. This first column includes two colored backgrounds which were created using [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) code. See [The About Page] Details section to for more details about how this works. 
+
+The text that we want altered with this particular style is delineated by the <div> to start and the </div> to end the style.
+
+The instructions for the style are within the <style> and </style> content dividers. 
+
+Inside these dividers is CSS code, which is what is used to stylize HTML. The div.blue is the name of the first particular style which involves a particular background color (#e6f0ffF) (see [here](https://www.w3schools.com/cssref/css_colors.asp) for more color options), with a boarder radius of 5 pixels to round the edges of the background color around the text with a size 5 pixel radius. The code also states that a [padding](https://developer.mozilla.org/en-US/docs/Web/CSS/padding) specification for the size of the margins of the text box around the text and it specifies that font should be of 20 pixels.
+
+The div.blue specifies that blue is the name of this style, thus we can then use <div class = blue> (called a [CSS selector](https://developer.mozilla.org/en-US/docs/Glossary/CSS_Selector)) to style the text this way. This can then be used again any time we want this style like so:
+
+<div class = "blue">
+
+text 
+
+</div>
+
+See this [website](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div) to learn more about HTML and CSS.
+
+
+We also see a list on this page, `+` signs are used to indicate new items. Importantly two spaces are necesarry after each item to start a new line. 
+
+The other unique aspect about this page are the telephone links like so `[+1-844-5-SAYNOW](tel:18445729669)`.
+
+By using `tel:` and the number, users can click this link to directly call the telephone number from their computer or phone if their device has such capabilities. 
+
 
 ***
 <details> <summary> Click here to see the code for this page. </summary>

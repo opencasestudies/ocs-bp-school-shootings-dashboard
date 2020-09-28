@@ -62,10 +62,14 @@ the future.
 
 <b><u> Our main questions: </u></b>
 
-1.  What has been the yearly rate of school shootings and where have
-    they occurred in the last 50 years (from January 1970 to June 2020)?
+1.  What has been the yearly rate of school shootings and where in the
+    country have they occurred in the last 50 years (from January 1970
+    to June 2020)?
 
-2.  What are the characteristics of these events?
+2.  How many individuals are typically killed in a shooting?
+
+3.  What were the characteristics of the shooters: How often was a
+    shooter male? How often did a shooter attempt or commit suicide?
 
 ### Data
 
