@@ -244,7 +244,7 @@ The first time we use a function, we will use the `::` to indicate which package
 # **Context**
 *** 
 
-Shooting events can also have braod and lasting impacts for those who witness but are not directly involved. 
+Shooting events can also have broad and lasting impacts for those who witness but are not directly involved. 
 
 
 According to the [Center for Injury Research and Prevention at the Children's Hospital of Philadelphia](https://injury.research.chop.edu/violence-prevention-initiative/types-violence-involving-youth/school-shootings):
@@ -280,7 +280,7 @@ Rossin-Slater, M., Schnell, M., Schwandt, H., Trejo, S. & Uniat, L. Local Exposu
 
 ####
 
-Thus, it is important that we characterize shootings so that we might better understand why shootings have occured to not only prevent the direct involvement of students in future events, but also to prevent students and staff from witnessing these events.
+Thus, it is important that we characterize shootings so that we might better understand why shootings have occurred to not only prevent the direct involvement of students in future events, but also to prevent students and staff from witnessing these events.
 
 
 ```{r, echo = FALSE, outwidth = "40%"}
@@ -341,7 +341,7 @@ According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/about/)
 
 Previously, the website for this data was located at "https://www.chds.us/ssdb/dataset/" (which is no longer an active link), which displayed an active Google Sheets document and a link to download a csv file of the data. At the time that we created this case study (June of 2020) we downloaded the data from this website.
 
-Now the data can be found at this [link](https://www.chds.us/ssdb/about/) and a csv file of the raw data can be dowloaded by clicking the "DOWNLOAD RAW DATA" botton.
+Now the data can be found at this [link](https://www.chds.us/ssdb/about/) and a csv file of the raw data can be downloaded by clicking the "DOWNLOAD RAW DATA" button.
 
 We can import the raw `.CSV` file using the `read_csv()` function of the `readr` package. Let's start by only importing the first five rows with the `n_max` argument which is the max number of rows to read in from the file.  
 
@@ -378,7 +378,7 @@ glimpse(shooting_data)
 
 ####
 
-We can also use the utils `str()` function, which is short for "structure" to see more details about the internal structure of the data. Therefore, the `str()` function will give us more information about the actual values for each column within the data, not just the columns themeselves. Typically we would be able to see some of the values with `glimpse()` function as well, but some of the columns have very long names, thus obscuring the first few values in the output. 
+We can also use the utils `str()` function, which is short for "structure" to see more details about the internal structure of the data. Therefore, the `str()` function will give us more information about the actual values for each column within the data, not just the columns themselves. Typically we would be able to see some of the values with `glimpse()` function as well, but some of the columns have very long names, thus obscuring the first few values in the output. 
 
 #### {.scrollable }
 ```{r}
@@ -388,7 +388,7 @@ str(shooting_data)
 
 
 
-We can see from this that many of the variables have Yes or No values, while others have relatively long distriptions. You may also notice that the `State` values are state abbreviations, not full state names. This is something that we will add to the data later. 
+We can see from this that many of the variables have Yes or No values, while others have relatively long discriptions. You may also notice that the `State` values are state abbreviations, not full state names. This is something that we will add to the data later. 
 
 
 ####
@@ -829,7 +829,7 @@ shooting_data_geocoded  %<>%
 ```
 
 
-Notice how the  class for the `geometry` variable is now `<POINT [m]>` as our data has been transformed into corrdinates in meters.
+Notice how the  class for the `geometry` variable is now `<POINT [m]>` as our data has been transformed into coordinates in meters.
 
 ```{r}
 shooting_data_geocoded[1:4]
@@ -849,7 +849,7 @@ shooting_data_geocoded %<>%
 ```
 
 
-We can now see that the coordiates are slighly modified. 
+We can now see that the coordinates are slightly modified. 
 
 ```{r}
 shooting_data_geocoded[1:4]
@@ -967,7 +967,7 @@ DT_table <-
 DT::datatable(DT_table)
 ```
 
-Next, we will maake some data visualizations. 
+Next, we will make some data visualizations. 
 
 
 ## Yearly Shootings
@@ -1295,9 +1295,21 @@ per_year_cum %>%
 **Note**: the limits for the y-axis were determined by first plotting without the `scale_y_continuous()` function.
 
 
+
 ## Deaths per Shooting
 
 Next, we will make a plot of the number of deaths per shooting based on the `Killed (includes shooter)` variable. 
+
+#### {.recall_code_question_block}
+<b><u> Question Opportunity </u></b>
+
+See if you can come up with the code for the plot.
+####
+
+***
+
+<details> <summary> Click here to reveal the answer. </summary>
+
 
 ```{r}
 deaths_per_event <-
@@ -1306,7 +1318,7 @@ deaths_per_event <-
   count() %>%
   ungroup()
 
-deaths_per_event %>%
+per_shooting_plot <-deaths_per_event %>%
   ggplot(aes(y = `Killed (includes shooter)`, x = n)) +
     geom_col(fill = "black")+
     theme_minimal() +
@@ -1316,18 +1328,13 @@ deaths_per_event %>%
          y = "")
 ```
 
-Our first plot could also have been made using `geom_bar()` instead of `geom_col()` this makes a similar plot but automatically uses the count for one of the axes, thus it is not required to first summarize the data using the `count()` function. 
+</details>
 
-#### {.think_question_block}
-<b><u> Question Opportunity </u></b>
+```{r}
+per_shooting_plot 
+```
 
-See if you can come up with the code for the plot using `geom_bar()` instead without using the `count()` function.
-
-####
-
-***
-
-<details> <summary> Click here to reveal the answer. </summary>
+This plot could also have been made using `geom_bar()` instead of `geom_col()` this makes a similar plot but automatically uses the count for one of the axes, thus it is not required to first summarize the data using the `count()` function. 
 
 
 ```{r}
@@ -1341,7 +1348,7 @@ shooting_data %>%
          y = "")
 ```
 
-</details>
+
 
 Because of the skewed distribution, it is difficult to see the shootings that had more numerous deaths, so we will add a facet that zooms in on this portion of the plot. We can do so, using the `facet_zoom()` function of the `ggforce` package.
 
@@ -1573,7 +1580,7 @@ suicide <- round(suicide, 2)
 suicide
 ```
 
-If after rounding we wanted zeros after the decimal so that the number of digits after the decimal was consistent for the different statistics we were dispalying, we could use the `format()` function to specify this. 
+If after rounding we wanted zeros after the decimal so that the number of digits after the decimal was consistent for the different statistics we were displaying, we could use the `format()` function to specify this. 
 
 So we can add a zero after  `13.4` like so:
 
@@ -1725,7 +1732,7 @@ embed_url("https://vimeo.com/178485416") %>%
 
 <details> <summary> Click here to see how this video was embedded in this R Markdown. </summary>
 
-This video was included using the `vembedr` package. Videos on [Vimeo](https://vimeo.com/) or [YouTube](https://youtube.com/) can be added like so, where a url is added within quotation marks and the following two lines of code allow for the video to be centered in the R Markdown output. See [here]([vembedr](https://github.com/ijlyttle/vembedr)  to learn more about embedding videos with this pacakge.
+This video was included using the `vembedr` package. Videos on [Vimeo](https://vimeo.com/) or [YouTube](https://youtube.com/) can be added like so, where a url is added within quotation marks and the following two lines of code allow for the video to be centered in the R Markdown output. See [here]([vembedr](https://github.com/ijlyttle/vembedr)  to learn more about embedding videos with this package.
 
 ```{r, eval = FALSE}
 library(vembedr)
@@ -1807,7 +1814,7 @@ knitr::include_graphics(here::here("img", "code_chunk.png"))
 
 ##### [[source]](https://ourcodingclub.github.io/tutorials/rmarkdown/)
 
-6. Another component of `flexdashboard` is value boxes. These are essentially text boxes for statistics or text that youmight like feature or emphasize. To do this again the `###` syntax is used to put a text label describing what the value box contains followed by a code chunk that uses the `valueBox()` function of the `flexdasboard` package. The value to display is specified using the `value` argument, as well as optional other aspects using additional arguments, such as the color of the value box using the `color` argument like the example below:
+6. Another component of `flexdashboard` is value boxes. These are essentially text boxes for statistics or text that you might like to feature or emphasize. To do this again the `###` syntax is used to put a text label describing what the value box contains followed by a code chunk that uses the `valueBox()` function of the `flexdasboard` package. The value to display is specified using the `value` argument, as well as optional other aspects using additional arguments, such as the color of the value box using the `color` argument like the example below:
 
 ```
 ### ValueBoxText
@@ -1911,6 +1918,34 @@ Here is an example of a YAML that includes this:
 ```{r, echo = FALSE}
 knitr::include_graphics(here::here("img", "shiny_yml.png"))
 ```
+
+***
+
+
+#### {.recall_code_question_block}
+<b><u> Question Opportunity </u></b>
+
+Let's take a minute to test your knowledge about `flexdashboard` basics:  
+
+1) How do we create multiple pages?  
+2) How do you create multiple columns?  
+3) How do we create multiple tabs?  
+4) How do we create start a dashboard?  
+5) How do we enable our dashboard to be interactive?  
+
+
+####
+
+***
+<details> <summary> Click here to reveal the answers. </summary>
+
+1) How do we create multiple pages? We use the `===` syntax.
+2) How do you create multiple columns? We use the `---` syntax.
+3) How do we create multiple tabs? We use `{.tabset} syntax combined with the column break `---` syntax. 
+4) We create an R Markdown document and we add `output: flexdashboard::flexdashboard` to the YAML.
+5) How do we enable our dashboard to be interactive?  We add `runtime:shiny` to the YAML.
+
+</details>
 
 ***
 
@@ -2031,7 +2066,7 @@ knitr::include_graphics(here::here("img", "fontawesome.png"))
 
 #### [[source]](https://fontawesome.com/icons/database?style=solid)
 
-Onlythe `fa-database` portion is required in the brackets after `data-icon=` to add the icon to the navigation bar.
+Only the `fa-database` portion is required in the brackets after `data-icon=` to add the icon to the navigation bar.
 
 ```
 
@@ -2085,7 +2120,18 @@ knitr::include_graphics(here::here("img" , "about_page_structure.png"))
 
 On this page we will have two columns - one which will be wider than the other.  Size specifications on `flexdashboard` are unit-less; the width of any column included on a page is a function of the width set for a column against the sum of widths for all columns on that page. If we set columns sizes of 600 and 300 on a page with two columns, one column will be twice as large as the other column. We want the left column to be quite a bit larger than the right, so we will set the left as `70` and the right as `30`.
 
-We will start out like so:
+
+#### {.recall_code_question_block}
+<b><u> Question Opportunity </u></b>
+
+Can you recall how we would make these columns?
+
+####
+
+***
+<details> <summary> Click here to reveal the code. </summary>
+
+
 
 ```
 About {data-icon="fa-question-circle"}
@@ -2103,6 +2149,8 @@ Column {data-width = 30}
 
 ```
 
+</details>
+
 Recall that `###` is used to add elements to columns and rows. Note that there is no text next to the `###` syntax that designates an element of our dashboard. In the previous examples, a header was used like so `### header`:
 
 ```{r, echo = FALSE}
@@ -2112,7 +2160,7 @@ knitr::include_graphics(here::here("img", "tab.png"))
 [[source](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)]
 
 
-We do no actually want a header now, so we can simply use `###` without any text following it. Note that you can get away with not using the `###`, but some elements will not render properly. 
+We do not actually want a header now, so we can simply use `###` without any text following it. Note that you can get away with not using the `###`, but some elements will not render properly. 
 
 Next, we add a block of text describing the dashboard to the first column and we will add an image to the second column like the following. Notice that two asterisks `**` around text makes them appear as bold and one `*` makes it appear as italic. See [this RStudio cheatsheet](https://rmarkdown.rstudio.com/lesson-15.html) for some basic Markdown syntax for stylizing text:
 
@@ -3473,7 +3521,7 @@ text
 See this [website](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div) to learn more about HTML and CSS.
 
 
-We also see a list on this page, `+` signs are used to indicate new items. Importantly two spaces are necesarry after each item to start a new line. 
+We also see a list on this page, `+` signs are used to indicate new items. Importantly two spaces are necessary after each item to start a new line. 
 
 The other unique aspect about this page are the telephone links like so `[+1-844-5-SAYNOW](tel:18445729669)`.
 
