@@ -1921,6 +1921,34 @@ knitr::include_graphics(here::here("img", "shiny_yml.png"))
 
 ***
 
+## Deployment
+
+You have a few options to publish your dashboard:  
+
+1) If your dashboard is not interactive (does not use shiny) or uses certain widgets like the `datatable()` function of the `DT` package, you just need to knit your R Markdown file into an html file.
+
+```{r, echo = FALSE, out.width="50%", fig.align="center"}
+knitr::include_graphics(here::here("img", "knit.png"))
+```
+
+Then you can host this on GitHub if you choose by changing the GitHub Pages settings of your repository:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "githubpages.png"))
+```
+
+2) If your dashboard is interactive (uses shiny), you can host it on  https://www.shinyapps.io/ after making an account. To do this you need to install the `rsconnect` package and after you have made an account and configured it, you can use the publish button of the RStudio IDE which looks like this on the upper right corner:
+
+```{r, echo = FALSE, out.width="40%", fig.align="center"}
+knitr::include_graphics(here::here("img", "publish.png"))
+```
+
+Note that this also requires authentication using tokens. 
+
+See this [link](https://shiny.rstudio.com/articles/shinyapps.html) for a getting start for this process.
+
+3) You can also publish using [RStudio Connect](https://rstudio.com/products/connect/). This also involves creating an account and pushing the publish button. 
+
 
 #### {.recall_code_question_block}
 <b><u> Question Opportunity </u></b>
