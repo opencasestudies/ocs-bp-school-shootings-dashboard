@@ -1,6 +1,6 @@
 ---
 title: "School Shooting Dashboard"
-output: 
+output:
   flexdashboard::flex_dashboard:
     logo: https://icons.iconarchive.com/icons/icons8/windows-8/48/Military-Gun-icon.png
     theme: readable
@@ -13,6 +13,7 @@ runtime: shiny
 
 
 ```{r}
+#
 library(here)
 library(readr)
 library(dplyr)
@@ -73,7 +74,7 @@ This database includes information about school shooting events for students in 
 
 Visit the [*Tutorial*](#tutorial) page of this dashboard to first learn the basics about building a dashboard with the `flexdashboard` package.
 
-At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE), which provides more detailed information about how ***this dashboard*** was created.
+At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/), which provides more detailed information about how ***this dashboard*** was created.
 
 <style>
 div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px; font-size: .8em;}
@@ -894,7 +895,7 @@ knitr::include_graphics(here::here("img", "gauge_output.png"))
 ### Additional Info
 As mentioned before, the `flexdashboard` metadata included in the `YAML` also alters how R Markdown documents are rendered. For more on how you can leverage both the `RMarkdown` package and the `flexdashboard` package to produce a dashboard, click [here](https://rmarkdown.rstudio.com/flexdashboard/index.html).
 
-This [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE) provides a case study on how to create this very dashboard in more detail.
+This [supplementary resource by the Open Case Studies project](https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/) provides a case study on how to create this very dashboard in more detail.
 
 
 

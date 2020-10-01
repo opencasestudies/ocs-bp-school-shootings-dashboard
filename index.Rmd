@@ -45,6 +45,7 @@ knitr::include_graphics(here("img", "aboutpagelook.png"))
 
 ####
 
+The link to the dashboard described in this case study is [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).  
 
 #### {.disclaimer_block}
 
@@ -62,7 +63,7 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [
 
 To cite this case study please use:
 
-Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://github.com/opencasestudies/ocs-youth-school-shootings-dashboard-case-study. Open Case Studies: School Shootings in the United States (Version v1.0.0).
+Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/. Open Case Studies: School Shootings in the United States (Version v1.0.0).
 
 ####
 
@@ -328,7 +329,6 @@ This database includes information about school shooting events for students in 
 - Victim characteristics (affiliation with the school, if they were targeted, their age and race)  
 
 According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/about/) website:
-
 
 
 > The School Shooting Database Project is conducted as part of the [Advanced Thinking in Homeland Security (HSx)](https://www.chds.us/c/academic-programs/hsx/) program at the Naval Postgraduate School’s [Center for Homeland Defense and Security (CHDS)](https://en.wikipedia.org/wiki/Center_for_Homeland_Defense_and_Security).
@@ -1954,6 +1954,8 @@ Let's take a minute to test your knowledge about `flexdashboard` basics:
 
 OK! Now that we know a bit about the basics of creating a dashboard, let's create our own.
 
+The link to the dashboard described in this section is located  [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).
+
 We want to create a dashboard that has several tabs that will look like this:
 
 ```{r, echo = FALSE}
@@ -2211,7 +2213,7 @@ This database includes information about school shooting events for students in 
 
 Visit the [*Tutorial*](#tutorial) page of this dashboard to first learn the basics about building a dashboard with the `flexdashboard` package.
 
-At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE), which provides more detailed information about how ***this dashboard*** was created.
+At the end of the tutorial we provide a link to this [supplementary resource by the Open Case Studies project](https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/), which provides more detailed information about how ***this dashboard*** was created.
 
 <style>
 div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px; font-size: .8 em;}
@@ -2224,7 +2226,7 @@ This was created as part of the [Open Case Studies](https://opencasestudies.gith
 
  **Disclaimer**
 
-This dashboard uses data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/dataset/). We acknowledge (like their website) that there may be reporting errors. The trends and statistics shown do not account for the many other factors that may influence the occurrence of shooting events. The dashboard should not be used in the context of making policy decisions without external consultation from scientific experts. 
+This dashboard uses data from the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/about/). We acknowledge (like their website) that there may be reporting errors. The trends and statistics shown do not account for the many other factors that may influence the occurrence of shooting events. The dashboard should not be used in the context of making policy decisions without external consultation from scientific experts. 
 
 
  **License**
@@ -2334,7 +2336,7 @@ Column {data-width=70}
 
 ###
 
-The data used in this dashboard is from the [**Center for Homeland Defense and Security (CHDS)**](Center for Homeland Defense and Security (CHDS)) [**K-12 Shool Shooting Database**](https://www.chds.us/ssdb/dataset/). 
+The data used in this dashboard is from the [**Center for Homeland Defense and Security (CHDS)**](Center for Homeland Defense and Security (CHDS)) [**K-12 Shool Shooting Database**](https://www.chds.us/ssdb/about/). 
 
 Their methods for identifying and authenticating incidents are outlined [here](https://www.chds.us/ssdb/methods/).
 
@@ -2382,7 +2384,7 @@ DT::renderDataTable({
                 caption = htmltools::tags$caption(
                   style = 'caption-side: top; text-align: Left;',
                   htmltools::withTags(
-                    div(HTML('<a href="https://www.chds.us/ssdb/dataset/)">Click here to be redirected to a page where this data can be downloaded.</a>')))),
+                    div(HTML('<a href="https://www.chds.us/ssdb/about/)">Click here to be redirected to a page where this data can be downloaded.</a>')))),
                   options = list(autoWidth = TRUE,
                                  pageLength = 10,
                                  scroller = TRUE,
@@ -2402,11 +2404,11 @@ Column {data-width=70}
 
 ###
 
-The data used in this dashboard is from the [**Center for Homeland Defense and Security (CHDS)**](Center for Homeland Defense and Security (CHDS)) [**K-12 Shool Shooting Database**](https://www.chds.us/ssdb/dataset/). 
+The data used in this dashboard is from the [**Center for Homeland Defense and Security (CHDS)**](Center for Homeland Defense and Security (CHDS)) [**K-12 Shool Shooting Database**](https://www.chds.us/ssdb/about/). 
 
 Their methods for identifying and authenticating incidents are outlined [here](https://www.chds.us/ssdb/methods/).
 
-According to their website: 
+Previously, according to their website: 
 
 *"The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. **All of the information is based on open-source information and 3rd party reporting... and may include reporting errors.**"*
 
@@ -2432,7 +2434,7 @@ DT::renderDataTable({
                 caption = htmltools::tags$caption(
                   style = 'caption-side: top; text-align: Left;',
                   htmltools::withTags(
-                    div(HTML('<a href="https://www.chds.us/ssdb/dataset/)">Click here to be redirected to a page where this data can be downloaded.</a>')))),
+                    div(HTML('<a href="https://www.chds.us/ssdb/about/)">Click here to be redirected to a page where this data can be downloaded.</a>')))),
                 options = list(autoWidth = TRUE,
                                pageLength = 10,
                                scroller = TRUE,
@@ -3472,7 +3474,7 @@ knitr::include_graphics(here::here("img", "gauge_output.png"))
 ### Additional Info
 As mentioned before, the `flexdashboard` metadata included in the `YAML` also alters how R Markdown documents are rendered. For more on how you can leverage both the `RMarkdown` package and the `flexdashboard` package to produce a dashboard, click [here](https://rmarkdown.rstudio.com/flexdashboard/index.html).
 
-This [supplementary resource by the Open Case Studies project](INCLUDE LINK HERE) provides a case study on how to create this very dashboard in more detail.
+This [supplementary resource by the Open Case Studies project](https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/) provides a case study on how to create this very dashboard in more detail.
 
 ```
 
@@ -3639,7 +3641,8 @@ In this case study, we demonstrated the basics of R Markdown and how to create a
 
 This case study also explored how to properly calculate and interpret percentages when the data has missing values. We also discussed the benefits and limiting aspects of pie charts (using the `ggplot2` package) and waffle plots (using the `waffle` package).
 
-Overall, the dashboard we created shows that the number of shootings per year has increased overtime. Further investigation is necessary to determine if this is simply due to increases in population alone or if the rate has increased due to other factors and if so, what those factors might be. It is also clear that the number of shootings and the number of deaths per capita varies by state. There appears to be other aspects accounting for state differences. 
+Overall, the dashboard we created which can be found [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/), 
+shows that the number of shootings per year has increased overtime. Further investigation is necessary to determine if this is simply due to increases in population alone or if the rate has increased due to other factors and if so, what those factors might be. It is also clear that the number of shootings and the number of deaths per capita varies by state. There appears to be other aspects accounting for state differences. 
 
 # **Suggested Homework**
 *** 
@@ -3651,6 +3654,9 @@ Create another dashboard with graphs and statistics featuring other elements wit
 ***
 
 ## Helpful Links
+
+The link to the dashboard described in this case study can be found  [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).
+
 
 [RStudio](https://rstudio.com/products/rstudio/features/){target="_blank"}  
 [Cheatsheet on RStuido IDE](https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf){target="_blank"}  

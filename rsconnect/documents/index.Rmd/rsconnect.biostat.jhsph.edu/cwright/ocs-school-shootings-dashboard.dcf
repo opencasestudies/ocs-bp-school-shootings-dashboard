@@ -1,0 +1,13 @@
+name: ocs-school-shootings-dashboard
+title: ocs-school-shootings-dashboard
+username: cwright
+account: cwright
+server: rsconnect.biostat.jhsph.edu
+hostUrl: https://rsconnect.biostat.jhsph.edu/__api__
+appId: 38
+bundleId: 158
+url: https://rsconnect.biostat.jhsph.edu/content/38/
+when: 1601391221.33014
+asMultiple: TRUE
+asStatic: FALSE
+ignoredFiles: README.Rmd

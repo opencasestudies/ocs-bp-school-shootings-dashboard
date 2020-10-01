@@ -28,7 +28,7 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 (
 
 To cite this case study:
 
-Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://github.com/opencasestudies/ocs-youth-school-shootings-dashboard-case-study. Fifty Years of School Shootings in the United States (Version v1.0.0).
+Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/. School Shootings in the United States (Version v1.0.0).
 
 ### Acknowledgements
 
@@ -38,8 +38,8 @@ We would also like to acknowledge the [Bloomberg American Health Initiative](htt
 
 
 ### Title 
-
-Fifty Years of School Shootings in the United States
+ 
+School Shootings in the United States
 
 ### Motivation 
 
@@ -47,7 +47,9 @@ According to this [report](https://siepr.stanford.edu/sites/default/files/public
 
 > Over **240,000** American students experienced a school shooting in the last two decades.
 
-Therefore as the number of school shootings apppears to be increasing, it is useful to better understand the characteristics about these shootings to better understand why they happen and how to avoid them in the future.
+Therefore as the number of school shootings apppears to be increasing, it is useful to better understand the characteristics about these shootings to better understand why they happen and how to avoid them in the future. Thus we will make a dashboard to display this data.
+
+The dashboard created in this case study can be found [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).
 
 
 ### Motivating questions
@@ -67,7 +69,7 @@ In this case study we will be using data related to school shootings in the US f
 
 Their methods for identifying and authenticating incidents are outlined [here](https://www.chds.us/ssdb/methods/).
 
-According to their website: 
+Previously according to their website: 
 
 *"The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. **All of the information is based on open-source information and 3rd party reporting... and may include reporting errors.**"*
 
@@ -112,12 +114,15 @@ In this case study we show how to make faceted plots where each plot has its own
 
 We also show how to create an interactive table with the `DT` package, as well as how to create an interactive map with the `leaflet` package.
 
+
 ### Analysis 
 
 This case study does not really include an analysis like other case studies, but it does domonstrate how to create simple percentage statistics using a data with missing values, as well as how to properly report such percentages. 
 
 
 ### Other notes and resources
+
+The dashboard created in this case study can be found [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).
 
 [RStudio](https://rstudio.com/products/rstudio/features/){target="_blank"}  
 [Cheatsheet on RStuido IDE](https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf){target="_blank"}  
@@ -211,7 +216,7 @@ Package   | Use in this case study
 
 #### For users 
 
-There is a [`Makefile`](Makefile) in this folder that allows you to type `make` to knit the case study contained in the `index.Rmd` to `index.html` and it will also knit the [`README.Rmd`](README.Rmd) to a markdown file (`README.md`). 
+There is a [`Makefile`](Makefile) in this folder that allows you to type `make` to knit the case study contained in the `index.Rmd` to `index.html` and it will also knit the [`README.Rmd`](README.Rmd) to a markdown file (`README.md`). Note that you may need to press the "Q" key to close the documentation about flexdashboard.
 
 Users can skip the Data Import and Data Wrangling sections to start with the Data Analysis and Visualization section if they wish. 
 

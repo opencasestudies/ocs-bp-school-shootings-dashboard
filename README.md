@@ -27,8 +27,8 @@ To cite this case study:
 
 Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub,
 Margaret and Hicks, Stephanie. (2020).
-<a href="https://github.com/opencasestudies/ocs-youth-school-shootings-dashboard-case-study" class="uri">https://github.com/opencasestudies/ocs-youth-school-shootings-dashboard-case-study</a>.
-Fifty Years of School Shootings in the United States (Version v1.0.0).
+<a href="https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/" class="uri">https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/</a>.
+School Shootings in the United States (Version v1.0.0).
 
 ### Acknowledgements
 
@@ -41,7 +41,7 @@ Initiative](https://americanhealth.jhu.edu/) for funding this work.
 
 ### Title
 
-Fifty Years of School Shootings in the United States
+School Shootings in the United States
 
 ### Motivation
 
@@ -56,7 +56,10 @@ them. This article states that:
 Therefore as the number of school shootings apppears to be increasing,
 it is useful to better understand the characteristics about these
 shootings to better understand why they happen and how to avoid them in
-the future.
+the future. Thus we will make a dashboard to display this data.
+
+The dashboard created in this case study can be found
+[here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).
 
 ### Motivating questions
 
@@ -82,7 +85,7 @@ and Security
 Their methods for identifying and authenticating incidents are outlined
 [here](https://www.chds.us/ssdb/methods/).
 
-According to their website:
+Previously according to their website:
 
 *“The database compiles information from more than 25 different sources
 including peer-reviewed studies, government reports, mainstream media,
@@ -162,6 +165,9 @@ statistics using a data with missing values, as well as how to properly
 report such percentages.
 
 ### Other notes and resources
+
+The dashboard created in this case study can be found
+[here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).
 
 <a href="https://rstudio.com/products/rstudio/features/" target="_blank">RStudio</a>  
 <a href="https://github.com/rstudio/cheatsheets/raw/master/rstudio-ide.pdf" target="_blank">Cheatsheet on RStuido IDE</a>  
@@ -357,7 +363,8 @@ dashboards in R using a package called `shinydashboard`.
 There is a [`Makefile`](Makefile) in this folder that allows you to type
 `make` to knit the case study contained in the `index.Rmd` to
 `index.html` and it will also knit the [`README.Rmd`](README.Rmd) to a
-markdown file (`README.md`).
+markdown file (`README.md`). Note that you may need to press the “Q” key
+to close the documentation about flexdashboard.
 
 Users can skip the Data Import and Data Wrangling sections to start with
 the Data Analysis and Visualization section if they wish.
