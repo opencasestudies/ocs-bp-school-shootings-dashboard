@@ -25,9 +25,9 @@ United States License.
 
 To cite this case study:
 
-Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub,
-Margaret and Hicks, Stephanie. (2020).
-<a href="https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/" class="uri">https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/</a>.
+Wright, Carrie and Ontiveros, Michael and Jager, Leah and Taub, Margaret
+and Hicks, Stephanie. (2020).
+<https://github.com//opencasestudies/ocs-bp-school-shootings-dashboard>.
 School Shootings in the United States (Version v1.0.0).
 
 ### Acknowledgements
@@ -99,7 +99,7 @@ reporting… and may include reporting errors.**”*
 The skills, methods, and concepts that students will be familiar with by
 the end of this case study are:
 
-Data science skills:
+<u>**Data Science Learning Objectives:**</u>
 
 1.  Importing text from a Google Sheets document (`googlesheets4`)  
 2.  Converting date formats (`lubridate`)  
@@ -114,7 +114,7 @@ Data science skills:
 9.  How to create an interactive dashboard with `flexdashboard` and
     `shiny`
 
-Statistical concepts and methods:
+<u>**Statistical Learning Objectives:**</u>
 
 1.  Calculating percentages for data with missing values
 

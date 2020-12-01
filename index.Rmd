@@ -19,7 +19,7 @@ output:
 
 <style>
 #TOC {
-  background: url("https://opencasestudies.github.io/img/logo.jpg");
+  background: url("https://opencasestudies.github.io/img/icon-bahi.png");
   background-size: contain;
   padding-top: 240px !important;
   background-repeat: no-repeat;
@@ -63,7 +63,7 @@ This work is licensed under the Creative Commons Attribution-NonCommercial 3.0 [
 
 To cite this case study please use:
 
-Wright, Carrie, and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/. Open Case Studies: School Shootings in the United States (Version v1.0.0).
+Wright, Carrie and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). [https://github.com//opencasestudies/ocs-bp-school-shootings-dashboard](https://github.com//opencasestudies/ocs-bp-school-shootings-dashboard). Open Case Studies: School Shootings in the United States (Version v1.0.0).
 
 ####
 
@@ -161,7 +161,7 @@ include_graphics("https://tidyverse.tidyverse.org/logo.png")
 The skills, methods, and concepts that students will be familiar with by the end of this case study are:
 
 
-Data science skills:  
+<u>**Data Science Learning Objectives:**</u>  
   
 1. Importing text from a Google Sheets document (`googlesheets4`)  
 2. Converting date formats (`lubridate`)  
@@ -173,8 +173,8 @@ Data science skills:
 8. How to create a map (`leaflet`)  
 9. How to create an interactive dashboard with `flexdashboard` and `shiny`  
 
-Statistical concepts and methods:  
-  
+<u>**Statistical Learning Objectives:**</u>    
+
 1. Calculating percentages for data with missing values  
 
 *** 
@@ -435,9 +435,11 @@ This is a great option, however, we chose not to do this for this case study to 
 
 # **Data Exploration and Wrangling**
 ***
+
 Luckily, our data is already in pretty good shape, but we want to make our data more useful for our dashboard. 
 
-## Adding state name
+## **Adding state name**
+***
 
 It would be useful to have the full state name in our data, rather than just the abbreviation.
 
@@ -507,7 +509,8 @@ shooting_data %>%
   slice_head(n = 4)
 ```
 
-## Reformatting dates
+## **Reformatting dates**
+***
 
 We also want to reformat our date values and create a `Date_year` variable based on the year in each date. We can use the `lubridate` package for this.
 
@@ -524,7 +527,8 @@ shooting_data %>%
 ```
 Looks good!
 
-## Reformatting data types
+## **Reformatting data types**
+***
 
 If you recall, in our dataset we have many variables that have either `Yes` or `No` values or `Y` and `N` values.  
 
@@ -619,7 +623,7 @@ shooting_data %>%
 
 Looks good!
 
-## Geocoding with the `ggmap` package
+## **Geocoding with the `ggmap` package**
 
 For the purpose of our dashboard, we are interested in creating a map. 
 
@@ -750,7 +754,7 @@ shooting_data_geocoded <-
 
 
 
-## Geometry lists with the `sf` package
+## **Geometry lists with the `sf` package**
 
 In this section, we will use the `sf` (which stands for simple features) package to 
 create what is called a geometry list of our latitude and longitude information for the schools where shootings occurred. As some school shootings occurred in the same location, we need to alter all of the locations a bit so that when we plot the data on a map, so that the spots indicating where shootings occurred will not overlap for the same location.
@@ -941,8 +945,8 @@ There are several elements we would like to include in our dashboard.
 
 One thing we would like is an interactive table.
 
-## Interactive Table
-
+## **Interactive Table**
+***
 We can do this using the `datatable()` function of the `DT` package.
 
 ```{r, eval = FALSE}
@@ -970,7 +974,8 @@ DT::datatable(DT_table)
 Next, we will make some data visualizations. 
 
 
-## Yearly Shootings
+## **Yearly Shootings**
+***
 
 We would like to create a plot of the number of shootings per year.
 
@@ -1084,7 +1089,8 @@ shootings_per_year_p <-
 shootings_per_year_p 
 ```
 
-## Yearly Deaths
+## **Yearly Deaths**
+***
 
 Let's make a similar plot for the number of deaths
 
@@ -1228,7 +1234,8 @@ theme_dashboard <- function(){
 
 
 
-## Yearly Cumulative Shootings
+## **Yearly Cumulative Shootings**
+***
 
 Now let's make another plot of the cumulative deaths each year including those of the previous years. In this case we can use the `shooting_per_year` object that we previously made.
 
@@ -1296,7 +1303,8 @@ per_year_cum %>%
 
 
 
-## Deaths per Shooting
+## **Deaths per Shooting**
+***
 
 Next, we will make a plot of the number of deaths per shooting based on the `Killed (includes shooter)` variable. 
 
@@ -1674,7 +1682,9 @@ We are now ready to build our dashboard!
 
 Let's introduce some basics about creating dashboards in R in the `flexdashboard` package.
 
-## Dashboard packages
+## **Dashboard packages**
+***
+
 To make our dashboard we will use three very useful packages:
 
 1. [flexdashboard](https://rmarkdown.rstudio.com/flexdashboard/)
@@ -1712,7 +1722,8 @@ See [here](https://rmarkdown.rstudio.com/flexdashboard/using.html#components) fo
 
 ***
 
-## R Markdown
+## **R Markdown**
+***
 
 The case study that you are reading right now was created using an [R Markdown document](https://rmarkdown.rstudio.com/). This means that it is a document that uses the `Markdown` language syntax with enhanced capabilities of executing R code in the document. 
 
@@ -1765,7 +1776,8 @@ See this [book](https://bookdown.org/yihui/rmarkdown/) for more information on w
 
 The RStudio [cheatsheet for R Markdown](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) and this [tutorial](https://ourcodingclub.github.io/tutorials/rmarkdown/) are great for getting started. 
 
-## Flexdashboard
+## **Flexdashboard**
+***
 
 There are several important features about the R Markdown language that the `flexdashboard` package leverages. 
 
@@ -1864,9 +1876,11 @@ knitr::include_graphics(here::here("img", "gauge.png"))
 
 ##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/using.html#value_boxes)
 
-## Layout
+## **Layout**
+***
 
-### Adding Columns
+### **Adding Columns**
+***
 
 To add multiple columns the following syntax is used `---------` for each  column and nothing additional is required in the header.
 
@@ -1879,7 +1893,9 @@ knitr::include_graphics(here::here("img", "columns.png"))
 ##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)
 
 
-### Adding Rows
+### **Adding Rows**
+***
+
 To add multiple rows - the yaml needs to state that the orientation is for rows instead of for columns (see the image below),  and then the same syntax is used `---------`  for each row instead of columns. In this example, two rows are created that will be oriented on top of one another and elements within the rows will be placed next to each other.
 
 Again the word `Row` is not actually necessary.
@@ -1893,7 +1909,8 @@ knitr::include_graphics(here::here("img", "rows.png"))
 See [here](https://rmarkdown.rstudio.com/flexdashboard/layouts.html) for template options.
 
 
-### Tabs
+### **Tabs**
+***
 
 To add tabs columns/rows we can use the following: 
 
@@ -1909,7 +1926,8 @@ knitr::include_graphics(here::here("img", "tab.png"))
 
 ##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/layouts.html)
 
-### Shiny
+### **Shiny**
+***
 
 Interactive elements can be added to dashboards. In our dashboard, we will use packages such as `DT` and `leaflet` that have shiny functionality. This requires that shiny is enabled in the YAML header by including `runtime:shiny` in the YAML.
 
@@ -1921,7 +1939,8 @@ knitr::include_graphics(here::here("img", "shiny_yml.png"))
 
 ***
 
-## Deployment
+## **Deployment**
+***
 
 You have a few options to publish your dashboard:  
 
@@ -1990,7 +2009,8 @@ We want to create a dashboard that has several tabs that will look like this:
 knitr::include_graphics(here::here("img", "dashboard_school.png"))
 ```
 
-## Getting started
+## **Getting started**
+***
 
 The first thing we need to do to create our dashboard is to create a new .Rmd document like so in R Studio:
 
@@ -1999,7 +2019,8 @@ knitr::include_graphics(here::here("img", "newrmd.png"))
 ```
 
 
-## YAML header
+## **YAML header**
+***
 
 Next we need to update the YAML header to look like this:
 
@@ -2044,7 +2065,8 @@ You can run the following command in the console to see more information about t
 
 Also see the CRAN [documentation](https://cran.r-project.org/web/packages/flexdashboard/flexdashboard.pdf) for more details.
 
-## Loading the packages and data
+## **Loading the packages and data**
+***
 
 Since we are creating our dashboard in a new Rmd file, we need to load the necessary packages and the wrangled data that we created in this Rmd file. In that Rmd file, it looks something like this. 
 
@@ -2080,7 +2102,8 @@ shooting_data_geocoded <-
 ```
 
 
-## Creating pages
+## **Creating pages**
+***
 
 Recall that `===` is used to designate elements that are part of the navigation bar.
 
@@ -2123,11 +2146,13 @@ Hotline {data-icon="fa-exclamation-triangle"}
 
 ```
 
-## The About Page
+## **The About Page**
+***
 
 Here, we create content in the About page.
 
-### Look
+### **Look**
+***
 
 This is what the page will look like:
 
@@ -2135,7 +2160,8 @@ This is what the page will look like:
 knitr::include_graphics(here::here("img" , "aboutpagelook.png"))
 ```
 
-### Overall Structure
+### **Overall Structure**
+***
 
 Here is the overall structure for this page:
 
@@ -2143,8 +2169,8 @@ Here is the overall structure for this page:
 knitr::include_graphics(here::here("img" , "about_page_structure.png"))
 ```
 
-### Details
-
+### **Details**
+***
 ***
 <details> <summary> Click here if you would like to see all of the code for this page. </summary>
 
@@ -2327,11 +2353,13 @@ See this [website](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div
 
 ***
 
-## The Data Page (Interactive)
+## **The Data Page (Interactive)**
+***
 
 Let's create a page about the data that we are using.
 
-### Look
+### **Look**
+***
 
 
 This is what the page will look like:
@@ -2340,14 +2368,17 @@ This is what the page will look like:
 knitr::include_graphics(here::here("img" , "The_Data_Page.png"))
 ```
 
-### Overall Structure
+### **Overall Structure**
+***
+
 Here is the overall structure for this page:
 
 ```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "Data_page_structure.png"))
 ```
 
-### Details
+### **Details**
+***
 
 ***
 <details> <summary> Click here to see the code for this page. </summary>
@@ -2484,18 +2515,22 @@ knitr::include_graphics(here::here("img", "ruben-rodriguez-IXTvnOOSTyU-unsplash.
 
 ***
 
-## The US Statistics Page
+## **The US Statistics Page**
+***
 
 Let's create a page for **US Statistics** we would like to share. 
 
-### Look
+### **Look**
+***
 This is what the page will look like:
 
 ```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "US_Statistics_page.png"))
 ```
 
-### Overall Structure
+### **Overall Structure**
+***
+
 Here is the overall structure for this page which uses a tab layout:
 
 ```{r, echo=FALSE, out.width="90%"}
@@ -2504,7 +2539,8 @@ knitr::include_graphics(here::here("img" , "US_stats_page_overview.png"))
 
 
 
-### Details
+### **Details**
+***
 
 ***
 <details> <summary> Click here to see the code for this page. </summary>
@@ -2818,11 +2854,13 @@ reporting rate of shooter gender = 'r reporting_male'%
 
 ***
 
-## The State Statistics Page (Interactive)
+## **The State Statistics Page (Interactive)**
+***
 
 Let's create a page for **State Statistics** we would like to share. Importantly this page allows for the user to choose what state to look at.
 
-### Look
+### **Look**
+***
 
 This is what the page will look like:
 
@@ -2830,7 +2868,8 @@ This is what the page will look like:
 knitr::include_graphics(here::here("img" , "State_Statistics_page.png"))
 ```
 
-### Overall Structure
+### **Overall Structure**
+***
 
 
 Here is the overall structure for this page:
@@ -2841,7 +2880,8 @@ knitr::include_graphics(here::here("img" , "states_stats_page_overview.png"))
 
 **Note**: the other value Boxes are not included in this image. You can see that the `renderPlot()` function is used for plots and the `renderValueBox()` function is used for value boxes. 
 
-### Details
+### **Details**
+***
 
 On this page we want the user to be able to select data for a specific state and render plots and get statistics just for the selected state. To do this we will utilize the `renderPlot()` and `renderValueBox()` functions of the `flexdashboard` package, as well as the `selectInput()` function of the `shiny` package. See this [website](https://rmarkdown.rstudio.com/flexdashboard/shiny.html) for more information on using `shiny` to create interactive dashboards with `flexdashboard`.
 
@@ -3173,13 +3213,15 @@ Per capita calculations are based on 2010 population values.
 
 ***
 
-##  The Map page (Interactive)
+##  **The Map page (Interactive)**
+***
 
 Next, we create our map page. Previously, in the  [**Data Exploration and Wrangling**] section, we geocoded our data and modified the `latitude` and `longitude` variables so that events that occurred in the same location would have slightly different values so that they will not cover one another in our map.
 
 To create our map, we will use the `leaflet` package which uses the [Leaflet](https://leafletjs.com/)  JavaScript library. 
 
-### Leaflet
+### **Leaflet**
+***
 
 `Leaflet` works by provided by adding base data (such as a map) and then adding markers if desired in layers. This is very similar to how `ggplot2` functions (pun intended).
 
@@ -3193,7 +3235,8 @@ Thus, if we called a group "Layer 1" and then in a subsequent layer refer to "La
 
 Note that `leaflet` can require a lot of computational power depending on the types of maps produced.
 
-### Look
+### **Look**
+***
 
 This is what the page will look like:
 
@@ -3201,7 +3244,8 @@ This is what the page will look like:
 knitr::include_graphics(here::here("img" , "The_Map_Page.png"))
 ```
 
-### Overall Structure
+### **Overall Structure**
+***
 
 The overall structure for this page is simple. There is just one column ,which will contain the map.
 
@@ -3209,7 +3253,8 @@ The overall structure for this page is simple. There is just one column ,which w
 knitr::include_graphics(here::here("img" , "map_page_structure.png"))
 ```
 
-### Details
+### **Details**
+***
 
 ***
 <details> <summary> Click here to see the code for this page. </summary>
@@ -3315,11 +3360,13 @@ leaflet(shooting_data_geocoded) %>%
 ***
  
 
-## The Tutorial Page
+## **The Tutorial Page**
+***
 
 Here, we create a **Tutorial** page that links to this case study. This provides a simple overview of how we created the dashboard. 
 
-### Look
+### **Look**
+***
 
 This is what the page will look like:
 
@@ -3328,7 +3375,8 @@ knitr::include_graphics(here::here("img" , "the_Tutorial_Page.png"))
 ```
 
 
-### Overall Structure
+### **Overall Structure**
+***
 
 To create this page we will use a special layout called a [storyboard](https://en.wikipedia.org/wiki/Storyboard). Story boards are used in many other fields, but the idea is that there are multiple images in a sequence. To create our storyboard page with `flexdashboard` we will use `{.stroyboard}` next to the page name. Each page name will be specified using this syntax: `###`. 
 
@@ -3338,7 +3386,8 @@ Here you see the top part of the overall structure:
 knitr::include_graphics(here::here("img" , "tutorialStructure.png"))
 ```
 
-### Details
+### **Details**
+***
 
 The code for this page is similar to the other pages, except for the story board structure. 
 
@@ -3510,11 +3559,13 @@ This [supplementary resource by the Open Case Studies project](https://opencases
 
 ***
 
-## The Get Help page
+## **The Get Help page**
+***
 
 We create a **Get Help** page to spread awareness on this important public health topic.
 
-### Look
+### **Look**
+***
 
 This is what the page will look like:
 
@@ -3523,14 +3574,16 @@ knitr::include_graphics(here::here("img" , "The_Get_Help_Page.png"))
 ```
 
 
-### Overall Structure
+### **Overall Structure**
+***
 
 ```{r, echo=FALSE}
 knitr::include_graphics(here::here("img" , "The_Get_Help_Page_structure.png"))
 ```
 
 
-### Details
+### **Details**
+***
 
 This page has two columns. The first column is much wider than the second. This first column includes two colored backgrounds which were created using [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) code. See [The About Page] Details section to for more details about how this works. 
 
@@ -3663,7 +3716,8 @@ The deaf and hard of hearing can contact the **(NSPL)** via TTY at **[1-800-799-
 # **Summary**
 *** 
 
-## Synopsis
+## **Synopsis**
+***
 
 In this case study, we demonstrated the basics of R Markdown and how to create a dashboard with using the `flexdashboard` package. We also demonstrated how to include an interactive table with the `DT` package, how to include interactive plots using functions of the `shiny` package such as `renderPlot()`. We included interactive value boxes using the `renderValueBox()` function of the `flexdashboard` package, which works with the `shiny` package. Finally, we showed how to include interactive maps using the `leaflet` package. 
 
@@ -3681,7 +3735,8 @@ Create another dashboard with graphs and statistics featuring other elements wit
 # **Additional Information**
 ***
 
-## Helpful Links
+## **Helpful Links**
+***
 
 The link to the dashboard described in this case study can be found  [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).
 
@@ -3820,14 +3875,16 @@ If you or your child or student experienced a shooting please see this [website]
 
 ####
 
-## Session Info
+## **Session Info**
+***
 
 ```{r}
 sessionInfo()
 ```
 
 
-## Acknowledgements
+## **Acknowledgements**
+***
 
 We would like to acknowledge [Elizabeth Stuart](https://www.jhsph.edu/faculty/directory/profile/1792/elizabeth-a-stuart) for assisting in framing the major direction of the case study.
 
