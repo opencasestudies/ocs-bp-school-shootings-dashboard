@@ -2,6 +2,19 @@
 OpenCaseStudies
 ===============
 
+### Important links
+
+-   HTML:
+    <a href="https://www.opencasestudies.org/ocs-bp-school-shootings-dashboard" class="uri">https://www.opencasestudies.org/ocs-bp-school-shootings-dashboard</a>
+-   GitHub:
+    <a href="https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard" class="uri">https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard</a>
+-   Bloomberg American Health Initiative:
+    <a href="https://americanhealth.jhu.edu/open-case-studies" class="uri">https://americanhealth.jhu.edu/open-case-studies</a>
+-   Dashboard:
+    <a href="https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/" class="uri">https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/</a>
+-   GitHub repo for dashboard:
+    <a href="https://github.com/opencasestudies/ocs-bp-school-shootings-flexdashboard" class="uri">https://github.com/opencasestudies/ocs-bp-school-shootings-flexdashboard</a>
+
 ### Disclaimer
 
 The purpose of the [Open Case
@@ -30,7 +43,7 @@ and Hicks, Stephanie. (2020).
 <https://github.com//opencasestudies/ocs-bp-school-shootings-dashboard>.
 School Shootings in the United States (Version v1.0.0).
 
-### Acknowledgements
+### Acknowledgments
 
 We would like to acknowledge [Elizabeth
 Stuart](https://www.jhsph.edu/faculty/directory/profile/1792/elizabeth-a-stuart)

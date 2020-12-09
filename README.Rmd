@@ -6,7 +6,13 @@ output: md_document
 
 # OpenCaseStudies
 
+### Important links 
 
+- HTML: https://www.opencasestudies.org/ocs-bp-school-shootings-dashboard
+- GitHub: https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard
+- Bloomberg American Health Initiative: https://americanhealth.jhu.edu/open-case-studies
+- Dashboard: https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/
+- GitHub repo for dashboard: https://github.com/opencasestudies/ocs-bp-school-shootings-flexdashboard
 
 ### Disclaimer 
 
@@ -30,7 +36,7 @@ To cite this case study:
 
 Wright, Carrie and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hicks, Stephanie. (2020). [https://github.com//opencasestudies/ocs-bp-school-shootings-dashboard](https://github.com//opencasestudies/ocs-bp-school-shootings-dashboard). School Shootings in the United States (Version v1.0.0).
 
-### Acknowledgements
+### Acknowledgments
 
 We would like to acknowledge [Elizabeth Stuart](https://www.jhsph.edu/faculty/directory/profile/1792/elizabeth-a-stuart) for assisting in framing the major direction of the case study.
 

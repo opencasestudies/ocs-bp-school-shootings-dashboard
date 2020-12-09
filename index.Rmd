@@ -47,6 +47,10 @@ knitr::include_graphics(here("img", "aboutpagelook.png"))
 
 The link to the dashboard described in this case study is [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).  
 
+To access the GitHub Repository for this case study see here: https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/.
+
+This case study is part of a series of public health case studies for the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/open-case-studies).
+
 #### {.disclaimer_block}
 
 **Disclaimer**: The purpose of the [Open Case Studies](https://opencasestudies.github.io){target="_blank"} project is **to demonstrate the use of various data science methods, tools, and software in the context of messy, real-world data**. A given case study does not cover all aspects of the research process, is not claiming to be the most appropriate way to analyze a given data set, and should not be used in the context of making policy decisions without external consultation from scientific experts. 
@@ -341,7 +345,7 @@ According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/about/)
 
 Previously, the website for this data was located at "https://www.chds.us/ssdb/dataset/" (which is no longer an active link), which displayed an active Google Sheets document and a link to download a csv file of the data. At the time that we created this case study (June of 2020) we downloaded the data from this website.
 
-Now the data can be found at this [link](https://www.chds.us/ssdb/about/) and a csv file of the raw data can be downloaded by clicking the "DOWNLOAD RAW DATA" button.
+Now the data can be found at this [link](https://www.chds.us/ssdb/about/) and a file of the raw data can be downloaded by clicking the "DOWNLOAD RAW DATA" button. This file was previously a `.CSV` file, but it is now an `.XLSX` file. To account for changes with this website, we have made the previous `.CSV` file available [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/raw_data/K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv).
 
 We can import the raw `.CSV` file using the `read_csv()` function of the `readr` package. Let's start by only importing the first five rows with the `n_max` argument which is the max number of rows to read in from the file.  
 
@@ -388,7 +392,7 @@ str(shooting_data)
 
 
 
-We can see from this that many of the variables have Yes or No values, while others have relatively long discriptions. You may also notice that the `State` values are state abbreviations, not full state names. This is something that we will add to the data later. 
+We can see from this that many of the variables have Yes or No values, while others have relatively long descriptions. You may also notice that the `State` values are state abbreviations, not full state names. This is something that we will add to the data later. 
 
 
 ####
@@ -3136,7 +3140,7 @@ shooting_data_state<-left_join(shooting_data_state, state_data, by = c("State_ab
 
 deaths_State <-shooting_data %>% 
   group_by(State) %>%
-  summarise( deaths = sum(`Killed (includes shooter)`, na.rm = TRUE))
+  summarize( deaths = sum(`Killed (includes shooter)`, na.rm = TRUE))
 
 state_data <- left_join(shooting_data_state, deaths_State)
 
@@ -3883,7 +3887,7 @@ sessionInfo()
 ```
 
 
-## **Acknowledgements**
+## **Acknowledgments**
 ***
 
 We would like to acknowledge [Elizabeth Stuart](https://www.jhsph.edu/faculty/directory/profile/1792/elizabeth-a-stuart) for assisting in framing the major direction of the case study.
