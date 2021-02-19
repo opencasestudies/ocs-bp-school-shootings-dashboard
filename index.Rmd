@@ -475,7 +475,7 @@ save(shooting_data, file = here::here("data", "imported", "shooting_data.rda"))
 
 To allow users to start at this point we will load the data that we already imported:
 
-This data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/)
+This data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/imported). Here we have put this data in a directory called "imported" within a "data" directory. See the above section for information about RStudio projects and the `here` package if it is new to you. 
 
 ```{r}
 load(here::here("data", "imported", "shooting_data.rda"))
@@ -790,7 +790,7 @@ readr::write_csv(shooting_data,
 ```
 
 
-Great now we will work with this data, thus you do not need to get an API key to get to this point. We can read our processed geocoded data into R by using the `read_csv()` function of the `readr` package. You can dowload this data [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/wrangled) for you to download.
+Great now we will work with this data, thus you do not need to get an API key to get to this point. We can read our processed geocoded data into R by using the `read_csv()` function of the `readr` package. You can access this data [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/wrangled) for you to download.
 
 ```{r}
 shooting_data_geocoded <- 
