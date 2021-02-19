@@ -347,15 +347,15 @@ According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/about/)
 
 Previously, the website for this data was located at "https://www.chds.us/ssdb/dataset/" (which is no longer an active link), which displayed an active Google Sheets document and a link to download a csv file of the data. At the time that we created this case study (June of 2020) we downloaded the data from this website.
 
-Now the data can be found at this [link](https://www.chds.us/ssdb/about/) and a file of the raw data can be downloaded by clicking the "DOWNLOAD RAW DATA" button. This file was previously a `.CSV` file, but it is now an `.XLSX` file. To account for changes with this website, we have made the previous `.CSV` file available [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/raw_data/K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv).
+Now the data can be found at this [link](https://www.chds.us/ssdb/about/) and a file of the raw data can be downloaded by clicking the "DOWNLOAD RAW DATA" button. This file was previously a `.CSV` file, but it is now an `.XLSX` file. To account for changes with this website, we have made the previous `.CSV` file available [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/raw/K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv).
 
 We can import the raw `.CSV` file using the `read_csv()` function of the `readr` package. Let's start by only importing the first five rows with the `n_max` argument which is the max number of rows to read in from the file.  
 
-We will use the `here()` function of the `here` package to easily locate the data within the `raw_data` directory within the main directory that contains the `.Rproj` file.
+We will use the `here()` function of the `here` package to easily locate the data within the `raw` directory within the main directory that contains the `.Rproj` file.
 
 ```{r}
 shooting_data <- 
-  readr::read_csv(file = here::here("raw_data",
+  readr::read_csv(file = here::here("raw",
                                     "K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv"), 
                  n_max = 5)
 shooting_data
@@ -369,7 +369,7 @@ We do not need this information, so we can skip it using the `skip` argument of 
 
 ```{r}
 shooting_data <- 
-  readr::read_csv(file = here::here("raw_data",
+  readr::read_csv(file = here::here("raw",
                                     "K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv"), 
                   col_names = TRUE, skip = 1)
 ```
@@ -739,13 +739,13 @@ Now using `glimpse()` and looking at the last several variables, we can see that
 knitr::include_graphics(here::here("img", "double.png"))
 ```
 
-Now we will save the geocoded data in the `processed_data` directory using the `write_csv` function of the `readr` package.
+Now we will save the geocoded data in the `wrangled` directory using the `write_csv` function of the `readr` package.
 
 This requires listing the R object, followed by the path for where the file should be saved and what it should be called. In this case it will be called "shooting_data_geo.csv".
 
 ```{r, eval = FALSE} 
 readr::write_csv(shooting_data, 
-                 path = here("processed_data",
+                 path = here("wrangled",
                              "shooting_data_geo.csv"))
 ```
 
@@ -754,7 +754,7 @@ Great now we will work with this data, thus you do not need to get an API key to
 
 ```{r}
 shooting_data_geocoded <- 
-  read_csv(here("processed_data",
+  read_csv(here("wrangled",
                 "shooting_data_geo.csv"))
 ```
 
@@ -922,11 +922,11 @@ Finally, we save our wrangled data, again using `write_csv()`.
 
 ```{r, eval = FALSE}
 readr::write_csv(shooting_data, 
-                 path = here("processed_data",
+                 path = here("wrangled",
                              "shooting_data_pre_geo_wrangled.csv"))
 
 write_csv(shooting_data_geocoded, 
-          path = here("processed_data",
+          path = here("wrangled",
                       "shooting_data_wrangled.csv"))
 ```
 
@@ -938,11 +938,11 @@ First let's load the data by reading in our wrangled version of the data.
 
 ```{r}
 shooting_data <- 
-  read_csv(here("processed_data",
+  read_csv(here("wrangled",
                 "shooting_data_pre_geo_wrangled.csv"))
 
 shooting_data_geocoded <- 
-  read_csv(here("processed_data",
+  read_csv(here("wrangled",
                 "shooting_data_wrangled.csv"))
 ```
 
@@ -2099,11 +2099,11 @@ For more information about what these packages were used for, see the beginning 
 
 ```{r,eval = FALSE}
 shooting_data <- 
-  read_csv(here("processed_data",
+  read_csv(here("wrangled",
                 "shooting_data_pre_geo_wrangled.csv"))
 
 shooting_data_geocoded <- 
-  read_csv(here("processed_data",
+  read_csv(here("wrangled",
                 "shooting_data_wrangled.csv"))
 ```
 
