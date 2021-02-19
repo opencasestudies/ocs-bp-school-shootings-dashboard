@@ -827,7 +827,7 @@ shooting_data_geocoded[1:4]
 
 To allow our points to not overlap for events that took place in the same location, we will add a bit more range so that they do not overlap one another on our map. 
 
-To do this, we will transform the coordinates using the `st_transform()` function  of the `sf` package into a two dimensional projection (called the [Albers equal-area conic projection](https://en.wikipedia.org/wiki/Albers_projection#:~:text=The%20Albers%20equal%2Darea%20conic,that%20uses%20two%20standard%20parallels.&text=The%20Albers%20projection%20is%20used,the%20United%20States%20Census%20Bureau.)) with units in meters using the [crs 102008](https://spatialreference.org/ref/esri/102008/html/) reference and then use the `st_jitter()` function of the `sf` package  to allow a specified amount of range near the actual original GPS coordinates. 
+To do this, we will transform the coordinates using the `st_transform()` function  of the `sf` package into a two dimensional projection (called the [Albers equal-area conic projection](https://en.wikipedia.org/wiki/Albers_projection#:~:text=The%20Albers%20equal%2Darea%20conic,that%20uses%20two%20standard%20parallels.&text=The%20Albers%20projection%20is%20used,the%20United%20States%20Census%20Bureau.)) with units in meters using the [crs 102008](https://spatialreference.org/ref/esri/102008/html/) reference from the [Environmental Systems Research Institute (ERSI)](https://en.wikipedia.org/wiki/Esri) and then use the `st_jitter()` function of the `sf` package  to allow a specified amount of range near the actual original GPS coordinates. 
 
 To learn more about geospatial coordinate systems see [here](https://www.nceas.ucsb.edu/sites/default/files/2020-04/OverviewCoordinateReferenceSystems.pdf) and [here](https://guides.library.duke.edu/r-geospatial/CRS).
 
@@ -835,7 +835,7 @@ So here we can see the output after transforming our data to the [crs 102008](ht
 
 ```{r}
 shooting_data_geocoded  %<>%
-  st_transform(crs = 102008) 
+  st_transform(crs = "ESRI:102008") 
 ```
 
 
