@@ -347,15 +347,40 @@ According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/about/)
 
 Previously, the website for this data was located at "https://www.chds.us/ssdb/dataset/" (which is no longer an active link), which displayed an active Google Sheets document and a link to download a csv file of the data. At the time that we created this case study (June of 2020) we downloaded the data from this website.
 
-Now the data can be found at this [link](https://www.chds.us/ssdb/about/) and a file of the raw data can be downloaded by clicking the "DOWNLOAD RAW DATA" button. This file was previously a `.CSV` file, but it is now an `.XLSX` file. To account for changes with this website, we have made the previous `.CSV` file available [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/raw/K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv).
+Now the data can be found at this [link](https://www.chds.us/ssdb/about/) and a file of the raw data can be downloaded by clicking the "DOWNLOAD RAW DATA" button. This file was previously a `.CSV` file, but it is now an `.XLSX` file. 
+
+To account for changes with this website, we have made the previous `.CSV` file available [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/raw/K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv) for you to download.
+
+In our case, we downloaded this data and put it within a "raw" subdirectory of a "data" directory for our project. If you use an RStudio project, then you can use the `here()` function of the `here` package to make the path for importing this data simpler. The `here` package automatically starts looking for files based on where you have a `.Rproj` file which is created when you start a new RStudio project. We can specify that we want to look for the "LND01.xls" file within the "raw" directory within the "data" directory where our `.Rproj` file is located by separating the names of these directories using commas and listing "data" first. 
+
+***
+<details> <summary> Click here to see more about creating new projects in R. </summary>
+
+You can create a project by going to the File menu of RStudio like so:
+
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "New_project.png"))
+```
+
+You can also do so by clicking the project button:
+
+```{r, echo = FALSE}
+knitr::include_graphics(here::here("img", "project_button.png"))
+```
+
+See [here](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) to learn more about using RStudio projects. 
+
+</details>
+
+***
 
 We can import the raw `.CSV` file using the `read_csv()` function of the `readr` package. Let's start by only importing the first five rows with the `n_max` argument which is the max number of rows to read in from the file.  
 
-We will use the `here()` function of the `here` package to easily locate the data within the `raw` directory within the main directory that contains the `.Rproj` file.
 
 ```{r}
 shooting_data <- 
-  readr::read_csv(file = here::here("raw",
+  readr::read_csv(file = here::here("data", "raw",
                                     "K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv"), 
                  n_max = 5)
 shooting_data
@@ -369,7 +394,7 @@ We do not need this information, so we can skip it using the `skip` argument of 
 
 ```{r}
 shooting_data <- 
-  readr::read_csv(file = here::here("raw",
+  readr::read_csv(file = here::here("data", "raw",
                                     "K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv"), 
                   col_names = TRUE, skip = 1)
 ```
@@ -439,10 +464,25 @@ This is a great option, however, we chose not to do this for this case study to 
 
 ####
 
+To allow users to skip import we will save the data as an rda:
+
+```{r, eval = FALSE}
+save(shooting_data, file = here::here("data", "imported", "shooting_data.rda"))
+```
+
 # **Data Exploration and Wrangling**
 ***
 
+To allow users to start at this point we will load the data that we already imported:
+
+This data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/)
+
+```{r}
+load(here::here("data", "imported", "shooting_data.rda"))
+```
+
 Luckily, our data is already in pretty good shape, but we want to make our data more useful for our dashboard. 
+
 
 ## **Adding state name**
 ***
@@ -665,7 +705,7 @@ To do this, we will use the `geocode()` function of the `ggmap` package to look 
 
 This step requires registering with the Google Cloud Platform to get an API key, which currently requires registering your payment information and agreeing to the [Google Maps API Terms of Service](https://developers.google.com/maps/terms).
 
-Therefore, we will simply demonstrate how this process works in general, but you are not required to do this yourself. 
+Therefore, we will simply **demonstrate** how this process works in general, but you are **not required to do this yourself**. 
 
 ***
 <details><summary> Click here to see how we registered with the Google Cloud Platform.</summary>
@@ -739,22 +779,22 @@ Now using `glimpse()` and looking at the last several variables, we can see that
 knitr::include_graphics(here::here("img", "double.png"))
 ```
 
-Now we will save the geocoded data in the `wrangled` directory using the `write_csv` function of the `readr` package.
+Now we will save the geocoded data in the `wrangled` directory of our `data` directory using the `write_csv` function of the `readr` package.
 
 This requires listing the R object, followed by the path for where the file should be saved and what it should be called. In this case it will be called "shooting_data_geo.csv".
 
 ```{r, eval = FALSE} 
 readr::write_csv(shooting_data, 
-                 path = here("wrangled",
+                 path = here("data", "wrangled",
                              "shooting_data_geo.csv"))
 ```
 
 
-Great now we will work with this data, thus you do not need to get an API key to get to this point. We can read our processed geocoded data into R by using the `read_csv()` function of the `readr` package.
+Great now we will work with this data, thus you do not need to get an API key to get to this point. We can read our processed geocoded data into R by using the `read_csv()` function of the `readr` package. You can dowload this data [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/wrangled) for you to download.
 
 ```{r}
 shooting_data_geocoded <- 
-  read_csv(here("wrangled",
+  read_csv(here("data", "wrangled",
                 "shooting_data_geo.csv"))
 ```
 
@@ -922,11 +962,11 @@ Finally, we save our wrangled data, again using `write_csv()`.
 
 ```{r, eval = FALSE}
 readr::write_csv(shooting_data, 
-                 path = here("wrangled",
+                 path = here("data", "wrangled",
                              "shooting_data_pre_geo_wrangled.csv"))
 
 write_csv(shooting_data_geocoded, 
-          path = here("wrangled",
+          path = here("data", "wrangled",
                       "shooting_data_wrangled.csv"))
 ```
 
@@ -938,11 +978,11 @@ First let's load the data by reading in our wrangled version of the data.
 
 ```{r}
 shooting_data <- 
-  read_csv(here("wrangled",
+  read_csv(here("data", "wrangled",
                 "shooting_data_pre_geo_wrangled.csv"))
 
 shooting_data_geocoded <- 
-  read_csv(here("wrangled",
+  read_csv(here("data", "wrangled",
                 "shooting_data_wrangled.csv"))
 ```
 
@@ -2097,13 +2137,13 @@ library(DT)
 
 For more information about what these packages were used for, see the beginning of this case study and the [Helpful Links] section.
 
-```{r,eval = FALSE}
+```{r, eval = FALSE}
 shooting_data <- 
-  read_csv(here("wrangled",
+  read_csv(here("data", "wrangled",
                 "shooting_data_pre_geo_wrangled.csv"))
 
 shooting_data_geocoded <- 
-  read_csv(here("wrangled",
+  read_csv(here("data", "wrangled",
                 "shooting_data_wrangled.csv"))
 ```
 
