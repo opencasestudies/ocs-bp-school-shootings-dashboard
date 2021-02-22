@@ -351,21 +351,21 @@ Now the data can be found at this [link](https://www.chds.us/ssdb/about/) and a 
 
 To account for changes with this website, we have made the previous `.CSV` file available [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/raw/K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv) for you to download.
 
-In our case, we downloaded this data and put it within a "raw" subdirectory of a "data" directory for our project. If you use an RStudio project, then you can use the `here()` function of the `here` package to make the path for importing this data simpler. The `here` package automatically starts looking for files based on where you have a `.Rproj` file which is created when you start a new RStudio project. We can specify that we want to look for the "LND01.xls" file within the "raw" directory within the "data" directory where our `.Rproj` file is located by separating the names of these directories using commas and listing "data" first. 
+In our case, we downloaded this data and put it within a "raw" subdirectory of a "data" directory for our project. If you use an RStudio project, then you can use the `here()` function of the `here` package to make the path for importing this data simpler. The `here` package automatically starts looking for files based on where you have a `.Rproj` file which is created when you start a new RStudio project. We can specify that we want to look for the "LND01.xls" file within the "raw" directory within the "data" directory within a directory where our `.Rproj` file is located by separating the names of these directories using commas and listing "data" first. 
 
 ***
-<details> <summary> Click here to see more about creating new projects in R. </summary>
+<details> <summary> Click here to see more about creating new projects in RStudio. </summary>
 
 You can create a project by going to the File menu of RStudio like so:
 
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width="60%"}
 knitr::include_graphics(here::here("img", "New_project.png"))
 ```
 
 You can also do so by clicking the project button:
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width="60%"}
 knitr::include_graphics(here::here("img", "project_button.png"))
 ```
 
@@ -375,7 +375,7 @@ See [here](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Project
 
 ***
 
-We can import the raw `.CSV` file using the `read_csv()` function of the `readr` package. Let's start by only importing the first five rows with the `n_max` argument which is the max number of rows to read in from the file.  
+We can import the raw `.CSV` file using the `read_csv()` function of the `readr` package. Let's start by only importing the first five rows with the `n_max` argument which is the max number of rows to read in from the file. Note that you would need to modify this if you set your data files up differently.  
 
 
 ```{r}
@@ -464,7 +464,7 @@ This is a great option, however, we chose not to do this for this case study to 
 
 ####
 
-To allow users to skip import we will save the data as an rda:
+To allow users to skip import we will save the data as an RDA file:
 
 ```{r, eval = FALSE}
 save(shooting_data, file = here::here("data", "imported", "shooting_data.rda"))
@@ -472,14 +472,42 @@ save(shooting_data, file = here::here("data", "imported", "shooting_data.rda"))
 
 # **Data Exploration and Wrangling**
 ***
+If you have been following along but stopped, we could load our imported data like so:
+```{r}
+load(here::here("data", "imported", "shooting_data.rda"))
+```
 
-To allow users to start at this point we will load the data that we already imported:
+***
+<details> <summary> If you skipped the data import section click here. </summary>
 
-This data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/imported). Here we have put this data in a directory called "imported" within a "data" directory. See the above section for information about RStudio projects and the `here` package if it is new to you. 
+An RDA file (stands for R data) of the data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/imported) or slightly more directly [here](https://raw.githubusercontent.com/opencasestudies/ocs-bp-school-shootings-dashboard/master/data/imported/shooting_data.rda). Download this file and then place it in your current working directory. We recommend using an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to your file more easily. We have put this file in a directory called "imported" within a directory called "data" within our working directory (which has a .Rproj file).
 
 ```{r}
 load(here::here("data", "imported", "shooting_data.rda"))
 ```
+
+***
+<details> <summary> Click here to see more about creating new projects in RStudio. </summary>
+
+You can create a project by going to the File menu of RStudio like so:
+
+
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics(here::here("img", "New_project.png"))
+```
+
+You can also do so by clicking the project button:
+
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics(here::here("img", "project_button.png"))
+```
+
+See [here](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) to learn more about using RStudio projects. 
+
+</details>
+***
+</details>
+***
 
 Luckily, our data is already in pretty good shape, but we want to make our data more useful for our dashboard. 
 
@@ -705,7 +733,7 @@ To do this, we will use the `geocode()` function of the `ggmap` package to look 
 
 This step requires registering with the Google Cloud Platform to get an API key, which currently requires registering your payment information and agreeing to the [Google Maps API Terms of Service](https://developers.google.com/maps/terms).
 
-Therefore, we will simply **demonstrate** how this process works in general, but you are **not required to do this yourself**. 
+Therefore, we will simply **demonstrate** how this process works in general, but you are **not required to do this yourself**! We will give you the data later. 
 
 ***
 <details><summary> Click here to see how we registered with the Google Cloud Platform.</summary>
@@ -779,23 +807,29 @@ Now using `glimpse()` and looking at the last several variables, we can see that
 knitr::include_graphics(here::here("img", "double.png"))
 ```
 
-Now we will save the geocoded data in the `wrangled` directory of our `data` directory using the `write_csv` function of the `readr` package.
+Now we will save the geocoded data in the `wrangled` directory of our `data` directory using the `save` function.
 
-This requires listing the R object, followed by the path for where the file should be saved and what it should be called. In this case it will be called "shooting_data_geo.csv".
+This requires listing the R object, followed by the path for where the file should be saved and what it should be called. In this case it will be called `shooting_data_wrangled_pre_map.rda`. First let's create a new object called `shooting_data_wrangled_pre_map` so it is clear in the future what we are working with when we load the data.
 
-```{r, eval = FALSE} 
-readr::write_csv(shooting_data, 
-                 path = here("data", "wrangled",
-                             "shooting_data_geo.csv"))
+
+```{r, eval = FALSE}
+shooting_data_wrangled_pre_map <- shooting_data
+save(shooting_data_wrangled_pre_map, file = here("data", "wrangled",
+                             "shooting_data_wrangled_pre_map.rda"))
 ```
 
+```{r, echo = FALSE, eval = FALSE} 
+# for instructors that wish to use csv files we will save as a csv file
+readr::write_csv(shooting_data_wrangled_pre_map, 
+                 path = here("data", "wrangled",
+                             "shooting_data_warngled_pre_map.csv"))
+```
 
-Great now we will work with this data, thus you do not need to get an API key to get to this point. We can read our processed geocoded data into R by using the `read_csv()` function of the `readr` package. You can access this data [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/wrangled) for you to download.
+Great now we will work with this data, thus you do not need to get an API key to get to this point. You can access this data [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/wrangled) for you to download.
 
 ```{r}
-shooting_data_geocoded <- 
-  read_csv(here("data", "wrangled",
-                "shooting_data_geo.csv"))
+load(file = here("data", "wrangled",
+                             "shooting_data_wrangled_pre_map.rda"))
 ```
 
 
@@ -808,7 +842,7 @@ create what is called a geometry list of our latitude and longitude information 
 Let's learn how to do this. 
 
 ```{r}
-shooting_data_geocoded %>% 
+shooting_data_wrangled_pre_map %>% 
   select(latitude, longitude) %>% 
   slice_head(n = 5)
 ```
@@ -816,13 +850,13 @@ shooting_data_geocoded %>%
 First, let's remind ourselves how many rows we have in our dataset.
 
 ```{r}
-dim(shooting_data_geocoded)
+dim(shooting_data_wrangled_pre_map)
 ```
 
 This is important because not all rows have a recorded latitude and longitude. 
 
 ```{r}
-shooting_data_geocoded %>% 
+shooting_data_wrangled_pre_map %>% 
   filter(is.na(latitude)) %>% 
   select(matches(c("long", "lat", "add")))
 ```
@@ -832,14 +866,14 @@ Therefore, before we can proceed, we need to remove rows with `NA` values for th
 We can remove these rows using the `drop_na()` function of the `tidyr` package. We will use a `.` to indicate that we want to use the data that we are using as an input with our pipe, but then we will specify that we want to only drop rows were there is an `NA` value for either the `latitude` or `longitude` variables.
 
 ```{r}
-shooting_data_geocoded %<>%
+shooting_data_wrangled_for_map <- shooting_data_wrangled_pre_map %>%
  tidyr::drop_na(., c(latitude, longitude))
 ```
 
 How many did we remove? Let's look at the dimension of our new dataset. 
 
 ```{r}
-dim(shooting_data_geocoded)
+dim(shooting_data_wrangled_for_map)
 ```
 
 We see that there were 5 events that occurred at schools with unidentified complete locations (missing either latitude, longitude, or both) that were removed from our dataset. 
@@ -849,10 +883,10 @@ Next, we are ready to convert our coordinates variables (`latitude` and `longitu
 To do this, we need to specify what our coordinate variables are and we will also specify what [coordinate reference system](https://www.w3.org/2015/spatial/wiki/Coordinate_Reference_Systems),(crs) we would like to use. In our case we will use the [ESPG](https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset) reference number [4326](https://spatialreference.org/ref/epsg/4326/), known as ESPG:4326 or the [World Geodetic System (WGS) version 84](https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84) which is one of the most commonly used CPS and used by by most global positioning systems, known as GPS. **This tells R  to use the values for the variables called `latitude` and `longitude` as latitude and longitude coordinates.**
 
 ```{r}
-shooting_data_geocoded %<>%
+shooting_data_wrangled_for_map %<>%
   sf::st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
 
-dim(shooting_data_geocoded)
+dim(shooting_data_wrangled_pre_map)
 ```
 
 We can see that our `latitude` and `longitude` variables were used to create a single new variable called `geometry` of class  `<POINT` [$^{\circ}$]`>`, thus we have one less column.
@@ -862,7 +896,7 @@ In this case, this type of variable will always be shown. Even if we were to loo
 So now we can see all variables related to location (which happen to be the first four variables and the `geometry` variable) by simply typing `[1:4]` next to the name of our tibble `shooting_data_geocoded`.
 
 ```{r}
-shooting_data_geocoded[1:4]
+shooting_data_wrangled_for_map[1:4]
 ```
 
 To allow our points to not overlap for events that took place in the same location, we will add a bit more range so that they do not overlap one another on our map. 
@@ -874,7 +908,7 @@ To learn more about geospatial coordinate systems see [here](https://www.nceas.u
 So here we can see the output after transforming our data to the [crs 102008](https://spatialreference.org/ref/esri/102008/html/) reference:
 
 ```{r}
-shooting_data_geocoded  %<>%
+shooting_data_wrangled_for_map  %<>%
   st_transform(crs = "ESRI:102008") 
 ```
 
@@ -882,7 +916,7 @@ shooting_data_geocoded  %<>%
 Notice how the  class for the `geometry` variable is now `<POINT [m]>` as our data has been transformed into coordinates in meters.
 
 ```{r}
-shooting_data_geocoded[1:4]
+shooting_data_wrangled_pre_map[1:4]
 ```
 
 And now we will add a jitter to the points using the `st_jitter()` function, meaning that we will randomly move the coordinates a little bit to allow for points at the same location to not overlap on the map.
@@ -894,7 +928,7 @@ You can see the tidyverse explanation about when to use a jitter plot  [here](ht
 In this case we will allow for 50 meters of range using the `amount = 50` argument.
 
 ```{r}
-shooting_data_geocoded %<>%
+shooting_data_wrangled_for_map %<>%
    sf::st_jitter(amount = 50)
 ```
 
@@ -902,7 +936,7 @@ shooting_data_geocoded %<>%
 We can now see that the coordinates are slightly modified. 
 
 ```{r}
-shooting_data_geocoded[1:4]
+shooting_data_wrangled_for_map[1:4]
 ```
 
 **Note**: the `geometry` values have changed.
@@ -910,10 +944,10 @@ shooting_data_geocoded[1:4]
 Now we will transform our coordinates back into the 3D latitude and longitude degree system again using the `st_transform()` function and the [ESPG:4326](https://spatialreference.org/ref/epsg/4326/), coordinate system.
 
 ```{r}
-shooting_data_geocoded  %<>%
+shooting_data_wrangled_for_map  %<>%
   st_transform(crs = 4326)
 
-shooting_data_geocoded[1:4]
+shooting_data_wrangled_for_map[1:4]
 ```
 
 Notice how the `geometry` variables are different from what they were originally with this coordinate system:
@@ -925,20 +959,20 @@ knitr::include_graphics(here::here("img", "geometry.png"))
 Next, we separate the `geometry` variable into `longitude` and `latitude` variables again. We can use the ` st_coordinates()` function of the `sf` package to extract the coordinates from our tibble as a matrix.
 
 ```{r}
-shooting_data_geocoded %<>% 
+shooting_data_wrangled_for_map %<>% 
   mutate(coordinates = as_tibble(st_coordinates(.)))
 
-shooting_data_geocoded %>%
+shooting_data_wrangled_for_map %>%
   pull(coordinates) %>%
   slice_head(n = 4)
 ```
 
-Now, just as we did previously we will create new variables called `latitude` and `longitude` from the `X` and `Y` variables within the `coordinates` tibble that is part of our `shooting_data_geocoded` using the `pull()` function.
+Now, just as we did previously we will create new variables called `latitude` and `longitude` from the `X` and `Y` variables within the `coordinates` tibble that is part of our `shooting_data_wrangled_for_map` using the `pull()` function.
 
-We will also convert our `shooting_data_geocoded` object which is currently a `sf` into a tibble using the `as_tibble()` function of the `tibble` package and then we will remove the `geometry` and `coordinates` variables using the `select()` function of the `dplyr` package with a minus operator in front of the names of the variables to remove.
+We will also convert our `shooting_data_wrangled_for_map` object which is currently a `sf` into a tibble using the `as_tibble()` function of the `tibble` package and then we will remove the `geometry` and `coordinates` variables using the `select()` function of the `dplyr` package with a minus operator in front of the names of the variables to remove.
 
 ```{r}
-shooting_data_geocoded %<>%
+shooting_data_wrangled_for_map %<>%
   mutate(longitude = pull(coordinates,X),
           latitude = pull(coordinates,Y)) %>%
   tibble::as_tibble() %>%
@@ -951,41 +985,102 @@ And now we can take a look at  our last 3 variables using the `last_col()` funct
 The `last_col()` function allows us to select either the last column, or with a specified offset we can select a number of columns before the last column. Thus, 2 columns before the last column  would be `last_col(offset = 2)` and then the `:` symbol is interpreted as through, thus we are selecting for the third to last column through the last column with `last_col(offset = 2):last_col()`.
 
 ```{r}
-shooting_data_geocoded %>% 
+shooting_data_wrangled_for_map %>% 
   select(tidyr::last_col(offset = 2):last_col()) %>% 
   slice_head(n = 4)
 ```
 
 Great! That looks like we expected.
 
-Finally, we save our wrangled data, again using `write_csv()`.
-
+Finally, we will save our wrangled data, again using `save()`.
 ```{r, eval = FALSE}
-readr::write_csv(shooting_data, 
-                 path = here("data", "wrangled",
-                             "shooting_data_pre_geo_wrangled.csv"))
 
-write_csv(shooting_data_geocoded, 
+save(shooting_data_wrangled_for_map, 
+          file = here("data", "wrangled",
+                      "shooting_data_wrangled_for_map.rda"))
+```
+
+
+
+```{r, eval = FALSE, echo = FALSE}
+# we will first save as CSV files for instructors that wish to have CSV files
+# readr::write_csv(shooting_data, 
+#                  path = here("data", "wrangled",
+#                              "shooting_data_pre_geo_wrangled.csv"))
+write_csv(shooting_data_wrangled_for_map, 
           path = here("data", "wrangled",
-                      "shooting_data_wrangled.csv"))
+                      "shooting_data_wrangled_for_map.csv"))
 ```
 
 
 # **Data Analysis and Visualization**
 *** 
 
-First let's load the data by reading in our wrangled version of the data.
-
+If you have been following along but stopped, we could load our data like so:
 ```{r}
-shooting_data <- 
-  read_csv(here("data", "wrangled",
-                "shooting_data_pre_geo_wrangled.csv"))
+load(here::here("data", "wrangled", "shooting_data_wrangled_pre_map.rda"))
+load(here::here("data", "wrangled", "shooting_data_wrangled_for_map.rda"))
 
-shooting_data_geocoded <- 
-  read_csv(here("data", "wrangled",
-                "shooting_data_wrangled.csv"))
 ```
 
+We need the wangled data that is prepared both for the map and the data just before the last wrangling step Geometry lists with the `sf` package] to prepare for the map because we removed some events that did not have addresses that were identified by Google (had `NA` values for latitude or longitude).  We want to use data for all events for our statistics, tables, and plots.
+
+***
+<details> <summary> If you skipped the data import section click here. </summary>
+
+Two RDA files (stands for R data) of the data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/wrangled) or slightly more directly [here](https://raw.githubusercontent.com/opencasestudies/ocs-bp-school-shootings-dashboard/master/data/wrangled/shooting_data_wrangled_for_map.rda) and [here](https://raw.githubusercontent.com/opencasestudies/ocs-bp-school-shootings-dashboard/master/data/wrangled/shooting_data_wrangled_pre_map.rda). Download these files and then place them in your current working directory. We recommend using an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to your files more easily. We have put these files in a directory called "wrangled" within a directory called "data" within our working directory (which has a .Rproj file).
+
+```{r}
+load(here::here("data", "wrangled", "shooting_data_wrangled_for_map.rda"))
+load(here::here("data", "wrangled", "shooting_data_wrangled_for_map.rda"))
+
+```
+
+***
+<details> <summary> Click here to see more about creating new projects in RStudio. </summary>
+
+You can create a project by going to the File menu of RStudio like so:
+
+
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics(here::here("img", "New_project.png"))
+```
+
+You can also do so by clicking the project button:
+
+```{r, echo = FALSE, out.width="60%"}
+knitr::include_graphics(here::here("img", "project_button.png"))
+```
+
+See [here](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects) to learn more about using RStudio projects. 
+
+</details>
+***
+</details>
+***
+
+Luckily, our data is already in pretty good shape, but we want to make our data more useful for our dashboard. 
+
+Let's shorten the name of the data that was wrangled up to the last step for the map. We will use `shooting_data`.
+
+```{r}
+shooting_data <-shooting_data_wrangled_pre_map
+```
+
+We will also rename the data that is wrangled for the map to a shorter name:
+
+```{r}
+shooting_data_for_map <- shooting_data_wrangled_for_map
+```
+
+Let's double check that our data is expected:
+
+```{r}
+dim(shooting_data)
+dim(shooting_data_for_map)
+```
+
+Great, looks like we indeed have more rows in our `shooting_data` as we would expect. 
 
 There are several elements we would like to include in our dashboard. 
 
@@ -2135,16 +2230,16 @@ library(htmltools)
 library(DT)
 ```
 
-For more information about what these packages were used for, see the beginning of this case study and the [Helpful Links] section.
+For more information about what these packages were used for, see the beginning of this case study and the [Helpful Links] section. The data can be found and downloaded from our GitHub repository at this [link](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/wrangled). In our case we saved this to a subdirectory called `wrangled` within a directory called `data` of our working directory. We recommend using RStudio projects and the `here` package to make navigating to files easy and reproducible.
 
 ```{r, eval = FALSE}
 shooting_data <- 
   read_csv(here("data", "wrangled",
-                "shooting_data_pre_geo_wrangled.csv"))
+                "shooting_data_wrangled_pre_map.csv"))
 
-shooting_data_geocoded <- 
+shooting_data_for_map <- 
   read_csv(here("data", "wrangled",
-                "shooting_data_wrangled.csv"))
+                "shooting_data_wrangled_for_map.csv"))
 ```
 
 
@@ -2462,7 +2557,7 @@ Column {data-width=30}
 Now we will add our `DT_table` to the first column. First, we need to include the code that we previously used to create the `DT_table` in our dashboard `.Rmd` file:
 
 ```{r, eval = FALSE}
-DT_table <- shooting_data%>%
+DT_table <- shooting_data %>%
   dplyr::select(Date,
                 School,
                 City,
@@ -3378,7 +3473,7 @@ The `set_view()` function allows for the starting position and zoom to be modifi
 
 ```
 '''{r}
-leaflet(shooting_data_geocoded) %>%
+leaflet(shooting_data_for_map) %>%
   addProviderTiles(provider = providers$OpenStreetMap, group = "OpenStreetMap") %>%
   addProviderTiles(provider = providers$Esri.WorldImagery, group = "ESRI World Imagery") %>%
   addProviderTiles(provider = providers$Stamen.TonerLite, group = "Toner")%>%
