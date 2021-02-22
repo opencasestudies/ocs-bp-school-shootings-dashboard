@@ -381,7 +381,8 @@ markdown file (`README.md`). Note that you may need to press the “Q” key
 to close the documentation about flexdashboard.
 
 Users can skip the Data Import and Data Wrangling sections to start with
-the Data Analysis and Visualization section if they wish.
+the Data Analysis and Visualization section if they wish. Alternatively
+users can also start at the Dashboard Basics or Our Dashboard sections.
 
 #### For instructors
 

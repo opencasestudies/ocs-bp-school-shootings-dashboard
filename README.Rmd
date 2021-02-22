@@ -223,7 +223,7 @@ Package   | Use in this case study
 
 There is a [`Makefile`](Makefile) in this folder that allows you to type `make` to knit the case study contained in the `index.Rmd` to `index.html` and it will also knit the [`README.Rmd`](README.Rmd) to a markdown file (`README.md`). Note that you may need to press the "Q" key to close the documentation about flexdashboard.
 
-Users can skip the Data Import and Data Wrangling sections to start with the Data Analysis and Visualization section if they wish. 
+Users can skip the Data Import and Data Wrangling sections to start with the Data Analysis and Visualization section if they wish. Alternatively users can also start at the Dashboard Basics or Our Dashboard sections.
 
 #### For instructors
 
