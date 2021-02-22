@@ -809,20 +809,17 @@ knitr::include_graphics(here::here("img", "double.png"))
 
 Now we will save the geocoded data in the `wrangled` directory of our `data` directory using the `save` function.
 
-This requires listing the R object, followed by the path for where the file should be saved and what it should be called. In this case it will be called `shooting_data_wrangled_pre_map.rda`. First let's create a new object called `shooting_data_wrangled_pre_map` so it is clear in the future what we are working with when we load the data.
+This requires listing the R object, followed by the path for where the file should be saved and what it should be called. In this case it will be called `shooting_data_wrangled_pre_map.rda`. First let's create a new object called `shooting_data_wrangled_pre_map` so it is clear in the future what we are working with when we load the data. We will also write this data to a csv file, which can be convenient for collaborators. To do this we will use the `write_csv()` function of the `readr` package.
 
 
 ```{r, eval = FALSE}
 shooting_data_wrangled_pre_map <- shooting_data
 save(shooting_data_wrangled_pre_map, file = here("data", "wrangled",
                              "shooting_data_wrangled_pre_map.rda"))
-```
 
-```{r, echo = FALSE, eval = FALSE} 
-# for instructors that wish to use csv files we will save as a csv file
 readr::write_csv(shooting_data_wrangled_pre_map, 
                  path = here("data", "wrangled",
-                             "shooting_data_warngled_pre_map.csv"))
+                             "shooting_data_wrangled_pre_map.csv"))
 ```
 
 Great now we will work with this data, thus you do not need to get an API key to get to this point. You can access this data [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/wrangled) for you to download.
@@ -992,21 +989,13 @@ shooting_data_wrangled_for_map %>%
 
 Great! That looks like we expected.
 
-Finally, we will save our wrangled data, again using `save()`.
+Finally, we will save our wrangled data, again using `save()` and we will also write to a CSV file using `write_csv()`.
 ```{r, eval = FALSE}
 
 save(shooting_data_wrangled_for_map, 
           file = here("data", "wrangled",
                       "shooting_data_wrangled_for_map.rda"))
-```
 
-
-
-```{r, eval = FALSE, echo = FALSE}
-# we will first save as CSV files for instructors that wish to have CSV files
-# readr::write_csv(shooting_data, 
-#                  path = here("data", "wrangled",
-#                              "shooting_data_pre_geo_wrangled.csv"))
 write_csv(shooting_data_wrangled_for_map, 
           path = here("data", "wrangled",
                       "shooting_data_wrangled_for_map.csv"))
@@ -1822,6 +1811,8 @@ reporting_gun
 We are now ready to build our dashboard!
 
 Let's introduce some basics about creating dashboards in R in the `flexdashboard` package.
+
+Note that you can also start the case study at this point, we will let you know how to get the data that you need.
 
 ## **Dashboard packages**
 ***
