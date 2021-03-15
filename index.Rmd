@@ -818,7 +818,7 @@ save(shooting_data_wrangled_pre_map, file = here("data", "wrangled",
                              "shooting_data_wrangled_pre_map.rda"))
 
 readr::write_csv(shooting_data_wrangled_pre_map, 
-                 path = here("data", "wrangled",
+                 file = here("data", "wrangled",
                              "shooting_data_wrangled_pre_map.csv"))
 ```
 
@@ -997,7 +997,7 @@ save(shooting_data_wrangled_for_map,
                       "shooting_data_wrangled_for_map.rda"))
 
 write_csv(shooting_data_wrangled_for_map, 
-          path = here("data", "wrangled",
+          file = here("data", "wrangled",
                       "shooting_data_wrangled_for_map.csv"))
 ```
 
