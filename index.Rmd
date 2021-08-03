@@ -61,6 +61,15 @@ The link to the dashboard described in this case study is [here](https://rsconne
 
 To access the GitHub Repository for this case study see here: https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/.
 
+To access the GitHub repository for this case study see here: https://github.com//opencasestudies/ocs-bp-youth-disconnection. 
+
+You may also access and download the data using our `OCSdata` package. To learn more about this package including examples, see this [link](https://github.com/opencasestudies/OCSdata). Here is how you would install this package:
+
+```{r, eval=FALSE}
+# install.packages("devtools")
+devtools::install_github("opencasestudies/OCSdata")
+```
+
 This case study is part of a series of public health case studies for the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/open-case-studies).
 
 For users or instructors who only wish to look at the basics of how to create a dashboard in R with the `flexdashboard` package, please see the [**Dashboard Basics**] Section. 
@@ -141,7 +150,7 @@ Given this need for more research to better understand why these events occur an
 [Here](https://jjallaire.shinyapps.io/shiny-crandash/#dashboardl) you can see an example of a dashboard created in R about downloads of packages on [cran](https://cran.r-project.org/).
 
 
-On the website the tabs and and plots are interactive. The above dashboard allows for users to get to know the data in a simple and quick way.
+On the website the tabs and plots are interactive. The above dashboard allows for users to get to know the data in a simple and quick way.
 
 The data about package downloads is succinctly summarized in an impactful manner.
 
@@ -174,7 +183,7 @@ Now let's learn how to create a dashboard with our data of interest.
 # **Learning Objectives** 
 *** 
 
-In this case study, we will demonstrate how to create a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report about a database. We will especially focus on using packages and functions from the [`tidyverse`](https://www.tidyverse.org/){target="_blank"}, such as `package_name`, `package_name`. The tidyverse is a library of packages created by RStudio. While some students may be familiar with previous R programming packages, these packages make data science in R more human-readable and intuitive.
+In this case study, we will demonstrate how to create a [dashboard](https://en.wikipedia.org/wiki/Dashboard_(business)), which is a website that displays a report about a database. We will especially focus on using packages and functions from the [`tidyverse`](https://www.tidyverse.org/){target="_blank"}, such as `package_name`. The tidyverse is a library of packages created by RStudio. While some students may be familiar with previous R programming packages, these packages make data science in R more human-readable and intuitive.
 
 
 ```{r, out.width = "20%", echo = FALSE, fig.align ="center"}
@@ -366,7 +375,16 @@ Previously, the website for this data was located at "https://www.chds.us/ssdb/d
 
 Now the data can be found at this [link](https://www.chds.us/ssdb/about/) and a file of the raw data can be downloaded by clicking the "DOWNLOAD RAW DATA" button. This file was previously a `.CSV` file, but it is now an `.XLSX` file. 
 
-To account for changes with this website, we have made the previous `.CSV` file available [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/raw/K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv) for you to download.
+To account for changes with this website, we have made the previous `.CSV` file available for you to download using the `OCSdata` package:
+
+```{r, eval=FALSE}
+# install.packages("devtools")
+# devtools::install_github("opencasestudies/OCSdata")
+# library(OCSdata)
+raw_data("ocs-bp-school-shootings-dashboard")
+```
+
+If you have trouble using the package, you may also download this `.CSV` file [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/raw/K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv).
 
 In our case, we downloaded this data and put it within a "raw" subdirectory of a "data" directory for our project. If you use an RStudio project, then you can use the `here()` function of the `here` package to make the path for importing this data simpler. The `here` package automatically starts looking for files based on where you have a `.Rproj` file which is created when you start a new RStudio project. We can specify that we want to look for the "LND01.xls" file within the "raw" directory within the "data" directory within a directory where our `.Rproj` file is located by separating the names of these directories using commas and listing "data" first. 
 
@@ -497,7 +515,25 @@ load(here::here("data", "imported", "shooting_data.rda"))
 ***
 <details> <summary> If you skipped the data import section click here. </summary>
 
-An RDA file (stands for R data) of the data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/imported) or slightly more directly [here](https://raw.githubusercontent.com/opencasestudies/ocs-bp-school-shootings-dashboard/master/data/imported/shooting_data.rda). Download this file and then place it in your current working directory. We recommend using an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to your file more easily. We have put this file in a directory called "imported" within a directory called "data" within our working directory (which has a .Rproj file).
+First you need to install the `OCSdata` package:
+
+```{r, eval=FALSE}
+# install.packages("devtools")
+devtools::install_github("opencasestudies/OCSdata")
+```
+
+Then, you may download the imported data `.rda` file using the following function:
+
+```{r, eval=FALSE}
+# library(OCSdata)
+imported_data("ocs-bp-school-shootings-dashboard")
+```
+
+To load the downloaded data into your environment, you may double click on the `.rda` file in Rstudio or using the `load()` function.
+
+If the package does not work for you, an RDA file (stands for R data) of the data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/imported) or slightly more directly [here](https://raw.githubusercontent.com/opencasestudies/ocs-bp-school-shootings-dashboard/master/data/imported/shooting_data.rda). Download this file and then place it in your current working directory. We recommend using an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to your file more easily. 
+
+We have put this file in a directory called "imported" within a directory called "data" within our working directory (which has a .Rproj file).
 
 ```{r}
 load(here::here("data", "imported", "shooting_data.rda"))
@@ -562,11 +598,34 @@ knitr::include_graphics(here::here("img", "join.png"))
 
 Here is  a visualization of these options:
 
-```{r, echo = FALSE, outwidth = "50%"}
-knitr::include_graphics(here::here("img", "join_image.png"))
+```{r, echo = FALSE, outwidth = "10%"}
+# inner_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/inner-join.gif")
 ```
 
-##### [[source]](https://rstudio.com/resources/cheatsheets/)
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/inner-join.gif)
+
+```{r, echo = FALSE, outwidth = "10%"}
+# left_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/left-join.gif")
+```
+
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/left-join.gif)
+
+```{r, echo = FALSE, outwidth = "10%"}
+# right_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/right-join.gif")
+```
+
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/right-join.gif)
+
+
+```{r, echo = FALSE, outwidth = "10%"}
+# full_join
+knitr::include_graphics("https://raw.githubusercontent.com/gadenbuie/tidyexplain/master/images/full-join.gif")
+```
+
+##### [[source]](https://github.com/gadenbuie/tidyexplain/blob/master/images/full-join.gif)
 
 See [here](https://dplyr.tidyverse.org/reference/join.html) for more details about joining data.
 
@@ -839,7 +898,18 @@ readr::write_csv(shooting_data_wrangled_pre_map,
                              "shooting_data_wrangled_pre_map.csv"))
 ```
 
-Great now we will work with this data, thus you do not need to get an API key to get to this point. You can access this data [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/wrangled) for you to download.
+Great now we will work with this data, thus you do not need to get an API key to get to this point. You can download this data using the `OCSdata` package:
+
+```{r, eval=FALSE}
+# install.packages("devtools")
+# devtools::install_github("opencasestudies/OCSdata")
+# library(OCSdata)
+wrangled_rda("ocs-bp-school-shootings-dashboard")
+```
+
+You can also access this data [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/wrangled).
+
+To load the data, you may double click the downloaded `.rda` file in RStudio, or put the downloaded file in the appropriate directory and use the following command.
 
 ```{r}
 load(file = here("data", "wrangled",
@@ -851,7 +921,7 @@ load(file = here("data", "wrangled",
 ## **Geometry lists with the `sf` package**
 
 In this section, we will use the `sf` (which stands for simple features) package to 
-create what is called a geometry list of our latitude and longitude information for the schools where shootings occurred. As some school shootings occurred in the same location, we need to alter all of the locations a bit so that when we plot the data on a map, so that the spots indicating where shootings occurred will not overlap for the same location.
+create what is called a geometry list of our latitude and longitude information for the schools where shootings occurred. As some school shootings occurred in the same location, we need to alter all of the locations a bit so that when we plot the data on a map, the spots indicating where shootings occurred will not overlap for the same location.
 
 Let's learn how to do this. 
 
@@ -1032,9 +1102,27 @@ load(here::here("data", "wrangled", "shooting_data_wrangled_for_map.rda"))
 We need the wangled data that is prepared both for the map and the data just before the last wrangling step Geometry lists with the `sf` package] to prepare for the map because we removed some events that did not have addresses that were identified by Google (had `NA` values for latitude or longitude).  We want to use data for all events for our statistics, tables, and plots.
 
 ***
-<details> <summary> If you skipped the data import section click here. </summary>
+<details> <summary> If you skipped the previous sections click here. </summary>
 
-Two RDA files (stands for R data) of the data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/wrangled) or slightly more directly [here](https://raw.githubusercontent.com/opencasestudies/ocs-bp-school-shootings-dashboard/master/data/wrangled/shooting_data_wrangled_for_map.rda) and [here](https://raw.githubusercontent.com/opencasestudies/ocs-bp-school-shootings-dashboard/master/data/wrangled/shooting_data_wrangled_pre_map.rda). Download these files and then place them in your current working directory. We recommend using an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to your files more easily. We have put these files in a directory called "wrangled" within a directory called "data" within our working directory (which has a .Rproj file).
+First you need to install the `OCSdata` package:
+
+```{r, eval=FALSE}
+# install.packages("devtools")
+devtools::install_github("opencasestudies/OCSdata")
+```
+
+Then, you may download the wrangled data `.rda` files like so:
+
+```{r, eval=FALSE}
+# library(OCSdata)
+wrangled_rda("ocs-bp-school-shootings-dashboard")
+```
+
+To load the downloaded data into your environment, you may double click on each of the `.rda` files in Rstudio or using the `load()` function.
+
+If the package does not work for you, two RDA files (stands for R data) of the data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/wrangled) or slightly more directly [here](https://raw.githubusercontent.com/opencasestudies/ocs-bp-school-shootings-dashboard/master/data/wrangled/shooting_data_wrangled_for_map.rda) and [here](https://raw.githubusercontent.com/opencasestudies/ocs-bp-school-shootings-dashboard/master/data/wrangled/shooting_data_wrangled_pre_map.rda). Download these files and then place them in your current working directory. We recommend using an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to your files more easily. 
+
+We have put these files in a directory called "wrangled" within a directory called "data" within our working directory (which has a .Rproj file).
 
 ```{r}
 load(here::here("data", "wrangled", "shooting_data_wrangled_for_map.rda"))
@@ -1295,7 +1383,7 @@ per_year %<>%
 per_year
 ```
 
-Hmmm, we see the data type of the `id` column is a character (`<chr>`). Let's convert it to a factor, so that the the order in which `Shootings` and `Deaths` appear is the order in which they appear first rather than by alphabetical order (which is default).
+Hmmm, we see the data type of the `id` column is a character (`<chr>`). Let's convert it to a factor, so that the order in which `Shootings` and `Deaths` appear is the order in which they appear first rather than by alphabetical order (which is default).
 
 Using the `fct_inorder()` function of the `forcats` package, we can easily reorder the `id` variable`. 
 
@@ -1456,9 +1544,11 @@ per_year_cum %>%
 Next, we will make a plot of the number of deaths per shooting based on the `Killed (includes shooter)` variable. 
 
 #### {.recall_code_question_block}
+
 <b><u> Question Opportunity </u></b>
 
 See if you can come up with the code for the plot.
+
 ####
 
 ***
@@ -1623,6 +1713,7 @@ deaths_perc_event
 ```
 
 #### {.think_question_block}
+
 <b><u> Question Opportunity </u></b>
 
 We could of used the`str_replace()` function of the `stringr` package to replace the value for the last row. This function would directly change the value of "85 deaths" to "4+deaths", but this would not be as reproducible. Why is that? 
@@ -1889,6 +1980,7 @@ embed_url("https://vimeo.com/178485416") %>%
 
 ##### [[source]](https://rmarkdown.rstudio.com/lesson-1.html) 
 
+***
 
 <details> <summary> Click here to see how this video was embedded in this R Markdown. </summary>
 
@@ -1902,6 +1994,8 @@ embed_url("https://vimeo.com/178485416") %>%
 ```
 
 </details>
+
+***
 
 These Rmd files can be rendered into a variety of file outputs like PDF, word, HTML etc. by the  [`knitr`](https://yihui.org/knitr/) and [`rmarkdown`](https://cran.r-project.org/web/packages/rmarkdown/rmarkdown.pdf) packages.
 
