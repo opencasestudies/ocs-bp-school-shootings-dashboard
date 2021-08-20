@@ -3,6 +3,12 @@
 OpenCaseStudies
 ===============
 
+<!-- badges: start -->
+
+[![render-README](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/workflows/render-README/badge.svg)](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/actions)
+[![render-index](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/workflows/render-index/badge.svg)](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/actions)
+<!-- badges: end -->
+
 ### Important links
 
 -   HTML:
