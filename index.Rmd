@@ -43,12 +43,17 @@ function googleTranslateElementInit() {
 </script>
 
 
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
                       message = FALSE, warning = FALSE, cache = FALSE,
                       fig.align = "center", out.width = '90%')
 library(here)
 library(knitr)
+
+rmarkdown:::perf_timer_reset_all()
+rmarkdown:::perf_timer_start("render")
 ```
 
 #### {.outline }
@@ -62,8 +67,6 @@ knitr::include_graphics(here("img", "aboutpagelook.png"))
 The link to the dashboard described in this case study is [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).  
 
 To access the GitHub Repository for this case study see here: https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/.
-
-To access the GitHub repository for this case study see here: https://github.com//opencasestudies/ocs-bp-youth-disconnection. 
 
 You may also access and download the data using our `OCSdata` package. To learn more about this package including examples, see this [link](https://github.com/opencasestudies/OCSdata). Here is how you would install this package:
 
@@ -95,11 +98,23 @@ Wright, Carrie and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hic
 
 ####
 
+**Total Reading Time: **
+
+```{r, echo=FALSE}
+wordcountaddin::text_stats("index.Rmd")
+```
+
+**Readability Score: **
+
+```{r, echo=FALSE}
+wordcountaddin::readability("index.Rmd")
+```
 
 Please help us by filling out our survey.
 
 
 <div style="display: flex; justify-content: center;"><iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfpN4FN3KELqBNEgf2Atpi7Wy7Nqy2beSkFQINL7Y5sAMV5_w/viewform?embedded=true" width="1200" height="700" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe></div>
+
 
 
 # **Motivation**
@@ -2355,7 +2370,7 @@ There are many other argument options for how the dashboard is displayed.
 
 You can run the following command in the console to see more information about the arguments in the help pane of the R Studio [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment).
 
-```{r}
+```{r, eval=FALSE}
 ?flexdashboard::flex_dashboard()
 ```
 
@@ -4180,6 +4195,14 @@ If you or your child or student experienced a shooting please see this [website]
 
 ```{r}
 sessionInfo()
+```
+
+**RMarkdown Compilation Time: **
+
+```{r, echo=FALSE}
+rmarkdown:::perf_timer_stop("render")
+pts = rmarkdown:::perf_timer_summary()
+cat("Around", round(pts$time[1]/1000 + 10), "seconds")
 ```
 
 
