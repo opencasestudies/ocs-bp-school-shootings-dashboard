@@ -423,7 +423,7 @@ To account for changes with this website, we have made the previous `.csv` file 
 
 ```{r, eval=FALSE}
 # library(OCSdata)
-raw_data("ocs-bp-school-shootings-dashboard")
+raw_data("ocs-bp-school-shootings-dashboard", outpath = getwd())
 ```
 
 If you have trouble using the package, you may also download this `.csv` file [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/raw/K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv).
@@ -567,10 +567,11 @@ Then, you may download the imported data `.rda` file using the following functio
 
 ```{r, eval=FALSE}
 # library(OCSdata)
-imported_data("ocs-bp-school-shootings-dashboard")
+imported_data("ocs-bp-school-shootings-dashboard", outpath = getwd())
+# load(here::here("OCSdata", "data", "imported", "shooting_data.rda"))
 ```
 
-To load the downloaded data into your environment, you may double click on the `.rda` file in Rstudio or using the `load()` function.
+To load the downloaded data into your environment, you may double click on the `.rda` file in RStudio or using the `load()` function.
 
 If the package does not work for you, an RDA file (stands for R data) of the data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/imported) or slightly more directly [here](https://raw.githubusercontent.com/opencasestudies/ocs-bp-school-shootings-dashboard/master/data/imported/shooting_data.rda). Download this file and then place it in your current working directory. We recommend using an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to your file more easily. 
 
@@ -969,7 +970,8 @@ You can download the wrangled data with latitude and longitude values using the 
 
 ```{r, eval=FALSE}
 # library(OCSdata)
-wrangled_rda("ocs-bp-school-shootings-dashboard")
+wrangled_rda("ocs-bp-school-shootings-dashboard", outpath = getwd())
+# load(file = here("OCSdata", "data", "wrangled", "shooting_data_wrangled_pre_map.rda"))
 ```
 
 You can also access this data [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/wrangled).
@@ -1186,7 +1188,9 @@ Then, you may download the wrangled data `.rda` files like so:
 
 ```{r, eval=FALSE}
 # library(OCSdata)
-wrangled_rda("ocs-bp-school-shootings-dashboard")
+wrangled_rda("ocs-bp-school-shootings-dashboard", outpath = getwd())
+# load(here::here("OCSdata", "data", "wrangled", "shooting_data_wrangled_pre_map.rda"))
+# load(here::here("OCSdata", "data", "wrangled", "shooting_data_wrangled_for_map.rda"))
 ```
 
 To load the downloaded data into your environment, you may double click on each of the `.rda` files in Rstudio or using the `load()` function.
