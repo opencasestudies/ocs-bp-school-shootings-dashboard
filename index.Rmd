@@ -51,6 +51,7 @@ knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
                       fig.align = "center", out.width = '90%')
 library(here)
 library(knitr)
+library(wordcountaddin)
 
 rmarkdown:::perf_timer_reset_all()
 rmarkdown:::perf_timer_start("render")
@@ -101,14 +102,20 @@ Wright, Carrie and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hic
 **Total Reading Time: **
 
 ```{r, echo=FALSE}
-wordcountaddin::text_stats("index.Rmd")
+readtable = text_stats("index.Rmd") # producing reading time markdown table
+timerow = stringr::str_split(readtable[6], "\\|") # extracting read time row
+num_min = stringr::str_split(timerow[[1]][3], " ") # extracting koRpus reading time
+cat("About", round(as.numeric(num_min[[1]][1])), "minutes") # print reading time
 ```
 
 **Readability Score: **
 
-```{r, echo=FALSE}
-wordcountaddin::readability("index.Rmd")
-```
+|index          |grade           |age  |
+|:--------------|:---------------|:----|
+|Flesch-Kincaid |9               |14   |
+|FORCAST        |10              |15   |
+|SMOG           |11              |16   |
+
 
 Please help us by filling out our survey.
 
@@ -4202,7 +4209,7 @@ sessionInfo()
 ```{r, echo=FALSE}
 rmarkdown:::perf_timer_stop("render")
 pts = rmarkdown:::perf_timer_summary()
-cat("Around", round(pts$time[1]/1000 + 10), "seconds")
+cat("About", round(pts$time[1]/1000 + 10), "seconds")
 ```
 
 
