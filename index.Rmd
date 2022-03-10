@@ -52,6 +52,7 @@ knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
 library(here)
 library(knitr)
 library(wordcountaddin)
+library(magrittr)
 
 rmarkdown:::perf_timer_reset_all()
 rmarkdown:::perf_timer_start("render")
@@ -99,23 +100,29 @@ Wright, Carrie and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hic
 
 ####
 
-**Total Reading Time: **
+#### {.disclaimer_block}
 
 ```{r, echo=FALSE}
 readtable = text_stats("index.Rmd") # producing reading time markdown table
-timerow = stringr::str_split(readtable[6], "\\|") # extracting read time row
-num_min = stringr::str_split(timerow[[1]][3], " ") # extracting koRpus reading time
-cat("About", round(as.numeric(num_min[[1]][1])), "minutes") # print reading time
+readtime = read.so::read.md(readtable) %>% dplyr::select(Method, koRpus) %>% # reading table into dataframe, selecting relevant factors
+  dplyr::filter(Method == "Reading time") %>% # dropping unnecessary rows
+  dplyr::mutate(koRpus = paste(round(as.numeric(stringr::str_split(koRpus, " ")[[1]][1])), "minutes")) %>% # rounding reading time estimate
+  dplyr::mutate(Method = "koRpus") %>% dplyr::relocate(koRpus, .before = Method) %>% dplyr::rename(`Reading Time` = koRpus) # reorganizing table
+knitr::kable(readtime, format="markdown")
 ```
 
 **Readability Score: **
 
-|index          |grade           |age  |
-|:--------------|:---------------|:----|
-|Flesch-Kincaid |9               |14   |
-|FORCAST        |10              |15   |
-|SMOG           |11              |16   |
+```{r, echo=FALSE}
+rt = wordcountaddin::readability("index.Rmd", quiet=TRUE) # producing readability markdown table
+df = read.so::read.md(rt) %>% dplyr::select(index, grade, age) %>%  # reading table into dataframe, selecting relevant factors
+  tidyr::drop_na() %>% dplyr::mutate(grade = round(as.numeric(grade)), # dropping rows with missing values, rounding age and grade columns
+                                     age = round(as.numeric(age))
+                                     )
+knitr::kable(df, format="markdown")
+```
 
+####
 
 Please help us by filling out our survey.
 
