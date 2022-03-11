@@ -100,7 +100,7 @@ Wright, Carrie and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hic
 
 ####
 
-#### {.disclaimer_block}
+The total reading time for this case study is calculated via [koRpus](https://github.com/unDocUMeantIt/koRpus) and shown below: 
 
 ```{r, echo=FALSE}
 readtable = text_stats("index.Rmd") # producing reading time markdown table
@@ -111,7 +111,11 @@ readtime = read.so::read.md(readtable) %>% dplyr::select(Method, koRpus) %>% # r
 knitr::kable(readtime, format="markdown")
 ```
 
+***
+
 **Readability Score: **
+
+A readability index estimates the reading difficulty level of a particular text. Flesch-Kincaid, FORCAST, and SMOG are three common readability indices that were calculated for this case study via [koRpus](https://github.com/unDocUMeantIt/koRpus). These indices provide an estimation of the minimum reading level required to comprehend this case study by grade and age. 
 
 ```{r, echo=FALSE}
 rt = wordcountaddin::readability("index.Rmd", quiet=TRUE) # producing readability markdown table
@@ -122,10 +126,9 @@ df = read.so::read.md(rt) %>% dplyr::select(index, grade, age) %>%  # reading ta
 knitr::kable(df, format="markdown")
 ```
 
-####
+***
 
 Please help us by filling out our survey.
-
 
 <div style="display: flex; justify-content: center;"><iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfpN4FN3KELqBNEgf2Atpi7Wy7Nqy2beSkFQINL7Y5sAMV5_w/viewform?embedded=true" width="1200" height="700" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe></div>
 
