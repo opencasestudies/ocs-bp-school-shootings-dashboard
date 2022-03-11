@@ -309,7 +309,7 @@ Package   | Use in this case study
 [leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
 [maps](https://cran.r-project.org/web/packages/maps/maps.pdf) | to create the simple leaflet map example   
 [vembedr](https://github.com/ijlyttle/vembedr) | to include a video in our case study 
-[OCSdata](https://github.com/opencasestudies/OCSdata) | to access and download cOCS data files
+[OCSdata](https://github.com/opencasestudies/OCSdata) | to access and download OCS data files
 
 
 
