@@ -43,12 +43,20 @@ function googleTranslateElementInit() {
 </script>
 
 
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
                       message = FALSE, warning = FALSE, cache = FALSE,
                       fig.align = "center", out.width = '90%')
 library(here)
 library(knitr)
+devtools::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
+library(wordcountaddin)
+library(magrittr)
+
+rmarkdown:::perf_timer_reset_all()
+rmarkdown:::perf_timer_start("render")
 ```
 
 #### {.outline }
@@ -62,8 +70,6 @@ knitr::include_graphics(here("img", "aboutpagelook.png"))
 The link to the dashboard described in this case study is [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).  
 
 To access the GitHub Repository for this case study see here: https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/.
-
-To access the GitHub repository for this case study see here: https://github.com//opencasestudies/ocs-bp-youth-disconnection. 
 
 You may also access and download the data using our `OCSdata` package. To learn more about this package including examples, see this [link](https://github.com/opencasestudies/OCSdata). Here is how you would install this package:
 
@@ -95,11 +101,38 @@ Wright, Carrie and Ontiveros, Michael and Jager, Leah and Taub, Margaret and Hic
 
 ####
 
+The total reading time for this case study is calculated via [koRpus](https://github.com/unDocUMeantIt/koRpus) and shown below: 
+
+```{r, echo=FALSE}
+readtable = text_stats("index.Rmd") # producing reading time markdown table
+readtime = read.so::read.md(readtable) %>% dplyr::select(Method, koRpus) %>% # reading table into dataframe, selecting relevant factors
+  dplyr::filter(Method == "Reading time") %>% # dropping unnecessary rows
+  dplyr::mutate(koRpus = paste(round(as.numeric(stringr::str_split(koRpus, " ")[[1]][1])), "minutes")) %>% # rounding reading time estimate
+  dplyr::mutate(Method = "koRpus") %>% dplyr::relocate(koRpus, .before = Method) %>% dplyr::rename(`Reading Time` = koRpus) # reorganizing table
+knitr::kable(readtime, format="markdown")
+```
+
+***
+
+**Readability Score: **
+
+A readability index estimates the reading difficulty level of a particular text. Flesch-Kincaid, FORCAST, and SMOG are three common readability indices that were calculated for this case study via [koRpus](https://github.com/unDocUMeantIt/koRpus). These indices provide an estimation of the minimum reading level required to comprehend this case study by grade and age. 
+
+```{r, echo=FALSE}
+rt = wordcountaddin::readability("index.Rmd", quiet=TRUE) # producing readability markdown table
+df = read.so::read.md(rt) %>% dplyr::select(index, grade, age) %>%  # reading table into dataframe, selecting relevant factors
+  tidyr::drop_na() %>% dplyr::mutate(grade = round(as.numeric(grade)), # dropping rows with missing values, rounding age and grade columns
+                                     age = round(as.numeric(age))
+                                     )
+knitr::kable(df, format="markdown")
+```
+
+***
 
 Please help us by filling out our survey.
 
-
 <div style="display: flex; justify-content: center;"><iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfpN4FN3KELqBNEgf2Atpi7Wy7Nqy2beSkFQINL7Y5sAMV5_w/viewform?embedded=true" width="1200" height="700" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe></div>
+
 
 
 # **Motivation**
@@ -280,7 +313,7 @@ Package   | Use in this case study
 [leaflet](https://rstudio.github.io/leaflet/shiny.html) | to implement the [leaflet](http://leafletjs.com/) (a JavaScript library for maps) to create the map for our dashboard   
 [maps](https://cran.r-project.org/web/packages/maps/maps.pdf) | to create the simple leaflet map example   
 [vembedr](https://github.com/ijlyttle/vembedr) | to include a video in our case study 
-[OCSdata](https://github.com/opencasestudies/OCSdata) | to access and download cOCS data files
+[OCSdata](https://github.com/opencasestudies/OCSdata) | to access and download OCS data files
 
 
 
@@ -394,7 +427,7 @@ To account for changes with this website, we have made the previous `.csv` file 
 
 ```{r, eval=FALSE}
 # library(OCSdata)
-raw_data("ocs-bp-school-shootings-dashboard")
+raw_data("ocs-bp-school-shootings-dashboard", outpath = getwd())
 ```
 
 If you have trouble using the package, you may also download this `.csv` file [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/raw/K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv).
@@ -538,10 +571,11 @@ Then, you may download the imported data `.rda` file using the following functio
 
 ```{r, eval=FALSE}
 # library(OCSdata)
-imported_data("ocs-bp-school-shootings-dashboard")
+imported_data("ocs-bp-school-shootings-dashboard", outpath = getwd())
+# load(here::here("OCSdata", "data", "imported", "shooting_data.rda"))
 ```
 
-To load the downloaded data into your environment, you may double click on the `.rda` file in Rstudio or using the `load()` function.
+To load the downloaded data into your environment, you may double click on the `.rda` file in RStudio or using the `load()` function.
 
 If the package does not work for you, an RDA file (stands for R data) of the data can be found [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/tree/master/data/imported) or slightly more directly [here](https://raw.githubusercontent.com/opencasestudies/ocs-bp-school-shootings-dashboard/master/data/imported/shooting_data.rda). Download this file and then place it in your current working directory. We recommend using an RStudio project and the [`here` package](https://github.com/jennybc/here_here) to navigate to your file more easily. 
 
@@ -940,7 +974,8 @@ You can download the wrangled data with latitude and longitude values using the 
 
 ```{r, eval=FALSE}
 # library(OCSdata)
-wrangled_rda("ocs-bp-school-shootings-dashboard")
+wrangled_rda("ocs-bp-school-shootings-dashboard", outpath = getwd())
+# load(file = here("OCSdata", "data", "wrangled", "shooting_data_wrangled_pre_map.rda"))
 ```
 
 You can also access this data [here](https://github.com/opencasestudies/ocs-bp-school-shootings-dashboard/blob/master/data/wrangled).
@@ -1157,7 +1192,9 @@ Then, you may download the wrangled data `.rda` files like so:
 
 ```{r, eval=FALSE}
 # library(OCSdata)
-wrangled_rda("ocs-bp-school-shootings-dashboard")
+wrangled_rda("ocs-bp-school-shootings-dashboard", outpath = getwd())
+# load(here::here("OCSdata", "data", "wrangled", "shooting_data_wrangled_pre_map.rda"))
+# load(here::here("OCSdata", "data", "wrangled", "shooting_data_wrangled_for_map.rda"))
 ```
 
 To load the downloaded data into your environment, you may double click on each of the `.rda` files in Rstudio or using the `load()` function.
@@ -2355,7 +2392,7 @@ There are many other argument options for how the dashboard is displayed.
 
 You can run the following command in the console to see more information about the arguments in the help pane of the R Studio [IDE](https://en.wikipedia.org/wiki/Integrated_development_environment).
 
-```{r}
+```{r, eval=FALSE}
 ?flexdashboard::flex_dashboard()
 ```
 
@@ -4180,6 +4217,14 @@ If you or your child or student experienced a shooting please see this [website]
 
 ```{r}
 sessionInfo()
+```
+
+**RMarkdown Compilation Time: **
+
+```{r, echo=FALSE}
+rmarkdown:::perf_timer_stop("render")
+pts = rmarkdown:::perf_timer_summary()
+cat("About", round(pts$time[1]/1000 + 10), "seconds")
 ```
 
 
