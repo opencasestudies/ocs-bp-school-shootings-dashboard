@@ -59,6 +59,14 @@ for assisting in framing the major direction of the case study.
 We would also like to acknowledge the [Bloomberg American Health
 Initiative](https://americanhealth.jhu.edu/) for funding this work.
 
+### Reading Metrics
+
+The total reading time for this case study was calculated with
+[koRpus](https://github.com/unDocUMeantIt/koRpus): **~ 110 minutes**
+
+The Flesch-Kincaid Readability Index was also calculated with
+[koRpus](https://github.com/unDocUMeantIt/koRpus): **Grade 9, Age 14**
+
 ### Title
 
 School Shootings in the United States
@@ -413,3 +421,7 @@ elements within this dataset. For example, students may create graphs
 that explore what school events are reported to have more shootings.
 Students could be asked to use one of the pages of the dashboard that we
 created as an example.
+
+#### RMarkdown Compilation Time
+
+~ 35 seconds
