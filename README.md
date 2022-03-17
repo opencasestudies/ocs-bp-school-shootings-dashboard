@@ -428,4 +428,4 @@ created as an example.
 
 #### RMarkdown Compilation Time
 
-~ 35 seconds
+~ 40 seconds
