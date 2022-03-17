@@ -45,8 +45,8 @@ United States License.
 
 To cite this case study:
 
-Wright, Carrie and Ontiveros, Michael and Jager, Leah and Taub, Margaret
-and Hicks, Stephanie. (2020).
+Wright, Carrie and Ontiveros, Michael and Meng, Qier and Jager, Leah and
+Taub, Margaret and Hicks, Stephanie. (2020).
 <https://github.com//opencasestudies/ocs-bp-school-shootings-dashboard>.
 School Shootings in the United States (Version v1.0.0).
 
