@@ -1079,7 +1079,7 @@ shooting_data_wrangled_for_map  %<>%
 Notice how the  class for the `geometry` variable is now `<POINT [m]>` as our data has been transformed into coordinates in meters.
 
 ```{r}
-shooting_data_wrangled_pre_map[1:4]
+shooting_data_wrangled_pre_map[1:5]
 ```
 
 And now we will add a jitter to the points using the `st_jitter()` function, meaning that we will randomly move the coordinates a little bit to allow for points at the same location to not overlap on the map.
