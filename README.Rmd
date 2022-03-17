@@ -255,3 +255,4 @@ Create another dashboard with graphs and statistics featuring other elements wit
 #### RMarkdown Compilation Time
 
 ~ 35 seconds
+
