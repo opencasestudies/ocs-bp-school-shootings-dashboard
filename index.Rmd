@@ -2309,18 +2309,18 @@ See this [link](https://shiny.rstudio.com/articles/shinyapps.html) for a getting
 Let's take a minute to test your knowledge about `flexdashboard` basics:  
 
 1) How do we create multiple pages?  
-2) How do you create multiple columns?  
+2) How do we create multiple columns?  
 3) How do we create multiple tabs?  
-4) How do we create start a dashboard?  
+4) How do we start creating a dashboard?  
 5) How do we enable our dashboard to be interactive?  
 
 ***
 <details> <summary> Click here to reveal the answers. </summary>
 
 1) How do we create multiple pages? We use the `===` syntax.
-2) How do you create multiple columns? We use the `---` syntax.
-3) How do we create multiple tabs? We use `{.tabset} syntax combined with the column break `---` syntax. 
-4) We create an R Markdown document and we add `output: flexdashboard::flexdashboard` to the YAML.
+2) How do we create multiple columns? We use the `---` syntax.
+3) How do we create multiple tabs? We use `{.tabset}` syntax combined with the column break `---` syntax. 
+4) How do we start creating a dashboard? We create an R Markdown document and we add `output: flexdashboard::flexdashboard` to the YAML.
 5) How do we enable our dashboard to be interactive?  We add `runtime:shiny` to the YAML.
 
 </details>
