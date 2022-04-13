@@ -1561,10 +1561,10 @@ shootings_per_year
 However, we want to add a new variable using the `mutate` function called `n_cum_sum` by using the `cumsum()` function to calculate a cumulative sum based on the yearly count. 
 
 ```{r}
-shootings_per_year_cum <- shootings_per_year%>%
+shootings_per_year_cum <- shootings_per_year %>%
     mutate(Shootings = cumsum(Shootings))
 
-deaths_per_year_cum <- deaths_per_year%>%
+deaths_per_year_cum <- deaths_per_year %>%
     mutate(Deaths = cumsum(Deaths))
 
 shootings_per_year_cum
@@ -2336,7 +2336,7 @@ Let's take a minute to test your knowledge about `flexdashboard` basics:
 
 OK! Now that we know a bit about the basics of creating a dashboard, let's create our own.
 
-The link to the dashboard described in this section is located  [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).
+The link to the dashboard described in this section is located [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).
 
 We want to create a dashboard that has several tabs that will look like this:
 
