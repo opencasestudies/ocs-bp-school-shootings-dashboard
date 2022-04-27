@@ -1561,10 +1561,10 @@ shootings_per_year
 However, we want to add a new variable using the `mutate` function called `n_cum_sum` by using the `cumsum()` function to calculate a cumulative sum based on the yearly count. 
 
 ```{r}
-shootings_per_year_cum <- shootings_per_year%>%
+shootings_per_year_cum <- shootings_per_year %>%
     mutate(Shootings = cumsum(Shootings))
 
-deaths_per_year_cum <- deaths_per_year%>%
+deaths_per_year_cum <- deaths_per_year %>%
     mutate(Deaths = cumsum(Deaths))
 
 shootings_per_year_cum
@@ -2309,18 +2309,18 @@ See this [link](https://shiny.rstudio.com/articles/shinyapps.html) for a getting
 Let's take a minute to test your knowledge about `flexdashboard` basics:  
 
 1) How do we create multiple pages?  
-2) How do you create multiple columns?  
+2) How do we create multiple columns?  
 3) How do we create multiple tabs?  
-4) How do we create start a dashboard?  
+4) How do we start creating a dashboard?  
 5) How do we enable our dashboard to be interactive?  
 
 ***
 <details> <summary> Click here to reveal the answers. </summary>
 
 1) How do we create multiple pages? We use the `===` syntax.
-2) How do you create multiple columns? We use the `---` syntax.
-3) How do we create multiple tabs? We use `{.tabset} syntax combined with the column break `---` syntax. 
-4) We create an R Markdown document and we add `output: flexdashboard::flexdashboard` to the YAML.
+2) How do we create multiple columns? We use the `---` syntax.
+3) How do we create multiple tabs? We use `{.tabset}` syntax combined with the column break `---` syntax. 
+4) How do we start creating a dashboard? We create an R Markdown document and we add `output: flexdashboard::flexdashboard` to the YAML.
 5) How do we enable our dashboard to be interactive?  We add `runtime:shiny` to the YAML.
 
 </details>
@@ -2336,7 +2336,7 @@ Let's take a minute to test your knowledge about `flexdashboard` basics:
 
 OK! Now that we know a bit about the basics of creating a dashboard, let's create our own.
 
-The link to the dashboard described in this section is located  [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).
+The link to the dashboard described in this section is located [here](https://rsconnect.biostat.jhsph.edu/ocs-bp-school-shootings-dashboard/).
 
 We want to create a dashboard that has several tabs that will look like this:
 
@@ -4221,14 +4221,15 @@ If you or your child or student experienced a shooting please see this [website]
 sessionInfo()
 ```
 
-**RMarkdown Compilation Time: **
+**Estimate of RMarkdown Compilation Time: **
 
 ```{r, echo=FALSE}
 rmarkdown:::perf_timer_stop("render")
 pts = rmarkdown:::perf_timer_summary()
-cat("About", round(pts$time[1]/1000 + 10), "seconds")
+cat("About", round(pts$time[1]/1000 + 5), "-", round(pts$time[1]/1000 + 15),"seconds")
 ```
 
+This compilation time was measured on a PC machine operating on Windows 10. This range should only be used as an estimate as compilation time will vary with different machines and operating systems.
 
 ## **Acknowledgments**
 ***
