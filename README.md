@@ -426,6 +426,10 @@ that explore what school events are reported to have more shootings.
 Students could be asked to use one of the pages of the dashboard that we
 created as an example.
 
-#### RMarkdown Compilation Time
+#### Estimate of RMarkdown Compilation Time:
 
-~ 40 seconds
+~ About 29 - 39 seconds
+
+This compilation time was measured on a PC machine operating on Windows
+10. This range should only be used as an estimate as compilation time
+will vary with different machines and operating systems.
