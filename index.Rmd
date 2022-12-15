@@ -2144,7 +2144,7 @@ We will describe this in more detail soon.
 
 2. To add a page to a navigation bar (also called a navbar) the following syntax is used `=======`. The number of dashes does not matter. (This is a level 1 header in Markdown, just like `#`)
 
-3. To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modified to specify to create rows, than this same syntax will be used to create rows. The number of dashes does not matter. (This is a level 2 header in Markdown, just like `##`)
+3. To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modified to specify to create rows, then this same syntax will be used to create rows. The number of dashes does not matter. (This is a level 2 header in Markdown, just like `##`)
 
 4. Components within the dashboard are delineated by using `###` - if you are familiar with Markdown notation, this is a level 3 Markdown header.
 
@@ -2181,12 +2181,12 @@ knitr::include_graphics(here::here("img", "valuebox.png"))
 
 ##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/using.html#value_boxes)
 
-7. Instead of value boxes you can also include a slight variation called a gauge. These are created with the `guage()` function from the `flexdashboard` package. This requires numeric values for a `value`, a `min`, and a `max` argument. Optionally, a symbol can also be added with the `symbol` argument. The value argument does not have to be explicitly called though, which is also true of the `valueBox()` function.
+7. Instead of value boxes you can also include a slight variation called a gauge. These are created with the `gauge()` function from the `flexdashboard` package. This requires numeric values for a `value`, a `min`, and a `max` argument. Optionally, a symbol can also be added with the `symbol` argument. The value argument does not have to be explicitly called though, which is also true of the `valueBox()` function.
 
 Here is a simple example:
 
 ```
-### GuageText
+### GaugeText
 
 '''{r}
 flexdashboard::gauge(value = 10, 
