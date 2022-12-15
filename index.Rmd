@@ -2144,7 +2144,7 @@ We will describe this in more detail soon.
 
 2. To add a page to a navigation bar (also called a navbar) the following syntax is used `=======`. The number of dashes does not matter. (This is a level 1 header in Markdown, just like `#`)
 
-3. To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modified to specify to create rows, than this same syntax will be used to create rows. The number of dashes does not matter. (This is a level 2 header in Markdown, just like `##`)
+3. To add columns or rows the following syntax is used `---------`. By default this notation will create new columns, however if the YAML is modified to specify to create rows, then this same syntax will be used to create rows. The number of dashes does not matter. (This is a level 2 header in Markdown, just like `##`)
 
 4. Components within the dashboard are delineated by using `###` - if you are familiar with Markdown notation, this is a level 3 Markdown header.
 
