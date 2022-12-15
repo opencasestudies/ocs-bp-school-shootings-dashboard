@@ -2181,12 +2181,12 @@ knitr::include_graphics(here::here("img", "valuebox.png"))
 
 ##### [[source]](https://rmarkdown.rstudio.com/flexdashboard/using.html#value_boxes)
 
-7. Instead of value boxes you can also include a slight variation called a gauge. These are created with the `guage()` function from the `flexdashboard` package. This requires numeric values for a `value`, a `min`, and a `max` argument. Optionally, a symbol can also be added with the `symbol` argument. The value argument does not have to be explicitly called though, which is also true of the `valueBox()` function.
+7. Instead of value boxes you can also include a slight variation called a gauge. These are created with the `gauge()` function from the `flexdashboard` package. This requires numeric values for a `value`, a `min`, and a `max` argument. Optionally, a symbol can also be added with the `symbol` argument. The value argument does not have to be explicitly called though, which is also true of the `valueBox()` function.
 
 Here is a simple example:
 
 ```
-### GuageText
+### GaugeText
 
 '''{r}
 flexdashboard::gauge(value = 10, 
