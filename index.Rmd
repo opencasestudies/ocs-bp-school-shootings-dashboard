@@ -51,11 +51,13 @@ knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
                       fig.align = "center", out.width = '90%')
 library(here)
 library(knitr)
-library(magrittr)
 remotes::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
 remotes::install_github("alistaire47/read.so")
 library(wordcountaddin)
 library(read.so)
+library(dplyr)
+remotes::install_github("hrbrmstr/waffle")
+library(waffle)
 
 rmarkdown:::perf_timer_reset_all()
 rmarkdown:::perf_timer_start("render")
@@ -194,7 +196,7 @@ The data about package downloads is succinctly summarized in an impactful manner
 knitr::include_graphics(here::here("img", "dashboard.png"))
 ```
 
-We can quickly get a sense that the `magrittr` package is among the top most widely downloaded packages on CRAN.
+We can quickly get a sense that the `dplyr` package is among the top most widely downloaded packages on CRAN.
 
 
 ##### [[source]](https://jjallaire.shinyapps.io/shiny-crandash/#dashboardl)
@@ -261,7 +263,6 @@ library(googlesheets4)
 library(tibble)
 library(dplyr)
 library(stringr)
-library(magrittr)
 library(tidyr)
 library(ggmap)
 library(sf)
@@ -298,7 +299,6 @@ Package   | Use in this case study
 [tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data  
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (collapsing strings together, replace values, and detect values)
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands 
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, and to see the last few columns of a tibble
 [ggmap](https://cran.r-project.org/web/packages/ggmap/ggmap.pdf) | to geocode the data (which means get the latitude and longitude values)
 [sf](https://r-spatial.github.io/sf/) | to modify the geocoded data so that overlapping points did not overlap
@@ -684,13 +684,13 @@ We also don't want the `inner_join()` function because `DC` does not have a stat
 
 > The [U.S. Constitution](https://en.wikipedia.org/wiki/U.S._Constitution) provides for a [federal district](https://en.wikipedia.org/wiki/Federal_district) under the [exclusive jurisdiction](https://en.wikipedia.org/wiki/District_of_Columbia_home_rule) of [Congress](https://en.wikipedia.org/wiki/United_States_Congress); the district is therefore not a part of any [U.S. state](https://en.wikipedia.org/wiki/U.S._state) (nor is it one itself)
 
-Thus we will use the `left_join(x,y)` function where `x` in this case will be the `shooting_data` (as it is introduced to this code first through the `%<>%` compound assignment pipe operator) and `y` is the `state_df`. Thus, we add the `state_df` values where they match to the `shooting_data`.
+Thus we will use the `left_join(x,y)` function where `x` in this case will be the `shooting_data` (as it is introduced to this code first through the `%>%` pipe operator from the `dplyr` package) and `y` is the `state_df`. Thus, we add the `state_df` values where they match to the `shooting_data`.
 
 
-The `%<>%` compound operator allows us to use the an input and reassign it at the end after all the subsequent steps have been performed. We can therefore use `data_input %<>%` instead of `data_input <- data_input %>%`. We will demonstrate this in the code below.
+We use the `%>%` pipe operator from the `dplyr` package and explicitly reassign the result back to the same object. We can therefore use `data_input <- data_input %>%` to pipe sequential steps and update `data_input` in place. We will demonstrate this in the code below.
 
 ```{r}
-shooting_data %<>%
+shooting_data <- shooting_data %>%
   rename("State_abb" = State) %>%
   left_join(state_df, by = c("State_abb" = "State_abb"))
 ```
@@ -702,7 +702,7 @@ In contrast, we can just use the `%>%` pipe operator to select a set of columns 
 
 <details> <summary>Click here if you are unfamiliar with piping in R, which uses this `%>%` operator.</summary>  
 
-By [piping](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html) we mean using the `%>%` pipe operator which is accessible after loading the `tidyverse` or several of the packages within the tidyverse like `dplyr` because they load the [`magrittr` package](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html). 
+By [piping](https://dplyr.tidyverse.org/articles/dplyr.html) we mean using the `%>%` pipe operator which is accessible after loading the `tidyverse` or the `dplyr` package directly. 
 This allows us to perform multiple sequential steps on one data input.
 The object on the left side is used as input to any commands to the right or below.
 
@@ -725,7 +725,7 @@ The `mdy()` function converts dates into a format where dates are listed as mont
 The `year()` function can then be used to extract just the year from each date.
 
 ```{r}
-shooting_data %<>%
+shooting_data <- shooting_data %>%
   mutate(Date = lubridate::mdy(Date)) %>%
   mutate(Date_year = lubridate::year(Date))
 
@@ -807,11 +807,11 @@ To implement the `case_when()` recoding of values, the existing values are writt
 ```{r}
 shooting_data %>%
        select(`Suicide (or attempted suicide) by Shooter (Y/N)`) %>%
-       mutate(type = dplyr::case_when(. == "Yes" ~ TRUE,
-                                      . == "No" ~ FALSE,
-                                      . == "Y" ~ TRUE,
-                                      . == "N" ~ FALSE,
-                                      . == "Officer Involved" ~ TRUE))
+       mutate(type = dplyr::case_when(`Suicide (or attempted suicide) by Shooter (Y/N)` == "Yes" ~ TRUE,
+                                      `Suicide (or attempted suicide) by Shooter (Y/N)` == "No" ~ FALSE,
+                                      `Suicide (or attempted suicide) by Shooter (Y/N)` == "Y" ~ TRUE,
+                                      `Suicide (or attempted suicide) by Shooter (Y/N)` == "N" ~ FALSE,
+                                      `Suicide (or attempted suicide) by Shooter (Y/N)` == "Officer Involved" ~ TRUE))
 ```
 
 In the above code chunk, we did this for one of the columns, but now let's do for all the columns that matched our string "Y/N|Specific|Random|Pre-planned" as above. 
@@ -822,7 +822,7 @@ The `across()` function then applies the `case_when()` function to all of these 
 
 
 ```{r}
-shooting_data %<>%
+shooting_data <- shooting_data %>%
   mutate(dplyr::across(.cols = matches("Y/N|Specific|Random|Pre-planned"),
                        ~ dplyr::case_when(. == "Yes" ~ TRUE,
                                           . == "No" ~ FALSE,
@@ -857,7 +857,7 @@ This variable will collapse the values in the `School`, `City`, and `State` colu
 In this way, we then can use the address variable to look up the latitude and longitude for each school.
 
 ```{r}
-shooting_data %<>%
+shooting_data <- shooting_data %>%
   dplyr::mutate(address = 
                   stringr::str_c(School, City, State_abb, sep = " "))
 ```
@@ -1046,7 +1046,7 @@ Next, we are ready to convert our coordinates variables (`latitude` and `longitu
 To do this, we need to specify what our coordinate variables are and we will also specify what [coordinate reference system](https://www.w3.org/2015/spatial/wiki/Coordinate_Reference_Systems),(crs) we would like to use. In our case we will use the [ESPG](https://en.wikipedia.org/wiki/EPSG_Geodetic_Parameter_Dataset) reference number [4326](https://spatialreference.org/ref/epsg/4326/), known as ESPG:4326 or the [World Geodetic System (WGS) version 84](https://en.wikipedia.org/wiki/World_Geodetic_System#WGS84) which is one of the most commonly used CPS and used by by most global positioning systems, known as GPS. **This tells R  to use the values for the variables called `latitude` and `longitude` as latitude and longitude coordinates.**
 
 ```{r}
-shooting_data_wrangled_for_map %<>%
+shooting_data_wrangled_for_map <- shooting_data_wrangled_for_map %>%
   sf::st_as_sf(coords = c("longitude", "latitude"), crs = 4326)
 
 dim(shooting_data_wrangled_pre_map)
@@ -1071,7 +1071,7 @@ To learn more about geospatial coordinate systems see [here](https://www.nceas.u
 So here we can see the output after transforming our data to the [crs 102008](https://spatialreference.org/ref/esri/102008/html/) reference:
 
 ```{r}
-shooting_data_wrangled_for_map  %<>%
+shooting_data_wrangled_for_map <- shooting_data_wrangled_for_map %>%
   st_transform(crs = "ESRI:102008") 
 ```
 
@@ -1091,7 +1091,7 @@ You can see the tidyverse explanation about when to use a jitter plot  [here](ht
 In this case we will allow for 50 meters of range using the `amount = 50` argument.
 
 ```{r}
-shooting_data_wrangled_for_map %<>%
+shooting_data_wrangled_for_map <- shooting_data_wrangled_for_map %>%
    sf::st_jitter(amount = 50)
 ```
 
@@ -1107,7 +1107,7 @@ shooting_data_wrangled_for_map[1:4]
 Now we will transform our coordinates back into the 3D latitude and longitude degree system again using the `st_transform()` function and the [ESPG:4326](https://spatialreference.org/ref/epsg/4326/), coordinate system.
 
 ```{r}
-shooting_data_wrangled_for_map  %<>%
+shooting_data_wrangled_for_map <- shooting_data_wrangled_for_map %>%
   st_transform(crs = 4326)
 
 shooting_data_wrangled_for_map[1:4]
@@ -1122,7 +1122,7 @@ knitr::include_graphics(here::here("img", "geometry.png"))
 Next, we separate the `geometry` variable into `longitude` and `latitude` variables again. We can use the ` st_coordinates()` function from the `sf` package to extract the coordinates from our tibble as a matrix.
 
 ```{r}
-shooting_data_wrangled_for_map %<>% 
+shooting_data_wrangled_for_map <- shooting_data_wrangled_for_map %>% 
   mutate(coordinates = as_tibble(st_coordinates(.)))
 
 shooting_data_wrangled_for_map %>%
@@ -1135,7 +1135,7 @@ Now, just as we did previously we will create new variables called `latitude` an
 We will also convert our `shooting_data_wrangled_for_map` object which is currently a `sf` into a tibble using the `as_tibble()` function from the `tibble` package and then we will remove the `geometry` and `coordinates` variables using the `select()` function from the `dplyr` package with a minus operator in front of the names of the variables to remove.
 
 ```{r}
-shooting_data_wrangled_for_map %<>%
+shooting_data_wrangled_for_map <- shooting_data_wrangled_for_map %>%
   mutate(longitude = pull(coordinates,X),
           latitude = pull(coordinates,Y)) %>%
   tibble::as_tibble() %>%
@@ -1455,7 +1455,7 @@ To specify that we want to collapse all the columns that have year values, we ca
 per_year <- 
   full_join(shootings_per_year, deaths_per_year)
 
-per_year %<>%
+per_year <- per_year %>%
   pivot_longer(cols = -Date_year, 
                values_to = "events", 
                names_to = "id")
@@ -1468,7 +1468,7 @@ Hmmm, we see the data type of the `id` column is a character (`<chr>`). Let's co
 Using the `fct_inorder()` function from the `forcats` package, we can easily reorder the `id` variable`. 
 
 ```{r}
-per_year %<>% 
+per_year <- per_year %>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year
@@ -1576,7 +1576,7 @@ Next, we join these tables together
 per_year_cum <- 
   full_join(shootings_per_year_cum, deaths_per_year_cum)
 
-per_year_cum %<>% 
+per_year_cum <- per_year_cum %>% 
   pivot_longer(cols = c(Shootings,Deaths ), 
                values_to = "events", 
                names_to = "id")
@@ -1589,7 +1589,7 @@ Good, this looks like we would expect.
 Now let's make a plot like we did before:
 
 ```{r}
-per_year_cum %<>% 
+per_year_cum <- per_year_cum %>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year_cum %>%
@@ -1755,7 +1755,7 @@ knitr::include_graphics(here::here("img", "bindrows.png"))
 
 
 ```{r}
-deaths_perc_event %<>%
+deaths_perc_event <- deaths_perc_event %>%
   bind_rows(greater_than4)
 
 deaths_perc_event 
@@ -1766,7 +1766,7 @@ Next, we add a new variable so that it is easy to plot and interpret the number 
 We will add the word "deaths" to each value in the `Killed (includes shooter)` variable using the base `paste0()` function. Note that this function automatically will result in no space or any other character between pasted elements. The `paste()` function can alternatively be used for those cases. 
 
 ```{r}
-deaths_perc_event %<>% 
+deaths_perc_event <- deaths_perc_event %>% 
   mutate(category = paste0(`Killed (includes shooter)`, 
                            " deaths ", "(", percent, "%)")) 
 
@@ -1784,7 +1784,7 @@ last(pull(deaths_perc_event, category))
 Using the `case_when()` function, we can change this value:
 
 ```{r}
-deaths_perc_event %<>% 
+deaths_perc_event <- deaths_perc_event %>% 
   mutate(category =
            case_when(category == last(pull(deaths_perc_event, category)) ~ 
                         paste0("4+ deaths ", "(", percent, "%)"),
@@ -2413,7 +2413,6 @@ library(readr)
 library(dplyr)
 library(flexdashboard)
 library(shiny)
-library(magrittr)
 library(forcats)
 library(stringr)
 library(waffle)
@@ -2930,11 +2929,11 @@ deaths_per_year<-shooting_data %>%
 
 
 per_year<-full_join(shootings_per_year, deaths_per_year)
-per_year %<>%pivot_longer( cols = (-Date_year), 
+per_year <- per_year %>%pivot_longer( cols = (-Date_year), 
                            values_to = "events", 
                            names_to = "id")
 
-per_year%<>% 
+per_year <- per_year %>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year %>%
@@ -2990,12 +2989,12 @@ deaths_per_year_cum <-
 
 per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
 
-per_year_cum %<>% 
+per_year_cum <- per_year_cum %>% 
   pivot_longer(cols = c(Shootings, Deaths ), 
                values_to = "events", 
                names_to = "id")
 
-per_year_cum %<>% 
+per_year_cum <- per_year_cum %>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year_cum %>%
@@ -3031,12 +3030,12 @@ greater_than4 <-
   filter(`Killed (includes shooter)` >= 4) %>% 
   colSums()
 
-deaths_perc_event %<>% bind_rows(greater_than4)
+deaths_perc_event <- deaths_perc_event %>% bind_rows(greater_than4)
 
-deaths_perc_event %<>% 
+deaths_perc_event <- deaths_perc_event %>% 
   mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
 
-deaths_perc_event %<>% 
+deaths_perc_event <- deaths_perc_event %>% 
   mutate(category = case_when(
     category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "\n(", percent, "%)"),
     category == "1 deaths" ~ "1 death",
@@ -3271,7 +3270,7 @@ In the next column, we have our plots like we did on the last page. Again we wil
 
 This will automatically be in a data object called `input` and it will be within a variable called `state_selected"` based on what we used for the `inputID` in the `select_Input()` function (this requires the base R way of selecting a specific variable using the `$`). 
 
-Notice that the `renderPlot()` function requires that the code be within brackets `{}`. The data is filtered first for just the state that was selected. The code for the plots is essentially the same with minor modifications to allow for all unique cases that the different states present. For example the `deaths_perc_event %<>%filter (!duplicated(category))` is added to the last plot about the number of deaths per school shooting to avoid duplication of the rows in cases like Colorado where the there is only one event that had 4 or more deaths (because in the other cases this value is a sum of all school shooting with 4 or more deaths). 
+Notice that the `renderPlot()` function requires that the code be within brackets `{}`. The data is filtered first for just the state that was selected. The code for the plots is essentially the same with minor modifications to allow for all unique cases that the different states present. For example the `deaths_perc_event <- deaths_perc_event %>% filter(!duplicated(category))` is added to the last plot about the number of deaths per school shooting to avoid duplication of the rows in cases like Colorado where the there is only one event that had 4 or more deaths (because in the other cases this value is a sum of all school shooting with 4 or more deaths). 
 
 It's always good to check as many possible input values as possible to make sure that your plot shows up as you expect!
 
@@ -3297,14 +3296,14 @@ deaths_per_year<-shooting_data_state  %>%
 
 
 per_year <- full_join(shootings_per_year, deaths_per_year)
-per_year %<>% pivot_longer(cols = (-Date_year), 
+per_year <- per_year %>% pivot_longer(cols = (-Date_year), 
                            values_to = "events", 
                            names_to = "id")
 
-per_year %<>% 
+per_year <- per_year %>% 
   mutate(id = forcats::fct_inorder(id))
 
-per_year %<>%
+per_year <- per_year %>%
     ggplot(aes(x = Date_year, y = events, fill =id)) +
     geom_col()+
     facet_wrap(~id, scales = "free", 
@@ -3355,12 +3354,12 @@ deaths_per_year_cum <-
 per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
 
 
-per_year_cum %<>% 
+per_year_cum <- per_year_cum %>% 
   pivot_longer(cols = c(Shootings, Deaths ), 
                values_to = "events", 
                 names_to = "id")
                 
-per_year_cum %<>% 
+per_year_cum <- per_year_cum %>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year_cum %>%
@@ -3405,18 +3404,18 @@ greater_than4 <-
   filter(`Killed (includes shooter)` >= 4) %>% 
   colSums()
 
-deaths_perc_event %<>% bind_rows(greater_than4)
+deaths_perc_event <- deaths_perc_event %>% bind_rows(greater_than4)
 
-deaths_perc_event %<>% 
+deaths_perc_event <- deaths_perc_event %>% 
   mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
 
-deaths_perc_event %<>% 
+deaths_perc_event <- deaths_perc_event %>% 
   mutate(category = case_when(
     category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "\n(", percent, "%)"),
     category == "1 deaths" ~ "1 death",
     TRUE ~ category))
 
-deaths_perc_event %<>% 
+deaths_perc_event <- deaths_perc_event %>% 
   filter (!duplicated(category))
 
 deaths_perc_event %>% 
@@ -3464,7 +3463,7 @@ shooting_data_state <-shooting_data %>%
   mutate(state_avg = state_sum/50)
 
 state_data <- poliscidata::states
-state_data %<>%
+state_data <- state_data %>%
   select(stateid, pop2010, pop2010_hun_thou) %>%
   mutate(stateid = as.character(stateid))%>%
   mutate(stateid = str_remove_all(stateid, pattern = " "))
@@ -3485,7 +3484,7 @@ valueBox(USavg, color = "white")
 ### **State Death Rate (per 100,000 people)**
 
 '''{r}
-state_data %<>%
+state_data <- state_data %>%
   mutate(percapita_deaths  = deaths/pop2010_hun_thou)
 
 renderValueBox({
@@ -3515,7 +3514,7 @@ valueBox(value = round(US_percap, digits = 3),
 
 '''{r}
 
-state_data %<>%
+state_data <- state_data %>%
   mutate(percapita_shootings  = shootings/pop2010_hun_thou)
 
 renderValueBox({
@@ -4087,7 +4086,7 @@ The link to the dashboard described in this case study can be found  [here](http
 
 [Tidyverse](https://www.tidyverse.org/){target="_blank"}   
 
-[Piping in R](https://cran.r-project.org/web/packages/magrittr/vignettes/magrittr.html){target="_blank"}   
+[Piping in R](https://dplyr.tidyverse.org/articles/dplyr.html){target="_blank"}   
 
 [String manipulation cheatsheet](https://rstudio.com/resources/cheatsheets/){target="_blank"}  
 [Table formats](https://en.wikipedia.org/wiki/Wide_and_narrow_data){target="_blank"}
@@ -4154,7 +4153,6 @@ Package   | Use in this case study
 [tibble](https://tibble.tidyverse.org/) | to create tibbles (the tidyverse version of dataframes)
 [dplyr](https://dplyr.tidyverse.org/){target="_blank"}      | to filter, subset, join, add rows to, and modify the data  
 [stringr](https://stringr.tidyverse.org/){target="_blank"}      | to manipulate  character strings within the data (collapsing strings together, replace values, and detect values)
-[magrittr](https://magrittr.tidyverse.org/){target="_blank"}      | to pipe sequential commands 
 [tidyr](https://tidyr.tidyverse.org/){target="_blank"}      | to change the shape or format of tibbles to wide and long, to drop rows with `NA` values, and to see the last few columns of a tibble
 [ggmap](https://cran.r-project.org/web/packages/ggmap/ggmap.pdf) | to geocode the data (which means get the latitude and longitude values)
 [sf](https://r-spatial.github.io/sf/) | to modify the geocoded data so that overlapping points did not overlap

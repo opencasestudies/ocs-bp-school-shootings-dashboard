@@ -19,7 +19,6 @@ library(readr)
 library(dplyr)
 library(flexdashboard)
 library(shiny)
-library(magrittr)
 library(forcats)
 library(stringr)
 library(waffle)
@@ -187,11 +186,11 @@ deaths_per_year<-shooting_data %>%
 
 
 per_year<-full_join(shootings_per_year, deaths_per_year)
-per_year %<>%pivot_longer( cols = (-Date_year), 
+per_year <- per_year %>%pivot_longer( cols = (-Date_year), 
                            values_to = "events", 
                            names_to = "id")
 
-per_year%<>% 
+per_year <- per_year %>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year %>%
@@ -248,11 +247,11 @@ deaths_per_year_cum <- deaths_per_year %>%
 per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
 
 
-per_year_cum %<>%pivot_longer( cols = c(Shootings,
+per_year_cum <- per_year_cum %>%pivot_longer( cols = c(Shootings,
                                         Deaths ), 
                            values_to = "events", 
                            names_to = "id")
-per_year_cum%<>% 
+per_year_cum <- per_year_cum %>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year_cum %>%
@@ -286,10 +285,10 @@ greater_than4<-deaths_perc_event %>%
   filter(`Killed (includes shooter)` >= 4) %>% 
   colSums()
 
-deaths_perc_event %<>%  bind_rows(greater_than4)
+deaths_perc_event <- deaths_perc_event %>%  bind_rows(greater_than4)
 
-deaths_perc_event %<>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
-deaths_perc_event %<>% 
+deaths_perc_event <- deaths_perc_event %>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
+deaths_perc_event <- deaths_perc_event %>% 
   mutate(category = case_when(
     category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "\n(", percent, "%)"),
     category == "1 deaths" ~ "1 death",
@@ -442,14 +441,14 @@ deaths_per_year<-shooting_data_state  %>%
 
 
 per_year<-full_join(shootings_per_year, deaths_per_year)
-per_year %<>%pivot_longer( cols = (-Date_year), 
+per_year <- per_year %>%pivot_longer( cols = (-Date_year), 
                            values_to = "events", 
                            names_to = "id")
 
-per_year%<>% 
+per_year <- per_year %>% 
   mutate(id = forcats::fct_inorder(id))
 
-per_year %<>%
+per_year <- per_year %>%
     ggplot(aes(x = Date_year, y = events, fill =id)) +
     geom_col()+
     facet_wrap(~id, scales = "free", 
@@ -498,11 +497,11 @@ deaths_per_year_cum <- deaths_per_year %>%
 per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
 
 
-per_year_cum %<>%pivot_longer( cols = c(Shootings,
+per_year_cum <- per_year_cum %>%pivot_longer( cols = c(Shootings,
                                         Deaths ), 
                            values_to = "events", 
                            names_to = "id")
-per_year_cum%<>% 
+per_year_cum <- per_year_cum %>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year_cum %>%
@@ -546,16 +545,16 @@ greater_than4<-deaths_perc_event %>%
   filter(`Killed (includes shooter)` >= 4) %>% 
   colSums()
 
-deaths_perc_event %<>%  bind_rows(greater_than4)
+deaths_perc_event <- deaths_perc_event %>%  bind_rows(greater_than4)
 
-deaths_perc_event %<>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
-deaths_perc_event %<>% 
+deaths_perc_event <- deaths_perc_event %>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
+deaths_perc_event <- deaths_perc_event %>% 
   mutate(category = case_when(
     category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "\n(", percent, "%)"),
     category == "1 deaths" ~ "1 death",
     TRUE ~ category))
 
- deaths_perc_event %<>%
+ deaths_perc_event <- deaths_perc_event %>%
  filter (!duplicated(`category`))
 
 deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
@@ -599,7 +598,7 @@ mutate(state_sum = sum(shootings)) %>%
   mutate(state_avg = state_sum/50)
 
 state_data <- poliscidata::states
-state_data %<>%
+state_data <- state_data %>%
   select(stateid, pop2010, pop2010_hun_thou) %>%
   mutate(stateid = as.character(stateid))%>%
   mutate(stateid = str_remove_all(stateid, pattern = " "))
@@ -626,7 +625,7 @@ valueBox(USavg,
 
 ```{r}
 
-state_data %<>%
+state_data <- state_data %>%
   mutate(percapita_deaths  = deaths/pop2010_hun_thou)
 
 renderValueBox({
@@ -656,7 +655,7 @@ valueBox(value = round(US_percap, digits = 3),
 
 ```{r}
 
-state_data %<>%
+state_data <- state_data %>%
   mutate(percapita_shootings  = shootings/pop2010_hun_thou)
 
 renderValueBox({
