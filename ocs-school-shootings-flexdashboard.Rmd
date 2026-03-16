@@ -896,7 +896,10 @@ As mentioned before, the `flexdashboard` metadata included in the `YAML` also al
 
 This [supplementary resource by the Open Case Studies project](https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/) provides a case study on how to create this very dashboard in more detail.
 
+More Case Studies
+=========================================   
 
+Interested in exploring more open case studies? Visit **[opencasestudies.org](https://opencasestudies.org)** to access additional studies and open educational resources.
 
 
 Get Help {data-icon="fa-exclamation-triangle"}
