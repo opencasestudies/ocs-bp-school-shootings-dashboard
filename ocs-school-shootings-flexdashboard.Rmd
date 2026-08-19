@@ -30,11 +30,11 @@ library(DT)
 ```
 
 ```{r}
-shooting_data <- read_csv(here("processed_data",
-                                        "shooting_data_pre_geo_wrangled.csv"))
+shooting_data <- read_csv(here("data", "wrangled",
+                                        "shooting_data_pre_map.csv"))
 
-shooting_data_geocoded <- read_csv(here("processed_data",
-                                        "shooting_data_wrangled.csv"))
+shooting_data_geocoded <- read_csv(here("data", "wrangled",
+                                        "shooting_data_wrangled_for_map.csv"))
 ```
 
 About {data-icon="fa-question-circle"}
