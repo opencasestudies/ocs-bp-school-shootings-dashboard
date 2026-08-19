@@ -12,16 +12,13 @@ output:
     theme: cosmo
     toc: yes
     toc_float: yes
-  pdf_document:
-    toc: yes
-  word_document:
-    toc: yes
+runtime: shiny_prerendered
 
 ---
 
 <style>
 #TOC {
-  background: url("https://opencasestudies.github.io/img/icon-bahi.png");
+  background: url("img/icon-bahi.png");
   background-size: contain;
   padding-top: 240px !important;
   background-repeat: no-repeat;
@@ -49,15 +46,34 @@ function googleTranslateElementInit() {
 knitr::opts_chunk$set(include = TRUE, comment = NA, echo = TRUE,
                       message = FALSE, warning = FALSE, cache = FALSE,
                       fig.align = "center", out.width = '90%')
+library(learnr)
+library(gradethis)
 library(here)
 library(knitr)
-remotes::install_github("benmarwick/wordcountaddin", type = "source", dependencies = TRUE)
-remotes::install_github("alistaire47/read.so")
 library(wordcountaddin)
 library(read.so)
 library(dplyr)
-remotes::install_github("hrbrmstr/waffle")
+library(readr)
+library(tidyr)
+library(forcats)
+library(ggplot2)
+library(stringr)
+library(leaflet)
+library(DT)
+library(htmltools)
 library(waffle)
+
+gradethis::gradethis_setup()
+
+shooting_data <- readr::read_csv(
+  here::here("data", "wrangled", "shooting_data_wrangled_pre_map.csv"),
+  show_col_types = FALSE
+)
+
+shooting_data_geocoded <- readr::read_csv(
+  here::here("data", "wrangled", "shooting_data_wrangled_for_map.csv"),
+  show_col_types = FALSE
+)
 
 rmarkdown:::perf_timer_reset_all()
 rmarkdown:::perf_timer_start("render")
@@ -216,6 +232,20 @@ Now let's learn how to create a dashboard with our data of interest.
 3) What were the characteristics of the shooters: How often was a shooter male? How often did a shooter attempt or commit suicide?
 
 ####
+
+```{r main-questions-check, echo=FALSE}
+quiz(
+  caption = "",
+  question(
+    "Which dashboard question connects most directly to the map?",
+    answer("Where school shooting events occurred across the United States.", correct = TRUE),
+    answer("Whether the original data were stored in an R package."),
+    answer("Which R Markdown theme was selected."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+)
+```
 
 
 # **Learning Objectives** 
@@ -417,6 +447,20 @@ According to the [K-12 Shool Shooting Database](https://www.chds.us/ssdb/about/)
 
 > The database compiles information from more than 25 different sources including peer-reviewed studies, government reports, mainstream media, non-profits, private websites, blogs, and crowd-sourced lists that have been analyzed, filtered, deconflicted, and cross-referenced. All of the information is based on open-source information and 3rd party reporting.
 
+```{r data-context-check, echo=FALSE}
+quiz(
+  caption = "",
+  question(
+    "Why does this case study repeatedly caution readers about interpretation?",
+    answer("The data are compiled from open-source and third-party reporting and may include reporting errors.", correct = TRUE),
+    answer("The dashboard uses no real data."),
+    answer("The data are only about colleges and universities."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+)
+```
+
 
 # **Data Import**
 *** 
@@ -551,6 +595,45 @@ To allow users to skip import we will save the data as an RDA file:
 
 ```{r, eval = FALSE}
 save(shooting_data, file = here::here("data", "imported", "shooting_data.rda"))
+```
+
+#### {.exercise_block}
+
+<b><u>Exercise</u></b>
+
+Practice importing the local raw CSV file with `read_csv()` and `here()`.
+
+####
+
+```{r import-exercise-setup, include=FALSE}
+library(here)
+library(readr)
+```
+
+```{r import-exercise, exercise=TRUE, exercise.checker=gradethis::grade_learnr}
+raw_school_shootings <- read_csv(
+  ___("data", "raw", "K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv")
+)
+
+nrow(raw_school_shootings)
+```
+
+```{r import-exercise-solution}
+raw_school_shootings <- read_csv(
+  here("data", "raw", "K-12_SSDB_(Public)-K-12_SSDB_(Public)_Linked.csv")
+)
+
+nrow(raw_school_shootings)
+```
+
+```{r import-exercise-check}
+grade_code(
+  pass_if(
+    ~ exists("raw_school_shootings") && nrow(raw_school_shootings) > 0,
+    "Nice. You imported the raw CSV from the project data folder."
+  ),
+  fail_if(~ TRUE, "Use `here()` to build the file path inside `read_csv()`.")
+)
 ```
 
 # **Data Exploration and Wrangling**
@@ -1165,6 +1248,44 @@ save(shooting_data_wrangled_for_map,
 write_csv(shooting_data_wrangled_for_map, 
           file = here("data", "wrangled",
                       "shooting_data_wrangled_for_map.csv"))
+```
+
+#### {.exercise_block}
+
+<b><u>Exercise</u></b>
+
+Use `count()` to inspect the event categories in the wrangled dataset.
+
+####
+
+```{r wrangling-count-exercise-setup, include=FALSE}
+library(dplyr)
+shooting_data_wrangled_for_map <- readr::read_csv(
+  here::here("data", "wrangled", "shooting_data_wrangled_for_map.csv"),
+  show_col_types = FALSE
+)
+```
+
+```{r wrangling-count-exercise, exercise=TRUE, exercise.checker=gradethis::grade_learnr}
+shooting_data_wrangled_for_map %>%
+  ___(Category, name = "events") %>%
+  arrange(desc(events))
+```
+
+```{r wrangling-count-exercise-solution}
+shooting_data_wrangled_for_map %>%
+  count(Category, name = "events") %>%
+  arrange(desc(events))
+```
+
+```{r wrangling-count-exercise-check}
+grade_code(
+  pass_if(
+    ~ identical(.result, shooting_data_wrangled_for_map %>% count(Category, name = "events") %>% arrange(desc(events))),
+    "Good work. This summary makes the most common event categories easy to compare."
+  ),
+  fail_if(~ TRUE, "Fill the blank with `count` and keep `Category` as the grouping variable.")
+)
 ```
 
 
@@ -2003,6 +2124,58 @@ reporting_gun
 
 ####
 
+#### {.exercise_block}
+
+<b><u>Exercise</u></b>
+
+Calculate yearly totals for shootings, deaths, and wounded people.
+
+####
+
+```{r yearly-summary-exercise-setup, include=FALSE}
+library(dplyr)
+shooting_data_wrangled_pre_map <- readr::read_csv(
+  here::here("data", "wrangled", "shooting_data_wrangled_pre_map.csv"),
+  show_col_types = FALSE
+)
+```
+
+```{r yearly-summary-exercise, exercise=TRUE, exercise.checker=gradethis::grade_learnr}
+yearly_summary <- shooting_data_wrangled_pre_map %>%
+  group_by(Date_year) %>%
+  summarise(
+    Shootings = ___,
+    Deaths = sum(`Killed (includes shooter)`, na.rm = TRUE),
+    Wounded = sum(Wounded, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+yearly_summary
+```
+
+```{r yearly-summary-exercise-solution}
+yearly_summary <- shooting_data_wrangled_pre_map %>%
+  group_by(Date_year) %>%
+  summarise(
+    Shootings = n(),
+    Deaths = sum(`Killed (includes shooter)`, na.rm = TRUE),
+    Wounded = sum(Wounded, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+yearly_summary
+```
+
+```{r yearly-summary-exercise-check}
+grade_code(
+  pass_if(
+    ~ exists("yearly_summary") && identical(yearly_summary, shooting_data_wrangled_pre_map %>% group_by(Date_year) %>% summarise(Shootings = n(), Deaths = sum(`Killed (includes shooter)`, na.rm = TRUE), Wounded = sum(Wounded, na.rm = TRUE), .groups = "drop")),
+    "Exactly. `n()` counts incidents within each year, while `sum()` totals casualties."
+  ),
+  fail_if(~ TRUE, "Use `n()` for the number of shootings in each grouped year.")
+)
+```
+
 
 # **Dashboard Basics**
 ***
@@ -2329,6 +2502,20 @@ Let's take a minute to test your knowledge about `flexdashboard` basics:
 
 ####
 
+
+```{r dashboard-basics-check, echo=FALSE}
+quiz(
+  caption = "",
+  question(
+    "What does `runtime: shiny` add to a flexdashboard?",
+    answer("It allows dashboard outputs to respond to user inputs.", correct = TRUE),
+    answer("It converts all plots into static image files."),
+    answer("It removes the need for an R Markdown YAML header."),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  )
+)
+```
 
 
 # **Our Dashboard**
@@ -4049,6 +4236,62 @@ The deaf and hard of hearing can contact the **(NSPL)** via TTY at **[1-800-799-
 
 ***
 
+#### {.exercise_block}
+
+<b><u>Exercise</u></b>
+
+Create a compact table for the dashboard's data page.
+
+####
+
+```{r dashboard-table-exercise-setup, include=FALSE}
+library(dplyr)
+shooting_data_wrangled_pre_map <- readr::read_csv(
+  here::here("data", "wrangled", "shooting_data_wrangled_pre_map.csv"),
+  show_col_types = FALSE
+)
+```
+
+```{r dashboard-table-exercise, exercise=TRUE, exercise.checker=gradethis::grade_learnr}
+dashboard_table <- shooting_data_wrangled_pre_map %>%
+  select(
+    Date,
+    School,
+    City,
+    State_abb,
+    Category,
+    `Killed (includes shooter)`,
+    ___
+  )
+
+head(dashboard_table)
+```
+
+```{r dashboard-table-exercise-solution}
+dashboard_table <- shooting_data_wrangled_pre_map %>%
+  select(
+    Date,
+    School,
+    City,
+    State_abb,
+    Category,
+    `Killed (includes shooter)`,
+    Wounded
+  )
+
+head(dashboard_table)
+```
+
+```{r dashboard-table-exercise-check}
+grade_code(
+  pass_if(
+    ~ exists("dashboard_table") && "Wounded" %in% names(dashboard_table),
+    "Nice. This smaller table keeps the dashboard focused on the fields users scan first."
+  ),
+  fail_if(~ TRUE, "Add `Wounded` as the final selected column.")
+)
+```
+
 # **Summary**
 *** 
 
@@ -4237,5 +4480,3 @@ We would like to acknowledge [Elizabeth Stuart](https://www.jhsph.edu/faculty/di
 We would like to acknowledge [Michael Breshock](https://mbreshock.github.io/) for his contributions to this case study and developing the `OCSdata` package. 
 
 We would also like to acknowledge the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/) for funding this work. 
-
-

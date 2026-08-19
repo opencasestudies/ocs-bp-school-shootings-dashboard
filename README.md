@@ -22,6 +22,18 @@ OpenCaseStudies
 -   GitHub repo for dashboard:
     <a href="https://github.com/opencasestudies/ocs-bp-school-shootings-flexdashboard" class="uri">https://github.com/opencasestudies/ocs-bp-school-shootings-flexdashboard</a>
 
+### Interactive case study
+
+This branch contains an interactive Shiny version of the case study, with
+`learnr` exercises embedded in the original content. Run it from the
+project root with:
+
+``` r
+rmarkdown::run("index.Rmd", shiny_args = list(launch.browser = TRUE))
+```
+
+You can also open `index.Rmd` in RStudio and click **Run Document**.
+
 ### Disclaimer
 
 The purpose of the [Open Case
