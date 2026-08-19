@@ -31,7 +31,7 @@ library(DT)
 
 ```{r}
 shooting_data <- read_csv(here("data", "wrangled",
-                                        "shooting_data_pre_map.csv"))
+                                        "shooting_data_wrangled_pre_map.csv"))
 
 shooting_data_geocoded <- read_csv(here("data", "wrangled",
                                         "shooting_data_wrangled_for_map.csv"))
@@ -712,9 +712,10 @@ shooting_information0 <- paste('<div style="height:auto;line-height:1em;overflow
 #Create the map!
 
 leaflet(shooting_data_geocoded) %>%
+  addTiles() %>%
   addProviderTiles(provider = providers$OpenStreetMap, group = "OpenStreetMap") %>%
   addProviderTiles(provider = providers$Esri.WorldImagery, group = "ESRI World Imagery") %>%
-  addProviderTiles(provider = providers$Stamen.TonerLite, group = "Toner")%>%
+  addProviderTiles(provider = providers$Stadia.StamenTonerLite, group = "Toner Lite") %>%
   addCircleMarkers(popup = ~shooting_information0,
                      lng = ~longitude,
                      lat = ~latitude,
@@ -723,7 +724,7 @@ leaflet(shooting_data_geocoded) %>%
      fillOpacity = 0.2,
      clusterOptions = markerClusterOptions(),
      group = "Circles") %>%
-  addMiniMap(tiles = providers$Stamen.Toner,
+  addMiniMap(tiles = providers$Stadia.StamenToner,
               toggleDisplay = TRUE) %>%
   addLayersControl(
      baseGroups = c("Toner Lite",
