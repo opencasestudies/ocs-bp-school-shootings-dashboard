@@ -802,7 +802,7 @@ shooting_data %>%
 ```
 We see there are six different values in this column. To recode this column, we need to consider what we recode all the values. 
 
-To implement the `case_when()` recoding of values, the existing values are written on the left of the `~` sign (quotation marks are necessary around the existing values) and new values are written on the right (quotations marks are not necessary as these are `TRUE` and `FALSE` statements).
+To implement the `case_when()` recoding of values, the existing values are written on the left of the `~` sign (quotation marks are necessary around the existing values) and new values are written on the right (quotations marks are not necessary as these are `TRUE` and `FALSE` statements). The `.default = NA` statement makes the handling of missing or unrecognized values explicit. We then use `count()` to check the resulting `TRUE`, `FALSE`, and `NA` values.
 
 ```{r}
 shooting_data %>%
