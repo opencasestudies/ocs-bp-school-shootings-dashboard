@@ -19,7 +19,6 @@ library(readr)
 library(dplyr)
 library(flexdashboard)
 library(shiny)
-library(magrittr)
 library(forcats)
 library(stringr)
 library(waffle)
@@ -31,11 +30,11 @@ library(DT)
 ```
 
 ```{r}
-shooting_data <- read_csv(here("processed_data",
-                                        "shooting_data_pre_geo_wrangled.csv"))
+shooting_data <- read_csv(here("data", "wrangled",
+                                        "shooting_data_wrangled_pre_map.csv"))
 
-shooting_data_geocoded <- read_csv(here("processed_data",
-                                        "shooting_data_wrangled.csv"))
+shooting_data_geocoded <- read_csv(here("data", "wrangled",
+                                        "shooting_data_wrangled_for_map.csv"))
 ```
 
 About {data-icon="fa-question-circle"}
@@ -187,11 +186,11 @@ deaths_per_year<-shooting_data %>%
 
 
 per_year<-full_join(shootings_per_year, deaths_per_year)
-per_year %<>%pivot_longer( cols = (-Date_year), 
+per_year <- per_year %>%pivot_longer( cols = (-Date_year), 
                            values_to = "events", 
                            names_to = "id")
 
-per_year%<>% 
+per_year <- per_year %>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year %>%
@@ -248,11 +247,11 @@ deaths_per_year_cum <- deaths_per_year %>%
 per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
 
 
-per_year_cum %<>%pivot_longer( cols = c(Shootings,
+per_year_cum <- per_year_cum %>%pivot_longer( cols = c(Shootings,
                                         Deaths ), 
                            values_to = "events", 
                            names_to = "id")
-per_year_cum%<>% 
+per_year_cum <- per_year_cum %>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year_cum %>%
@@ -286,10 +285,10 @@ greater_than4<-deaths_perc_event %>%
   filter(`Killed (includes shooter)` >= 4) %>% 
   colSums()
 
-deaths_perc_event %<>%  bind_rows(greater_than4)
+deaths_perc_event <- deaths_perc_event %>%  bind_rows(greater_than4)
 
-deaths_perc_event %<>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
-deaths_perc_event %<>% 
+deaths_perc_event <- deaths_perc_event %>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
+deaths_perc_event <- deaths_perc_event %>% 
   mutate(category = case_when(
     category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "\n(", percent, "%)"),
     category == "1 deaths" ~ "1 death",
@@ -430,26 +429,26 @@ Column {data-width=900 .tabset .tabset-fade}
 renderPlot({
 shooting_data_state <- shooting_data %>% filter(State == input$state_selected)
 
-shootings_per_year<- shooting_data_state  %>%
+shootings_per_year <- shooting_data_state  %>%
     group_by(Date_year) %>%
     count() %>%
   rename("Shootings" = n) %>%
     ungroup()
 
-deaths_per_year<-shooting_data_state  %>% 
+deaths_per_year <- shooting_data_state  %>% 
   group_by(Date_year) %>%
   summarize(Deaths =sum(`Killed (includes shooter)`))
 
 
-per_year<-full_join(shootings_per_year, deaths_per_year)
-per_year %<>%pivot_longer( cols = (-Date_year), 
+per_year <- full_join(shootings_per_year, deaths_per_year)
+per_year <- per_year %>% pivot_longer( cols = (-Date_year), 
                            values_to = "events", 
                            names_to = "id")
 
-per_year%<>% 
+per_year <- per_year %>% 
   mutate(id = forcats::fct_inorder(id))
 
-per_year %<>%
+per_year <- per_year %>%
     ggplot(aes(x = Date_year, y = events, fill =id)) +
     geom_col()+
     facet_wrap(~id, scales = "free", 
@@ -468,6 +467,8 @@ per_year %<>%
     theme_dashboard()+
     theme(title = element_text(size = 16, face = "bold"),
           axis.text = element_text(size = 14))
+
+per_year
 })
 ```
 
@@ -498,11 +499,11 @@ deaths_per_year_cum <- deaths_per_year %>%
 per_year_cum <- full_join(shootings_per_year_cum, deaths_per_year_cum)
 
 
-per_year_cum %<>%pivot_longer( cols = c(Shootings,
+per_year_cum <- per_year_cum %>%pivot_longer( cols = c(Shootings,
                                         Deaths ), 
                            values_to = "events", 
                            names_to = "id")
-per_year_cum%<>% 
+per_year_cum <- per_year_cum %>% 
   mutate(id = forcats::fct_inorder(id))
 
 per_year_cum %>%
@@ -546,16 +547,16 @@ greater_than4<-deaths_perc_event %>%
   filter(`Killed (includes shooter)` >= 4) %>% 
   colSums()
 
-deaths_perc_event %<>%  bind_rows(greater_than4)
+deaths_perc_event <- deaths_perc_event %>%  bind_rows(greater_than4)
 
-deaths_perc_event %<>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
-deaths_perc_event %<>% 
+deaths_perc_event <- deaths_perc_event %>% mutate(category = paste0(`Killed (includes shooter)`, " deaths ", "\n(", percent, "%)")) 
+deaths_perc_event <- deaths_perc_event %>% 
   mutate(category = case_when(
     category ==  last(pull(deaths_perc_event, category)) ~ paste0("4+ deaths ", "\n(", percent, "%)"),
     category == "1 deaths" ~ "1 death",
     TRUE ~ category))
 
- deaths_perc_event %<>%
+ deaths_perc_event <- deaths_perc_event %>%
  filter (!duplicated(`category`))
 
 deaths_perc_event %>% select(-`Killed (includes shooter)`) %>%
@@ -599,7 +600,7 @@ mutate(state_sum = sum(shootings)) %>%
   mutate(state_avg = state_sum/50)
 
 state_data <- poliscidata::states
-state_data %<>%
+state_data <- state_data %>%
   select(stateid, pop2010, pop2010_hun_thou) %>%
   mutate(stateid = as.character(stateid))%>%
   mutate(stateid = str_remove_all(stateid, pattern = " "))
@@ -626,7 +627,7 @@ valueBox(USavg,
 
 ```{r}
 
-state_data %<>%
+state_data <- state_data %>%
   mutate(percapita_deaths  = deaths/pop2010_hun_thou)
 
 renderValueBox({
@@ -656,7 +657,7 @@ valueBox(value = round(US_percap, digits = 3),
 
 ```{r}
 
-state_data %<>%
+state_data <- state_data %>%
   mutate(percapita_shootings  = shootings/pop2010_hun_thou)
 
 renderValueBox({
@@ -713,9 +714,10 @@ shooting_information0 <- paste('<div style="height:auto;line-height:1em;overflow
 #Create the map!
 
 leaflet(shooting_data_geocoded) %>%
+  addTiles() %>%
   addProviderTiles(provider = providers$OpenStreetMap, group = "OpenStreetMap") %>%
   addProviderTiles(provider = providers$Esri.WorldImagery, group = "ESRI World Imagery") %>%
-  addProviderTiles(provider = providers$Stamen.TonerLite, group = "Toner")%>%
+  addProviderTiles(provider = providers$Stadia.StamenTonerLite, group = "Toner Lite") %>%
   addCircleMarkers(popup = ~shooting_information0,
                      lng = ~longitude,
                      lat = ~latitude,
@@ -724,7 +726,7 @@ leaflet(shooting_data_geocoded) %>%
      fillOpacity = 0.2,
      clusterOptions = markerClusterOptions(),
      group = "Circles") %>%
-  addMiniMap(tiles = providers$Stamen.Toner,
+  addMiniMap(tiles = providers$Stadia.StamenToner,
               toggleDisplay = TRUE) %>%
   addLayersControl(
      baseGroups = c("Toner Lite",
@@ -897,7 +899,10 @@ As mentioned before, the `flexdashboard` metadata included in the `YAML` also al
 
 This [supplementary resource by the Open Case Studies project](https://opencasestudies.github.io/ocs-bp-school-shootings-dashboard/) provides a case study on how to create this very dashboard in more detail.
 
+More Case Studies
+=========================================   
 
+Interested in exploring more open case studies? Visit **[opencasestudies.org](https://opencasestudies.org)** to access additional studies and open educational resources.
 
 
 Get Help {data-icon="fa-exclamation-triangle"}
