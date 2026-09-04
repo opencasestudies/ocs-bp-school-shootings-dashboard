@@ -810,7 +810,9 @@ shooting_data %>%
                                       `Suicide (or attempted suicide) by Shooter (Y/N)` == "No" ~ FALSE,
                                       `Suicide (or attempted suicide) by Shooter (Y/N)` == "Y" ~ TRUE,
                                       `Suicide (or attempted suicide) by Shooter (Y/N)` == "N" ~ FALSE,
-                                      `Suicide (or attempted suicide) by Shooter (Y/N)` == "Officer Involved" ~ TRUE))
+                                      `Suicide (or attempted suicide) by Shooter (Y/N)` == "Officer Involved" ~ TRUE,
+                                      .default = NA)) %>%
+       count(type)
 ```
 
 In the above code chunk, we did this for one of the columns, but now let's do for all the columns that matched our string "Y/N|Specific|Random|Pre-planned" as above. 
@@ -4236,4 +4238,3 @@ We would like to acknowledge [Elizabeth Stuart](https://www.jhsph.edu/faculty/di
 We would like to acknowledge [Michael Breshock](https://mbreshock.github.io/) for his contributions to this case study and developing the `OCSdata` package. 
 
 We would also like to acknowledge the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/) for funding this work. 
-
