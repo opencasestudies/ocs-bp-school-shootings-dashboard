@@ -817,7 +817,7 @@ shooting_data %>%
 
 In the above code chunk, we did this for one of the columns, but now let's do for all the columns that matched our string "Y/N|Specific|Random|Pre-planned" as above. 
 
-To do this, we will use the `across()` function from the `dplyr` package and the `matches()` function from the `tidyselect` package to allow us to apply this to all of the variables that have a pattern that that matches any of those of the variables we want to change. 
+To do this, we will use the `across()` function from the `dplyr` package and the `matches()` function from the `tidyselect` package to apply this to all variables whose names match one of the patterns we want to change. Within `across()`, the `.` is a placeholder for the current column, so the same `case_when()` conditions are applied to each selected variable. 
 
 The `across()` function then applies the `case_when()` function to all of these variables. Notice that the `~` symbol is necessary before the function that is applied using `across()`.
 
