@@ -806,7 +806,6 @@ To implement the `case_when()` recoding of values, the existing values are writt
 
 ```{r}
 shooting_data %>%
-       select(`Suicide (or attempted suicide) by Shooter (Y/N)`) %>%
        mutate(type = dplyr::case_when(`Suicide (or attempted suicide) by Shooter (Y/N)` == "Yes" ~ TRUE,
                                       `Suicide (or attempted suicide) by Shooter (Y/N)` == "No" ~ FALSE,
                                       `Suicide (or attempted suicide) by Shooter (Y/N)` == "Y" ~ TRUE,
@@ -4237,5 +4236,4 @@ We would like to acknowledge [Elizabeth Stuart](https://www.jhsph.edu/faculty/di
 We would like to acknowledge [Michael Breshock](https://mbreshock.github.io/) for his contributions to this case study and developing the `OCSdata` package. 
 
 We would also like to acknowledge the [Bloomberg American Health Initiative](https://americanhealth.jhu.edu/) for funding this work. 
-
 
